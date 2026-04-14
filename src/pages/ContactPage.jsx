@@ -74,7 +74,7 @@ const ContactPage = () => {
                   <a href="https://www.instagram.com/finfleetacademy/" target="_blank" rel="noopener noreferrer" className="p-3 bg-slate-50 dark:bg-slate-900 rounded-xl hover:text-brand-600 transition-colors border border-slate-100 dark:border-slate-800">
                     <Instagram className="w-5 h-5" />
                   </a>
-                  <a href="#" className="p-3 bg-slate-50 dark:bg-slate-900 rounded-xl hover:text-brand-600 transition-colors border border-slate-100 dark:border-slate-800">
+                  <a href="https://www.linkedin.com/company/113126241/" target="_blank" rel="noopener noreferrer" className="p-3 bg-slate-50 dark:bg-slate-900 rounded-xl hover:text-brand-600 transition-colors border border-slate-100 dark:border-slate-800">
                     <Linkedin className="w-5 h-5" />
                   </a>
                   <a href="https://x.com/finfleetacademy" target="_blank" rel="noopener noreferrer" className="p-3 bg-slate-50 dark:bg-slate-900 rounded-xl hover:text-brand-600 transition-colors border border-slate-100 dark:border-slate-800">
