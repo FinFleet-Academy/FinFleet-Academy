@@ -8,15 +8,18 @@ import { toast } from 'react-hot-toast';
 const SignupPage = () => {
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
   const [selectedPlan, setSelectedPlan] = useState(PLANS.FREE);
-  const { login } = useAuth();
+  const { registerUser } = useAuth();
   const navigate = useNavigate();
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
-    // Mock signup logic
-    login({ name: formData.name, email: formData.email }, selectedPlan);
-    toast.success(`Welcome to the Fleet, ${formData.name}! Your ${selectedPlan} plan is active.`);
-    navigate('/');
+    try {
+      await registerUser(formData.name, formData.email, formData.password, selectedPlan);
+      toast.success(`Welcome to the Fleet, ${formData.name}! Your ${selectedPlan} plan is active.`);
+      navigate('/');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to create account');
+    }
   };
 
   return (

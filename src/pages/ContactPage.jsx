@@ -1,15 +1,25 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, MessageSquare, Instagram, Linkedin, Twitter, MapPin, Phone, Send } from 'lucide-react';
+import { Mail, MessageSquare, Instagram, Linkedin, Twitter, MapPin, Phone, Send, Loader2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import axios from 'axios';
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    toast.success("Message sent! Our team will contact you soon.");
-    setFormData({ name: '', email: '', subject: '', message: '' });
+    setLoading(true);
+    try {
+      await axios.post('/api/contacts', formData);
+      toast.success("Message sent! Our team will contact you soon.");
+      setFormData({ name: '', email: '', subject: '', message: '' });
+    } catch (error) {
+      toast.error("Failed to send message. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -138,9 +148,22 @@ const ContactPage = () => {
                   ></textarea>
                 </div>
 
-                <button type="submit" className="btn-primary w-full py-4 flex items-center justify-center space-x-2">
-                  <span>Send Message</span>
-                  <Send className="w-4 h-4" />
+                <button 
+                  type="submit" 
+                  disabled={loading}
+                  className="btn-primary w-full py-4 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? (
+                    <>
+                      <span>Sending...</span>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    </>
+                  ) : (
+                    <>
+                      <span>Send Message</span>
+                      <Send className="w-4 h-4" />
+                    </>
+                  )}
                 </button>
               </form>
             </div>

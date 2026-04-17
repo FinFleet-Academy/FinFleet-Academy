@@ -13,14 +13,18 @@ const Navbar = () => {
 
   const navLinks = [
     { name: 'Home', path: '/' },
-    { name: 'Courses', path: '/courses' },
-    { name: 'Features', path: '/#features' },
+    { name: 'Academy', path: '/courses' },
+    { name: 'Pricing', path: '/pricing' },
+    { name: 'Market', path: '/#features' },
     { name: 'AI Chatbot', path: '/chatbot' },
-    { name: 'Contact', path: '/contact' },
   ];
 
+  if (isAuthenticated) {
+    navLinks.push({ name: 'Dashboard', path: '/dashboard' });
+  }
+
   if (isAdmin) {
-    navLinks.push({ name: 'Admin Panel', path: '/admin' });
+    navLinks.push({ name: 'Admin', path: '/admin' });
   }
 
   const isActive = (path) => location.pathname === path;

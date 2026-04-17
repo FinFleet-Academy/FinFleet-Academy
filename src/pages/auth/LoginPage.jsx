@@ -8,21 +8,22 @@ import { toast } from 'react-hot-toast';
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Admin check logic
-    if (email === 'admin@finfleet.com') {
-      login({ name: 'Admin', email }, PLANS.FREE);
-      toast.success("Welcome back, Admin.");
-      navigate('/admin');
-    } else {
-      // Regular user mock login logic
-      login({ name: email.split('@')[0], email }, PLANS.FREE);
+    try {
+      const userData = await login(email, password);
       toast.success("Welcome back! You are logged in.");
-      navigate('/');
+      if (userData.isAdmin) {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Invalid email or password');
     }
   };
 
@@ -70,6 +71,8 @@ const LoginPage = () => {
                 <input
                   required
                   type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-12 pr-12 py-3.5 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none dark:text-white"
                   placeholder="••••••••"
                 />

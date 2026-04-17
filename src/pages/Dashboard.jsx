@@ -1,16 +1,36 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, Trophy, Clock, TrendingUp, Award, PlayCircle, Star, ShieldCheck, Bell, CheckCircle2 } from 'lucide-react';
+import { BookOpen, Trophy, Clock, TrendingUp, Award, PlayCircle, Star, ShieldCheck, Bell, CheckCircle2, LayoutDashboard, Wallet } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import BudgetTracker from '../components/dashboard/BudgetTracker';
+import axios from 'axios';
 
 const Dashboard = () => {
   const { user, plan, notifications, markNotificationRead } = useAuth();
+  const [courses, setCourses] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
 
-  const courses = [
-    { title: 'Market Psychology 101', progress: 85, icon: BookOpen, color: 'text-blue-600', bg: 'bg-blue-100' },
-    { title: 'Technical Analysis Mastery', progress: 40, icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-100' },
-    { title: 'Risk Management Pro', progress: 10, icon: ShieldCheck, color: 'text-brand-600', bg: 'bg-brand-100' }
-  ];
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data } = await axios.get('/api/courses/progress');
+        // Map progress data to course format or handle empty state
+        const mappedCourses = data.map(p => ({
+          title: p.courseId.title,
+          progress: p.completed ? 100 : 50, // Mocking progress for now as Progress model only has 'completed'
+          icon: BookOpen, // Dynamic icons would need a mapping
+          color: p.courseId.color || 'text-brand-600',
+          bg: p.courseId.bg || 'bg-brand-100'
+        }));
+        setCourses(mappedCourses);
+      } catch (err) {
+        console.error("Failed to fetch courses", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   // Filter notifications for this user or 'ALL' broadcast
   const userNotifs = notifications.filter(n => n.userEmail === 'ALL' || n.userEmail === user?.email);
@@ -51,6 +71,15 @@ const Dashboard = () => {
               <div className="text-xs text-slate-500 uppercase tracking-widest mt-1">{stat.label}</div>
             </div>
           ))}
+        </div>
+
+        {/* Budget Tracker Section */}
+        <div className="mb-12">
+          <h3 className="text-xl font-bold dark:text-white flex items-center mb-6">
+            <Wallet className="w-5 h-5 mr-2 text-brand-600" />
+            Financial Overview
+          </h3>
+          <BudgetTracker />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -106,7 +135,7 @@ const Dashboard = () => {
                     <AnimatePresence>
                       {userNotifs.map((notif) => (
                         <motion.div 
-                          key={notif.id}
+                          key={notif._id}
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: 'auto' }}
                           exit={{ opacity: 0, height: 0 }}

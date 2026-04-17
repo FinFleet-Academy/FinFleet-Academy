@@ -6,6 +6,7 @@ import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import HomePage from './pages/HomePage';
 import CoursesPage from './pages/CoursesPage';
+import PricingPage from './pages/PricingPage';
 import ChatPage from './pages/ChatPage';
 import ContactPage from './pages/ContactPage';
 import LoginPage from './pages/auth/LoginPage';
@@ -23,6 +24,7 @@ function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/courses" element={<CoursesPage />} />
+              <Route path="/pricing" element={<PricingPage />} />
               <Route path="/chatbot" element={<ChatPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/dashboard" element={<Dashboard />} />

@@ -7,23 +7,46 @@ import { useNavigate } from 'react-router-dom';
 const AdminDashboard = () => {
   const { 
     isAdmin, 
-    usersList, 
-    coupons, 
-    adminUpdateUserPlan, 
-    adminCancelSubscription, 
-    adminCreateCoupon, 
-    adminDeleteCoupon,
+    upgradePlan, 
+    addCoupon, 
+    deleteCoupon,
+    fetchUsers,
+    fetchCoupons,
     adminSendNotification
   } = useAuth();
   
   const navigate = useNavigate();
 
+  const [usersList, setUsersList] = useState([]);
+  const [coupons, setCoupons] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [couponCode, setCouponCode] = useState('');
   const [discountPercent, setDiscountPercent] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   
   const [notifEmail, setNotifEmail] = useState('ALL');
   const [notifMessage, setNotifMessage] = useState('');
+
+  const loadData = async () => {
+    try {
+      const [users, allCoupons] = await Promise.all([
+        fetchUsers(),
+        fetchCoupons()
+      ]);
+      setUsersList(users);
+      setCoupons(allCoupons);
+    } catch (error) {
+      toast.error("Failed to fetch admin data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    if (isAdmin) {
+      loadData();
+    }
+  }, [isAdmin]);
 
   // Protect the route
   if (!isAdmin) {
@@ -37,41 +60,70 @@ const AdminDashboard = () => {
     );
   }
 
-  const handleCreateCoupon = (e) => {
+  const handleCreateCoupon = async (e) => {
     e.preventDefault();
     if (!couponCode || !discountPercent) return;
     
-    if (coupons.find(c => c.code === couponCode.toUpperCase())) {
-      toast.error("A coupon with this code already exists.");
-      return;
+    try {
+      await addCoupon(couponCode, discountPercent);
+      toast.success(`Coupon ${couponCode.toUpperCase()} created successfully!`);
+      setCouponCode('');
+      setDiscountPercent('');
+      loadData();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to create coupon");
     }
-
-    adminCreateCoupon(couponCode, discountPercent);
-    toast.success(`Coupon ${couponCode.toUpperCase()} created successfully!`);
-    setCouponCode('');
-    setDiscountPercent('');
   };
 
-  const handleUpgradeUser = (userId, currentPlan) => {
+  const handleUpgradeUser = async (userId, currentPlan) => {
     const plansOrder = Object.values(PLANS);
     const currentIndex = plansOrder.indexOf(currentPlan);
     
     if (currentIndex < plansOrder.length - 1) {
       const nextPlan = plansOrder[currentIndex + 1];
-      adminUpdateUserPlan(userId, nextPlan);
-      toast.success(`Upgraded user to ${nextPlan}.`);
+      try {
+        await upgradePlan(userId, nextPlan);
+        toast.success(`Upgraded user to ${nextPlan}.`);
+        loadData();
+      } catch (error) {
+        toast.error("Failed to upgrade user");
+      }
     } else {
       toast.error("User is already on the highest tier.");
     }
   };
 
-  const handleSendNotification = (e) => {
+  const handleCancelSubscription = async (userId) => {
+    try {
+      await upgradePlan(userId, PLANS.FREE);
+      toast.success("Subscription cancelled");
+      loadData();
+    } catch (error) {
+      toast.error("Failed to cancel subscription");
+    }
+  };
+
+  const handleDeleteCoupon = async (couponId, code) => {
+    try {
+      await deleteCoupon(couponId);
+      toast.success(`Coupon ${code} deleted.`);
+      loadData();
+    } catch (error) {
+      toast.error("Failed to delete coupon");
+    }
+  };
+
+  const handleSendNotification = async (e) => {
     e.preventDefault();
     if (!notifMessage.trim()) return;
     
-    adminSendNotification(notifEmail, notifMessage);
-    toast.success(`Notification sent to ${notifEmail === 'ALL' ? 'all users' : notifEmail}`);
-    setNotifMessage('');
+    try {
+      await adminSendNotification(notifEmail, notifMessage);
+      toast.success(`Notification sent to ${notifEmail === 'ALL' ? 'all users' : notifEmail}`);
+      setNotifMessage('');
+    } catch (error) {
+      toast.error("Failed to send notification");
+    }
   };
 
   const filteredUsers = usersList.filter(u => 
@@ -125,7 +177,7 @@ const AdminDashboard = () => {
                   </thead>
                   <tbody className="text-sm">
                     {filteredUsers.map((u) => (
-                      <tr key={u.id} className="border-b border-slate-100 dark:border-slate-800/50 hover:bg-slate-50/50 dark:hover:bg-slate-900/50 transition-colors">
+                      <tr key={u._id} className="border-b border-slate-100 dark:border-slate-800/50 hover:bg-slate-50/50 dark:hover:bg-slate-900/50 transition-colors">
                         <td className="py-4 px-4">
                           <div className="font-bold dark:text-white">{u.name}</div>
                           <div className="text-xs text-slate-500">{u.email}</div>
@@ -144,7 +196,7 @@ const AdminDashboard = () => {
                         <td className="py-4 px-4">
                           <div className="flex items-center justify-end space-x-2">
                             <button 
-                              onClick={() => handleUpgradeUser(u.id, u.plan)}
+                              onClick={() => handleUpgradeUser(u._id, u.plan)}
                               className="p-2 text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-lg transition-colors"
                               title="Upgrade Plan"
                             >
@@ -152,7 +204,7 @@ const AdminDashboard = () => {
                             </button>
                             <button 
                               onClick={() => {
-                                adminCancelSubscription(u.id);
+                                handleCancelSubscription(u._id);
                                 toast.success(`Cancelled subscription for ${u.name}`);
                               }}
                               className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
@@ -186,7 +238,7 @@ const AdminDashboard = () => {
                      >
                        <option value="ALL">All Users</option>
                        {usersList.map(u => (
-                         <option key={u.id} value={u.email}>{u.name} ({u.email})</option>
+                         <option key={u._id} value={u.email}>{u.name} ({u.email})</option>
                        ))}
                      </select>
                    </div>
@@ -265,10 +317,7 @@ const AdminDashboard = () => {
                          <div className="text-xs text-slate-500">{c.discountPercent}% OFF</div>
                        </div>
                        <button 
-                         onClick={() => {
-                           adminDeleteCoupon(c.code);
-                           toast.success(`Coupon ${c.code} deleted.`);
-                         }}
+                         onClick={() => handleDeleteCoupon(c._id, c.code)}
                          className="p-2 text-slate-400 hover:text-red-500 transition-colors"
                        >
                          <Trash2 className="w-4 h-4" />

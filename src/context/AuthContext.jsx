@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
 
 const AuthContext = createContext();
 
@@ -9,184 +10,114 @@ export const PLANS = {
   PRIME: 'ELITE PRIME'
 };
 
-const INITIAL_MOCK_USERS = [
-  { id: 1, name: 'Alice Smith', email: 'alice@example.com', plan: PLANS.ELITE, chatCount: 3 },
-  { id: 2, name: 'Bob Jones', email: 'bob@example.com', plan: PLANS.FREE, chatCount: 0 },
-  { id: 3, name: 'Charlie Day', email: 'charlie@example.com', plan: PLANS.PRIME, chatCount: 42 }
-];
-
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
   const [plan, setPlan] = useState(PLANS.FREE);
-  const [chatCount, setChatCount] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
-
-  // Global Mock DB instances
-  const [usersList, setUsersList] = useState(INITIAL_MOCK_USERS);
+  const [chatCount, setChatCount] = useState(0);
+  
+  // We'll keep these mostly for mock features that weren't converted to full-stack if needed, 
+  // but main user data comes from the backend.
   const [coupons, setCoupons] = useState([]);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [notifications, setNotifications] = useState([]);
 
-  // Load mock data on startup
   useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    const savedPlan = localStorage.getItem('plan');
-    const savedCount = localStorage.getItem('chatCount');
-    const savedAdmin = localStorage.getItem('isAdmin');
-    const savedUsers = localStorage.getItem('usersList');
-    const savedCoupons = localStorage.getItem('coupons');
-    const savedAppliedCoupon = localStorage.getItem('appliedCoupon');
-    const savedNotifications = localStorage.getItem('notifications');
-    
-    if (savedUser) setUser(JSON.parse(savedUser));
-    if (savedPlan) setPlan(savedPlan);
-    if (savedCount) setChatCount(parseInt(savedCount));
-    if (savedAdmin) setIsAdmin(savedAdmin === 'true');
-    
-    if (savedUsers) {
-      setUsersList(JSON.parse(savedUsers));
-    } else {
-      localStorage.setItem('usersList', JSON.stringify(INITIAL_MOCK_USERS));
-    }
+    const initAuth = async () => {
+      const storedToken = localStorage.getItem('token');
+      if (storedToken) {
+        setToken(storedToken);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+        try {
+          const { data } = await axios.get('/api/user/profile');
+          setUser(data);
+          setPlan(data.plan || PLANS.FREE);
+          setIsAdmin(data.isAdmin || false);
+          setChatCount(data.chatCount || 0);
 
-    if (savedCoupons) setCoupons(JSON.parse(savedCoupons));
-    if (savedAppliedCoupon) setAppliedCoupon(JSON.parse(savedAppliedCoupon));
-    if (savedNotifications) setNotifications(JSON.parse(savedNotifications));
+          // Fetch notifications from backend
+          const notifRes = await axios.get('/api/notifications');
+          setNotifications(notifRes.data);
+
+        } catch (error) {
+          console.error("Failed to fetch user profile", error);
+          logout();
+        }
+      }
+      
+      const savedCoupons = localStorage.getItem('coupons');
+      const savedAppliedCoupon = localStorage.getItem('appliedCoupon');
+      if (savedCoupons) setCoupons(JSON.parse(savedCoupons));
+      if (savedAppliedCoupon) setAppliedCoupon(JSON.parse(savedAppliedCoupon));
+    };
+    initAuth();
   }, []);
 
-  const login = (userData, userPlan = PLANS.FREE) => {
-    setUser(userData);
-    setPlan(userPlan);
-    
-    const isUserAdmin = userData.email === 'admin@finfleet.com';
-    setIsAdmin(isUserAdmin);
+  // ... (other methods)
 
-    localStorage.setItem('user', JSON.stringify(userData));
-    localStorage.setItem('plan', userPlan);
-    localStorage.setItem('isAdmin', isUserAdmin.toString());
+  const login = async (email, password) => {
+    const { data } = await axios.post('/api/auth/login', { email, password });
+    setUser(data);
+    setToken(data.token);
+    setPlan(data.plan || PLANS.FREE);
+    setIsAdmin(data.isAdmin || false);
+    localStorage.setItem('token', data.token);
+    axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+    return data;
+  };
 
-    // Add user to mock database if not exists and not admin
-    if (!isUserAdmin) {
-      const existingUser = usersList.find(u => u.email === userData.email);
-      if (!existingUser) {
-        const newUser = {
-          id: Date.now(),
-          name: userData.name,
-          email: userData.email,
-          plan: userPlan,
-          chatCount: 0
-        };
-        const updatedList = [...usersList, newUser];
-        setUsersList(updatedList);
-        localStorage.setItem('usersList', JSON.stringify(updatedList));
-        
-        // Welcome notification
-        const welcomeNotif = {
-           id: Date.now() + 1,
-           userEmail: userData.email,
-           message: `Welcome to FinFleet Academy, ${userData.name}!`,
-           date: new Date().toISOString(),
-           read: false
-        };
-        const updatedNotifs = [...notifications, welcomeNotif];
-        setNotifications(updatedNotifs);
-        localStorage.setItem('notifications', JSON.stringify(updatedNotifs));
-
-      } else {
-        // Inherit state from DB if they already exist
-        setPlan(existingUser.plan);
-        setChatCount(existingUser.chatCount);
-        localStorage.setItem('plan', existingUser.plan);
-        localStorage.setItem('chatCount', existingUser.chatCount.toString());
-      }
-    }
+  const registerUser = async (name, email, password, initialPlan) => {
+    const { data } = await axios.post('/api/auth/register', { 
+      name, email, password, plan: initialPlan 
+    });
+    setUser(data);
+    setToken(data.token);
+    setPlan(data.plan || PLANS.FREE);
+    setIsAdmin(data.isAdmin || false);
+    localStorage.setItem('token', data.token);
+    axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+    return data;
   };
 
   const logout = () => {
     setUser(null);
+    setToken(null);
     setPlan(PLANS.FREE);
     setIsAdmin(false);
     setAppliedCoupon(null);
-    localStorage.removeItem('user');
-    localStorage.removeItem('plan');
-    localStorage.removeItem('chatCount');
-    localStorage.removeItem('isAdmin');
+    localStorage.removeItem('token');
     localStorage.removeItem('appliedCoupon');
+    delete axios.defaults.headers.common['Authorization'];
   };
 
-  const updateChatCount = () => {
-    const newCount = chatCount + 1;
-    setChatCount(newCount);
-    localStorage.setItem('chatCount', newCount.toString());
-    
-    // Sync with mock DB
-    if (user && !isAdmin) {
-      const updatedList = usersList.map(u => u.email === user.email ? { ...u, chatCount: newCount } : u);
-      setUsersList(updatedList);
-      localStorage.setItem('usersList', JSON.stringify(updatedList));
-    }
+  const upgradePlan = async (userId, newPlan) => {
+    const { data } = await axios.put(`/api/admin/users/${userId}/plan`, { plan: newPlan });
+    return data;
   };
 
-  const upgradePlan = (newPlan) => {
-    setPlan(newPlan);
-    localStorage.setItem('plan', newPlan);
-
-    // Sync with mock DB
-    if (user && !isAdmin) {
-      const updatedList = usersList.map(u => u.email === user.email ? { ...u, plan: newPlan } : u);
-      setUsersList(updatedList);
-      localStorage.setItem('usersList', JSON.stringify(updatedList));
-    }
+  const fetchUsers = async () => {
+    const { data } = await axios.get('/api/admin/users');
+    return data;
   };
 
-  // Admin Methods 
-  const adminUpdateUserPlan = (userId, newPlan) => {
-    const updatedList = usersList.map(u => u.id === userId ? { ...u, plan: newPlan } : u);
-    setUsersList(updatedList);
-    localStorage.setItem('usersList', JSON.stringify(updatedList));
-
-    if (user && user.email === updatedList.find(u => u.id === userId)?.email) {
-      setPlan(newPlan);
-      localStorage.setItem('plan', newPlan);
-    }
+  const fetchCoupons = async () => {
+    const { data } = await axios.get('/api/admin/coupons');
+    setCoupons(data);
+    return data;
   };
 
-  const adminCancelSubscription = (userId) => {
-    adminUpdateUserPlan(userId, PLANS.FREE);
+  const addCoupon = async (code, discountPercent) => {
+    const { data } = await axios.post('/api/admin/coupons', { code, discountPercent });
+    setCoupons([...coupons, data]);
+    return data;
   };
 
-  const adminCreateCoupon = (code, discountPercent) => {
-    const newCoupon = { code: code.toUpperCase(), discountPercent: parseInt(discountPercent) };
-    const updatedCoupons = [...coupons, newCoupon];
-    setCoupons(updatedCoupons);
-    localStorage.setItem('coupons', JSON.stringify(updatedCoupons));
+  const deleteCoupon = async (couponId) => {
+    await axios.delete(`/api/admin/coupons/${couponId}`);
+    setCoupons(coupons.filter(c => c._id !== couponId));
   };
 
-  const adminDeleteCoupon = (code) => {
-    const updatedCoupons = coupons.filter(c => c.code !== code);
-    setCoupons(updatedCoupons);
-    localStorage.setItem('coupons', JSON.stringify(updatedCoupons));
-    
-    if (appliedCoupon?.code === code) {
-      setAppliedCoupon(null);
-      localStorage.removeItem('appliedCoupon');
-    }
-  };
-
-  const adminSendNotification = (userEmail, message) => {
-    const newNotif = {
-      id: Date.now(),
-      userEmail,
-      message,
-      date: new Date().toISOString(),
-      read: false
-    };
-    const updatedNotifs = [newNotif, ...notifications];
-    setNotifications(updatedNotifs);
-    localStorage.setItem('notifications', JSON.stringify(updatedNotifs));
-  };
-
-  // User Methods
   const validateAndApplyCoupon = (code) => {
     const validCoupon = coupons.find(c => c.code === code.toUpperCase());
     if (validCoupon) {
@@ -202,34 +133,52 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('appliedCoupon');
   };
 
-  const markNotificationRead = (notifId) => {
-    const updatedNotifs = notifications.map(n => n.id === notifId ? { ...n, read: true } : n);
-    setNotifications(updatedNotifs);
-    localStorage.setItem('notifications', JSON.stringify(updatedNotifs));
+  const markNotificationRead = async (notifId) => {
+    try {
+      await axios.put(`/api/notifications/${notifId}/read`);
+      setNotifications(notifications.map(n => n._id === notifId ? { ...n, read: true } : n));
+    } catch (error) {
+      console.error("Failed to mark notification as read", error);
+    }
+  };
+
+  const adminSendNotification = async (userEmail, message) => {
+    const { data } = await axios.post('/api/admin/notify', { userEmail, message });
+    return data;
+  };
+
+  const updateChatCount = async () => {
+    try {
+      const { data } = await axios.put('/api/user/chat');
+      setChatCount(data.chatCount);
+    } catch (error) {
+      console.error("Failed to update chat count", error);
+    }
   };
 
   return (
     <AuthContext.Provider value={{ 
       user, 
+      token,
       plan, 
-      chatCount,
       isAdmin,
-      usersList,
+      chatCount,
       coupons,
       appliedCoupon,
       notifications,
       login, 
+      registerUser,
       logout, 
-      updateChatCount,
       upgradePlan,
-      adminUpdateUserPlan,
-      adminCancelSubscription,
-      adminCreateCoupon,
-      adminDeleteCoupon,
-      adminSendNotification,
+      fetchUsers,
+      fetchCoupons,
+      addCoupon,
+      deleteCoupon,
       validateAndApplyCoupon,
       removeCoupon,
       markNotificationRead,
+      adminSendNotification,
+      updateChatCount,
       isAuthenticated: !!user 
     }}>
       {children}
