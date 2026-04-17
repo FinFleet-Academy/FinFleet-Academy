@@ -1,4 +1,5 @@
 import User from '../models/User.js';
+import Notification from '../models/Notification.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
@@ -29,6 +30,12 @@ export const registerUser = async (req, res) => {
     });
 
     if (user) {
+      // Create welcome notification
+      await Notification.create({
+        userEmail: user.email,
+        message: `Welcome to FinFleet Academy, ${user.name}! We're excited to help you master the markets.`
+      });
+
       res.status(201).json({
         _id: user._id,
         name: user.name,
