@@ -10,7 +10,9 @@ import {
   createNews,
   deleteNews,
   createCourse,
-  deleteCourse
+  deleteCourse,
+  getAllContacts,
+  deleteContact
 } from '../controllers/adminController.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
 
@@ -36,5 +38,9 @@ router.delete('/news/:id', protect, admin, deleteNews);
 // Course Management
 router.post('/courses', protect, admin, createCourse);
 router.delete('/courses/:id', protect, admin, deleteCourse);
+
+// Contact Messages
+router.get('/contacts', protect, admin, getAllContacts);
+router.delete('/contacts/:id', protect, admin, deleteContact);
 
 export default router;

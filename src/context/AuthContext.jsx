@@ -183,6 +183,15 @@ export const AuthProvider = ({ children }) => {
     await axios.delete(`/api/admin/courses/${courseId}`);
   };
 
+  const fetchContacts = async () => {
+    const { data } = await axios.get('/api/admin/contacts');
+    return data;
+  };
+
+  const deleteAdminContact = async (contactId) => {
+    await axios.delete(`/api/admin/contacts/${contactId}`);
+  };
+
   return (
     <AuthContext.Provider value={{ 
       user, 
@@ -211,6 +220,8 @@ export const AuthProvider = ({ children }) => {
       deleteNews,
       createCourse,
       deleteCourse,
+      fetchContacts,
+      deleteAdminContact,
       isAuthenticated: !!user 
     }}>
       {children}

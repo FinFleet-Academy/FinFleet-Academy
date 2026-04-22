@@ -4,6 +4,7 @@ import Notification from '../models/Notification.js';
 import Subscriber from '../models/Subscriber.js';
 import News from '../models/News.js';
 import Course from '../models/Course.js';
+import Contact from '../models/Contact.js';
 
 // ... (other controllers)
 
@@ -122,4 +123,25 @@ export const deleteCourse = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// Contact Management
+export const getAllContacts = async (req, res) => {
+  try {
+    const contacts = await Contact.find({}).sort({ createdAt: -1 });
+    res.json(contacts);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const deleteContact = async (req, res) => {
+  try {
+    const contact = await Contact.findByIdAndDelete(req.params.id);
+    if (!contact) return res.status(404).json({ message: 'Message not found' });
+    res.json({ message: 'Message deleted' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 

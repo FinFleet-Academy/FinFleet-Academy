@@ -3,7 +3,7 @@ import { useAuth, PLANS } from '../context/AuthContext';
 import { 
   Users, Ticket, Trash2, ArrowUpCircle, XCircle, Search, ShieldAlert, 
   BellRing, Send, Newspaper, BookOpen, PlusCircle, LayoutDashboard,
-  ExternalLink, Video, CheckCircle
+  ExternalLink, Video, CheckCircle, MessageSquare, Mail, Clock
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
@@ -22,7 +22,9 @@ const AdminDashboard = () => {
     createNews,
     deleteNews,
     createCourse,
-    deleteCourse
+    deleteCourse,
+    fetchContacts,
+    deleteAdminContact
   } = useAuth();
   
   const navigate = useNavigate();
@@ -33,6 +35,7 @@ const AdminDashboard = () => {
   const [coupons, setCoupons] = useState([]);
   const [newsList, setNewsList] = useState([]);
   const [coursesList, setCoursesList] = useState([]);
+  const [contactsList, setContactsList] = useState([]);
   const [loading, setLoading] = useState(true);
   
   // Forms state
@@ -50,18 +53,20 @@ const AdminDashboard = () => {
 
   const loadData = async () => {
     try {
-      const [users, allCoupons, subscribers, allNews, allCourses] = await Promise.all([
+      const [users, allCoupons, subscribers, allNews, allCourses, allContacts] = await Promise.all([
         fetchUsers(),
         fetchCoupons(),
         fetchSubscribers(),
         axios.get('/api/news'),
-        axios.get('/api/courses')
+        axios.get('/api/courses'),
+        fetchContacts()
       ]);
       setUsersList(users);
       setCoupons(allCoupons);
       setSubscribersList(subscribers);
       setNewsList(allNews.data);
       setCoursesList(allCourses.data);
+      setContactsList(allContacts);
     } catch (error) {
       console.error("Admin Load Error:", error);
       toast.error("Failed to fetch admin data");
@@ -146,6 +151,17 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleDeleteContact = async (id) => {
+    if (!window.confirm("Delete this message?")) return;
+    try {
+      await deleteAdminContact(id);
+      toast.success("Message deleted");
+      loadData();
+    } catch (error) {
+      toast.error("Failed to delete message");
+    }
+  };
+
   const filteredUsers = usersList.filter(u => 
     u.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
     u.email.toLowerCase().includes(searchTerm.toLowerCase())
@@ -165,7 +181,8 @@ const AdminDashboard = () => {
           {[
             { id: 'overview', name: 'Overview', icon: LayoutDashboard },
             { id: 'news', name: 'News Feed', icon: Newspaper },
-            { id: 'courses', name: 'Courses', icon: BookOpen }
+            { id: 'courses', name: 'Courses', icon: BookOpen },
+            { id: 'messages', name: 'Messages', icon: MessageSquare }
           ].map(tab => (
             <button
               key={tab.id}
@@ -193,10 +210,10 @@ const AdminDashboard = () => {
                 {[
                   { label: 'Total Users', value: usersList.length, icon: Users, color: 'text-blue-600', bg: 'bg-blue-100' },
                   { label: 'Subscribers', value: subscribersList.length, icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-100' },
-                  { label: 'Articles', value: newsList.length, icon: Newspaper, color: 'text-purple-600', bg: 'bg-purple-100' },
+                  { label: 'Messages', value: contactsList.length, icon: Mail, color: 'text-red-600', bg: 'bg-red-100' },
                   { label: 'Courses', value: coursesList.length, icon: BookOpen, color: 'text-orange-600', bg: 'bg-orange-100' }
                 ].map((stat, i) => (
-                  <div key={i} className="card-premium p-4 flex items-center space-x-4">
+                  <div key={i} className="card-premium p-4 flex items-center space-x-4 cursor-pointer" onClick={() => stat.label === 'Messages' && setActiveTab('messages')}>
                     <div className={`p-3 ${stat.bg} rounded-xl`}>
                       <stat.icon className={`w-6 h-6 ${stat.color}`} />
                     </div>
@@ -240,7 +257,7 @@ const AdminDashboard = () => {
                 {/* Notifications & Coupons */}
                 <div className="space-y-6">
                   <div className="card-premium p-6">
-                    <h3 className="text-lg font-bold dark:text-white mb-4">Broadcast</h3>
+                    <h3 className="text-lg font-bold dark:text-white mb-4">Quick Coupon</h3>
                     <form onSubmit={handleCreateCoupon} className="space-y-3">
                       <input 
                         placeholder="Coupon Code" 
@@ -260,15 +277,16 @@ const AdminDashboard = () => {
                   </div>
 
                   <div className="card-premium p-6">
-                    <h3 className="text-lg font-bold dark:text-white mb-4">Newsletter ({subscribersList.length})</h3>
-                    <div className="max-h-[150px] overflow-y-auto space-y-2 pr-2">
-                      {subscribersList.map(sub => (
-                        <div key={sub._id} className="text-xs p-2 bg-slate-50 dark:bg-slate-900 rounded border dark:border-slate-800 flex justify-between">
-                          <span className="font-bold dark:text-white">{sub.email}</span>
-                          <span className="text-slate-500">{sub.source}</span>
-                        </div>
-                      ))}
-                    </div>
+                    <h3 className="text-lg font-bold dark:text-white mb-4">Latest Message</h3>
+                    {contactsList.length > 0 ? (
+                      <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-brand-500/20">
+                        <div className="font-bold text-sm dark:text-white mb-1">{contactsList[0].subject}</div>
+                        <p className="text-xs text-slate-500 line-clamp-2">{contactsList[0].message}</p>
+                        <button onClick={() => setActiveTab('messages')} className="mt-3 text-[10px] font-bold text-brand-600 uppercase">View All Messages</button>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-slate-500 italic">No messages yet.</p>
+                    )}
                   </div>
                 </div>
              </div>
@@ -451,12 +469,53 @@ const AdminDashboard = () => {
                   </div>
                 </div>
               ))}
-              {coursesList.length === 0 && (
-                <div className="text-center py-20 bg-slate-100 dark:bg-slate-900/50 rounded-3xl text-slate-500">
-                  No courses added yet.
-                </div>
-              )}
             </div>
+          </div>
+        )}
+
+        {/* Tab 4: Messages */}
+        {activeTab === 'messages' && (
+          <div className="animate-in slide-in-from-right duration-500 space-y-6">
+             <div className="flex justify-between items-center mb-6">
+                <h3 className="text-2xl font-bold dark:text-white">Contact Messages</h3>
+                <div className="text-sm text-slate-500 font-bold">{contactsList.length} total entries</div>
+             </div>
+             
+             <div className="grid grid-cols-1 gap-4">
+                {contactsList.map((contact) => (
+                  <div key={contact._id} className="card-premium p-6 border-l-4 border-brand-500">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
+                      <div>
+                        <div className="flex items-center space-x-3 mb-1">
+                           <h4 className="font-bold text-lg dark:text-white">{contact.name}</h4>
+                           <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-500 rounded uppercase">{contact.subject}</span>
+                        </div>
+                        <div className="flex items-center text-sm text-slate-500">
+                          <Mail className="w-4 h-4 mr-2" />
+                          {contact.email}
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-4">
+                        <div className="flex items-center text-xs text-slate-400">
+                          <Clock className="w-4 h-4 mr-1.5" />
+                          {new Date(contact.createdAt).toLocaleString()}
+                        </div>
+                        <button onClick={() => handleDeleteContact(contact._id)} className="p-2 text-slate-400 hover:text-red-500 transition-colors">
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
+                      {contact.message}
+                    </div>
+                  </div>
+                ))}
+                {contactsList.length === 0 && (
+                  <div className="text-center py-20 bg-slate-100 dark:bg-slate-900/50 rounded-3xl text-slate-500">
+                    No contact messages found.
+                  </div>
+                )}
+             </div>
           </div>
         )}
 
