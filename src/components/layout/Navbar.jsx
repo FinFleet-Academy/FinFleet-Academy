@@ -35,13 +35,24 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 group">
-            <div className="w-10 h-10 bg-gradient-to-tr from-brand-600 to-accent-success rounded-xl flex items-center justify-center shadow-lg transform group-hover:rotate-12 transition-transform">
+          <Link to="/" className="flex items-center space-x-3 group">
+            <div className="w-10 h-10 bg-gradient-to-tr from-brand-600 to-accent-success rounded-xl flex items-center justify-center shadow-lg transform group-hover:rotate-12 transition-transform shrink-0">
               <Rocket className="text-white w-6 h-6" />
             </div>
-            <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400">
-              FinFleet<span className="text-brand-600 dark:text-brand-400">Academy</span>
-            </span>
+            {location.pathname === '/finor' ? (
+              <div className="flex flex-col -space-y-1">
+                <span className="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400">
+                  Finor
+                </span>
+                <span className="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-widest">
+                  By FinFleet Academy
+                </span>
+              </div>
+            ) : (
+              <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400">
+                FinFleet<span className="text-brand-600 dark:text-brand-400">Academy</span>
+              </span>
+            )}
           </Link>
 
           {/* Desktop Nav */}
