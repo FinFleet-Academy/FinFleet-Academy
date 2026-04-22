@@ -33,6 +33,15 @@ export const handleChat = async (req, res) => {
       await user.save();
     }
 
+    // Cooldown Check (3 seconds)
+    const cooldown = 3000;
+    const timeSinceLastMsg = now - new Date(user.lastMessageAt).getTime();
+    if (timeSinceLastMsg < cooldown) {
+      return res.status(429).json({ 
+        message: `Please wait ${Math.ceil((cooldown - timeSinceLastMsg) / 1000)}s before sending another message.` 
+      });
+    }
+
     // Check Plan Limits
     const limit = CHAT_LIMITS[user.plan] || 3;
     if (user.chatCount >= limit && user.plan !== 'ELITE PRIME') {
@@ -78,6 +87,7 @@ export const handleChat = async (req, res) => {
 
     // Increment chat count
     user.chatCount += 1;
+    user.lastMessageAt = new Date();
     await user.save();
 
     res.json({ 

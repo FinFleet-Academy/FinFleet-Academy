@@ -24,6 +24,14 @@ const PricingCard = ({ tier, isPopular }) => {
 
     setLoading(true);
     try {
+      // Guard: ensure Razorpay key is available
+      const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID;
+      if (!razorpayKey) {
+        toast.error('Payment system is not configured. Please contact support.');
+        setLoading(false);
+        return;
+      }
+
       // 1. Create order on backend
       const { data: order } = await axios.post('/api/payments/create-order', {
         plan: tier.name
@@ -31,12 +39,12 @@ const PricingCard = ({ tier, isPopular }) => {
 
       // 2. Configure Razorpay Options
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_your_key_id',
+        key: razorpayKey,
         amount: order.amount,
         currency: order.currency,
         name: "FinFleet Academy",
         description: `Upgrade to ${tier.name} Subscription`,
-        image: "https://finfleetacademy.com/vite.svg", // logo url
+        image: "https://finfleetacademy.com/vite.svg",
         order_id: order.id,
         handler: async function (response) {
           try {
@@ -63,7 +71,7 @@ const PricingCard = ({ tier, isPopular }) => {
           email: user?.email,
         },
         theme: {
-          color: "#2563eb", // brand-600
+          color: "#2563eb",
         },
         modal: {
           ondismiss: function() {

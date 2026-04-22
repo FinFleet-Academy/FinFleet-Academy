@@ -7,7 +7,8 @@ const userSchema = new mongoose.Schema({
   plan: { type: String, default: 'FREE' },
   isAdmin: { type: Boolean, default: false },
   chatCount: { type: Number, default: 0 },
-  lastChatReset: { type: Date, default: Date.now }
+  lastChatReset: { type: Date, default: Date.now },
+  lastMessageAt: { type: Date, default: 0 }
 }, { timestamps: true });
 
 export default mongoose.model('User', userSchema);
