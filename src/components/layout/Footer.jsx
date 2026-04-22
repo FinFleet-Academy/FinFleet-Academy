@@ -1,9 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Rocket, Mail, Instagram, Linkedin, Twitter, ShieldAlert } from 'lucide-react';
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    if (!email) return;
+
+    try {
+      setIsSubmitting(true);
+      await axios.post('/api/subscribers', { 
+        email, 
+        source: 'footer' 
+      });
+      toast.success('Successfully subscribed to updates!');
+      setEmail('');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to subscribe');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <footer className="bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-900 pt-16 pb-8">
@@ -63,14 +86,20 @@ const Footer = () => {
             <p className="text-slate-500 dark:text-slate-400 text-sm mb-4">
               Get the latest market insights and academy updates.
             </p>
-            <div className="flex flex-col space-y-3">
+            <form onSubmit={handleSubscribe} className="flex flex-col space-y-3">
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isSubmitting}
+                className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all disabled:opacity-50"
               />
-              <button className="btn-primary py-2.5 text-sm">Subscribe</button>
-            </div>
+              <button type="submit" disabled={isSubmitting} className="btn-primary py-2.5 text-sm disabled:opacity-50">
+                {isSubmitting ? 'Subscribing...' : 'Subscribe'}
+              </button>
+            </form>
           </div>
         </div>
 
