@@ -21,15 +21,13 @@ const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'Academy', path: '/courses' },
-    { name: 'Pricing', path: '/pricing' },
-    { name: 'Finor', path: '/finor' },
+    { name: 'Learning', path: '/courses' },
+    { name: 'News', path: '/finor' },
     { name: 'Tools', path: '/tools' },
-    { name: 'AI Chatbot', path: '/chatbot' },
+    { name: 'Pricing', path: '/pricing' }
   ];
 
-  if (isAuthenticated) navLinks.push({ name: 'Dashboard', path: '/dashboard' });
+  if (isAuthenticated) navLinks.unshift({ name: 'Dashboard', path: '/dashboard' });
   if (isAdmin) navLinks.push({ name: 'Admin', path: '/admin' });
 
   const isActive = (path) => location.pathname === path;

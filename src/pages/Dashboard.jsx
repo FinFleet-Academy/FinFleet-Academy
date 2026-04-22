@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, Trophy, Clock, TrendingUp, Award, PlayCircle, Star, ShieldCheck, Bell, CheckCircle2, LayoutDashboard, Wallet } from 'lucide-react';
+import { BookOpen, Trophy, Clock, TrendingUp, Award, PlayCircle, Star, ShieldCheck, Bell, CheckCircle2, LayoutDashboard, Wallet, MessageSquare } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import BudgetTracker from '../components/dashboard/BudgetTracker';
 import axios from 'axios';
@@ -63,10 +63,10 @@ const Dashboard = () => {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           {[
-            { label: 'Courses in Progress', value: courses.length || '0', icon: BookOpen, detail: 'Keep learning' },
-            { label: 'AI Messages Used', value: user?.chatCount || '0', icon: Star, detail: 'Reset Daily' },
-            { label: 'Saved Items', value: bookmarks.length || '0', icon: Award, detail: 'Quick access' },
-            { label: 'Certificates Won', value: '2', icon: Trophy, detail: 'Foundation & Basics' },
+            { label: 'Plan Status', value: plan || 'Free', icon: Star, detail: 'Active Subscription' },
+            { label: 'Messages Used', value: user?.chatCount || '0', icon: MessageSquare, detail: 'Daily AI Usage' },
+            { label: 'Saved Items', value: bookmarks.length || '0', icon: Award, detail: 'Bookmarks' },
+            { label: 'Learning Progress', value: courses.length || '0', icon: BookOpen, detail: 'Active Courses' },
           ].map((stat, i) => (
             <div key={i} className="card-premium p-6">
               <div className="flex justify-between items-start mb-4">
@@ -75,7 +75,7 @@ const Dashboard = () => {
                 </div>
                 <span className="text-[10px] font-bold text-accent-success uppercase tracking-wider">{stat.detail}</span>
               </div>
-              <div className="text-2xl font-bold dark:text-white">{stat.value}</div>
+              <div className="text-2xl font-bold dark:text-white capitalize">{stat.value}</div>
               <div className="text-xs text-slate-500 uppercase tracking-widest mt-1">{stat.label}</div>
             </div>
           ))}
