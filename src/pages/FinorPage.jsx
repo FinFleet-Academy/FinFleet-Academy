@@ -105,6 +105,12 @@ const FinorPage = () => {
           </div>
         </div>
       </section>
+      <div className="pb-12 text-center">
+        <div className="inline-flex flex-col items-center">
+          <span className="text-xl font-bold text-slate-400 dark:text-slate-500 tracking-tight">Finor</span>
+          <span className="text-[10px] font-bold text-brand-600/60 dark:text-brand-400/60 uppercase tracking-[0.2em] -mt-1">By FinFleet Academy</span>
+        </div>
+      </div>
     </div>
   );
 };
