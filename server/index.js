@@ -13,6 +13,7 @@ import subscriberRoutes from './routes/subscriberRoutes.js';
 import newsRoutes from './routes/newsRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
+import seedRoutes from './routes/seedRoutes.js';
 
 dotenv.config();
 
@@ -45,6 +46,7 @@ app.use('/api/subscribers', subscriberRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api', seedRoutes);
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/finfleet')
