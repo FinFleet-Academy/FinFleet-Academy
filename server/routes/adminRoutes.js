@@ -6,7 +6,11 @@ import {
   createCoupon, 
   deleteCoupon,
   broadcastNotification,
-  getAllSubscribers
+  getAllSubscribers,
+  createNews,
+  deleteNews,
+  createCourse,
+  deleteCourse
 } from '../controllers/adminController.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
 
@@ -24,5 +28,13 @@ router.delete('/coupons/:id', protect, admin, deleteCoupon);
 
 // Notifications
 router.post('/notify', protect, admin, broadcastNotification);
+
+// News Management
+router.post('/news', protect, admin, createNews);
+router.delete('/news/:id', protect, admin, deleteNews);
+
+// Course Management
+router.post('/courses', protect, admin, createCourse);
+router.delete('/courses/:id', protect, admin, deleteCourse);
 
 export default router;

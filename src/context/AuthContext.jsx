@@ -165,6 +165,24 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const createNews = async (newsData) => {
+    const { data } = await axios.post('/api/admin/news', newsData);
+    return data;
+  };
+
+  const deleteNews = async (newsId) => {
+    await axios.delete(`/api/admin/news/${newsId}`);
+  };
+
+  const createCourse = async (courseData) => {
+    const { data } = await axios.post('/api/admin/courses', courseData);
+    return data;
+  };
+
+  const deleteCourse = async (courseId) => {
+    await axios.delete(`/api/admin/courses/${courseId}`);
+  };
+
   return (
     <AuthContext.Provider value={{ 
       user, 
@@ -189,6 +207,10 @@ export const AuthProvider = ({ children }) => {
       markNotificationRead,
       adminSendNotification,
       updateChatCount,
+      createNews,
+      deleteNews,
+      createCourse,
+      deleteCourse,
       isAuthenticated: !!user 
     }}>
       {children}

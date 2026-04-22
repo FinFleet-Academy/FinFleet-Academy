@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth, PLANS } from '../context/AuthContext';
-import { Users, Ticket, Trash2, ArrowUpCircle, XCircle, Search, ShieldAlert, BellRing, Send } from 'lucide-react';
+import { 
+  Users, Ticket, Trash2, ArrowUpCircle, XCircle, Search, ShieldAlert, 
+  BellRing, Send, Newspaper, BookOpen, PlusCircle, LayoutDashboard,
+  ExternalLink, Video, CheckCircle
+} from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const AdminDashboard = () => {
   const { 
@@ -13,46 +18,64 @@ const AdminDashboard = () => {
     fetchUsers,
     fetchSubscribers,
     fetchCoupons,
-    adminSendNotification
+    adminSendNotification,
+    createNews,
+    deleteNews,
+    createCourse,
+    deleteCourse
   } = useAuth();
   
   const navigate = useNavigate();
 
+  const [activeTab, setActiveTab] = useState('overview');
   const [usersList, setUsersList] = useState([]);
   const [subscribersList, setSubscribersList] = useState([]);
   const [coupons, setCoupons] = useState([]);
+  const [newsList, setNewsList] = useState([]);
+  const [coursesList, setCoursesList] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [couponCode, setCouponCode] = useState('');
-  const [discountPercent, setDiscountPercent] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
   
-  const [notifEmail, setNotifEmail] = useState('ALL');
-  const [notifMessage, setNotifMessage] = useState('');
+  // Forms state
+  const [couponForm, setCouponForm] = useState({ code: '', discountPercent: '' });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [notifForm, setNotifForm] = useState({ email: 'ALL', message: '' });
+  
+  const [newsForm, setNewsForm] = useState({
+    title: '', summary: '', content: '', category: 'Stock Market', sourceLink: '', isTrending: false
+  });
+  
+  const [courseForm, setCourseForm] = useState({
+    title: '', description: '', content: '', videoUrl: '', icon: 'BookOpen', category: 'Trading', isPremium: true
+  });
 
   const loadData = async () => {
     try {
-      const [users, allCoupons, subscribers] = await Promise.all([
+      const [users, allCoupons, subscribers, allNews, allCourses] = await Promise.all([
         fetchUsers(),
         fetchCoupons(),
-        fetchSubscribers()
+        fetchSubscribers(),
+        axios.get('/api/news'),
+        axios.get('/api/courses')
       ]);
       setUsersList(users);
       setCoupons(allCoupons);
       setSubscribersList(subscribers);
+      setNewsList(allNews.data);
+      setCoursesList(allCourses.data);
     } catch (error) {
+      console.error("Admin Load Error:", error);
       toast.error("Failed to fetch admin data");
     } finally {
       setLoading(false);
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isAdmin) {
       loadData();
     }
   }, [isAdmin]);
 
-  // Protect the route
   if (!isAdmin) {
     return (
       <div className="py-24 text-center min-h-[calc(100vh-80px)] flex flex-col items-center justify-center">
@@ -64,69 +87,62 @@ const AdminDashboard = () => {
     );
   }
 
+  // Action Handlers
   const handleCreateCoupon = async (e) => {
     e.preventDefault();
-    if (!couponCode || !discountPercent) return;
-    
     try {
-      await addCoupon(couponCode, discountPercent);
-      toast.success(`Coupon ${couponCode.toUpperCase()} created successfully!`);
-      setCouponCode('');
-      setDiscountPercent('');
+      await addCoupon(couponForm.code, couponForm.discountPercent);
+      toast.success(`Coupon created!`);
+      setCouponForm({ code: '', discountPercent: '' });
       loadData();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to create coupon");
+      toast.error("Failed to create coupon");
     }
   };
 
-  const handleUpgradeUser = async (userId, currentPlan) => {
-    const plansOrder = Object.values(PLANS);
-    const currentIndex = plansOrder.indexOf(currentPlan);
-    
-    if (currentIndex < plansOrder.length - 1) {
-      const nextPlan = plansOrder[currentIndex + 1];
-      try {
-        await upgradePlan(userId, nextPlan);
-        toast.success(`Upgraded user to ${nextPlan}.`);
-        loadData();
-      } catch (error) {
-        toast.error("Failed to upgrade user");
-      }
-    } else {
-      toast.error("User is already on the highest tier.");
-    }
-  };
-
-  const handleCancelSubscription = async (userId) => {
-    try {
-      await upgradePlan(userId, PLANS.FREE);
-      toast.success("Subscription cancelled");
-      loadData();
-    } catch (error) {
-      toast.error("Failed to cancel subscription");
-    }
-  };
-
-  const handleDeleteCoupon = async (couponId, code) => {
-    try {
-      await deleteCoupon(couponId);
-      toast.success(`Coupon ${code} deleted.`);
-      loadData();
-    } catch (error) {
-      toast.error("Failed to delete coupon");
-    }
-  };
-
-  const handleSendNotification = async (e) => {
+  const handleCreateNews = async (e) => {
     e.preventDefault();
-    if (!notifMessage.trim()) return;
-    
     try {
-      await adminSendNotification(notifEmail, notifMessage);
-      toast.success(`Notification sent to ${notifEmail === 'ALL' ? 'all users' : notifEmail}`);
-      setNotifMessage('');
+      await createNews(newsForm);
+      toast.success("News article published!");
+      setNewsForm({ title: '', summary: '', content: '', category: 'Stock Market', sourceLink: '', isTrending: false });
+      loadData();
     } catch (error) {
-      toast.error("Failed to send notification");
+      toast.error("Failed to publish news");
+    }
+  };
+
+  const handleDeleteNews = async (id) => {
+    if (!window.confirm("Are you sure?")) return;
+    try {
+      await deleteNews(id);
+      toast.success("News deleted");
+      loadData();
+    } catch (error) {
+      toast.error("Failed to delete news");
+    }
+  };
+
+  const handleCreateCourse = async (e) => {
+    e.preventDefault();
+    try {
+      await createCourse(courseForm);
+      toast.success("Course added successfully!");
+      setCourseForm({ title: '', description: '', content: '', videoUrl: '', icon: 'BookOpen', category: 'Trading', isPremium: true });
+      loadData();
+    } catch (error) {
+      toast.error("Failed to add course");
+    }
+  };
+
+  const handleDeleteCourse = async (id) => {
+    if (!window.confirm("Are you sure?")) return;
+    try {
+      await deleteCourse(id);
+      toast.success("Course deleted");
+      loadData();
+    } catch (error) {
+      toast.error("Failed to delete course");
     }
   };
 
@@ -136,239 +152,314 @@ const AdminDashboard = () => {
   );
 
   return (
-    <div className="py-12 bg-slate-50 dark:bg-slate-950 min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-slate-50 dark:bg-slate-950">
+      
+      {/* Sidebar Navigation */}
+      <div className="w-full lg:w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 p-6">
+        <div className="flex items-center space-x-3 mb-10 px-2">
+          <ShieldAlert className="w-8 h-8 text-brand-600" />
+          <span className="text-xl font-bold dark:text-white">Admin Panel</span>
+        </div>
         
-        <div className="mb-10">
-          <h1 className="text-3xl font-bold dark:text-white flex items-center">
-            <ShieldAlert className="w-8 h-8 mr-3 text-brand-600" />
-            Admin Operations
-          </h1>
-          <p className="text-slate-500 mt-2">Manage users, their subscriptions, notifications, and promotional coupons.</p>
-        </div>
+        <nav className="space-y-2">
+          {[
+            { id: 'overview', name: 'Overview', icon: LayoutDashboard },
+            { id: 'news', name: 'News Feed', icon: Newspaper },
+            { id: 'courses', name: 'Courses', icon: BookOpen }
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
+                activeTab === tab.id 
+                ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/20' 
+                : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'
+              }`}
+            >
+              <tab.icon className="w-5 h-5" />
+              <span>{tab.name}</span>
+            </button>
+          ))}
+        </nav>
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
-          {/* User Management */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="card-premium p-6">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                <h3 className="text-xl font-bold dark:text-white flex items-center">
-                  <Users className="w-5 h-5 mr-2 text-brand-600" />
-                  User Subscriptions
-                </h3>
-                <div className="relative w-full sm:w-64">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input 
-                    type="text" 
-                    placeholder="Search users..." 
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg pl-9 pr-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 dark:text-white"
-                  />
-                </div>
-              </div>
+      {/* Main Content Area */}
+      <div className="flex-1 p-6 lg:p-10 overflow-y-auto">
+        
+        {/* Tab 1: Overview */}
+        {activeTab === 'overview' && (
+          <div className="space-y-8 animate-in fade-in duration-500">
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[
+                  { label: 'Total Users', value: usersList.length, icon: Users, color: 'text-blue-600', bg: 'bg-blue-100' },
+                  { label: 'Subscribers', value: subscribersList.length, icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-100' },
+                  { label: 'Articles', value: newsList.length, icon: Newspaper, color: 'text-purple-600', bg: 'bg-purple-100' },
+                  { label: 'Courses', value: coursesList.length, icon: BookOpen, color: 'text-orange-600', bg: 'bg-orange-100' }
+                ].map((stat, i) => (
+                  <div key={i} className="card-premium p-4 flex items-center space-x-4">
+                    <div className={`p-3 ${stat.bg} rounded-xl`}>
+                      <stat.icon className={`w-6 h-6 ${stat.color}`} />
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold dark:text-white">{stat.value}</div>
+                      <div className="text-xs text-slate-500 font-bold uppercase">{stat.label}</div>
+                    </div>
+                  </div>
+                ))}
+             </div>
 
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="border-b border-slate-200 dark:border-slate-800 text-sm text-slate-500">
-                      <th className="py-3 px-4 font-bold">User</th>
-                      <th className="py-3 px-4 font-bold">Current Plan</th>
-                      <th className="py-3 px-4 font-bold">Chat Usage</th>
-                      <th className="py-3 px-4 font-bold text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-sm">
-                    {filteredUsers.map((u) => (
-                      <tr key={u._id} className="border-b border-slate-100 dark:border-slate-800/50 hover:bg-slate-50/50 dark:hover:bg-slate-900/50 transition-colors">
-                        <td className="py-4 px-4">
-                          <div className="font-bold dark:text-white">{u.name}</div>
+             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Users List */}
+                <div className="card-premium p-6">
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-lg font-bold dark:text-white">User Subscriptions</h3>
+                    <input 
+                      type="text" 
+                      placeholder="Search..." 
+                      className="bg-slate-50 dark:bg-slate-800 border-none rounded-lg px-3 py-1.5 text-sm"
+                      value={searchTerm}
+                      onChange={e => setSearchTerm(e.target.value)}
+                    />
+                  </div>
+                  <div className="max-h-[400px] overflow-y-auto space-y-3 pr-2">
+                    {filteredUsers.map(u => (
+                      <div key={u._id} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800/50">
+                        <div>
+                          <div className="font-bold text-sm dark:text-white">{u.name}</div>
                           <div className="text-xs text-slate-500">{u.email}</div>
-                        </td>
-                        <td className="py-4 px-4">
-                          <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-                            u.plan === PLANS.FREE ? 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400' :
-                            'bg-brand-100 text-brand-700 dark:bg-brand-900/30 dark:text-brand-400'
-                          }`}>
-                            {u.plan}
-                          </span>
-                        </td>
-                        <td className="py-4 px-4 text-slate-600 dark:text-slate-400">
-                          {u.plan !== PLANS.FREE && u.plan !== PLANS.PRO ? u.chatCount : '-'}
-                        </td>
-                        <td className="py-4 px-4">
-                          <div className="flex items-center justify-end space-x-2">
-                            <button 
-                              onClick={() => handleUpgradeUser(u._id, u.plan)}
-                              className="p-2 text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-lg transition-colors"
-                              title="Upgrade Plan"
-                            >
-                              <ArrowUpCircle className="w-5 h-5" />
-                            </button>
-                            <button 
-                              onClick={() => {
-                                handleCancelSubscription(u._id);
-                                toast.success(`Cancelled subscription for ${u.name}`);
-                              }}
-                              className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                              title="Cancel Subscription"
-                            >
-                              <XCircle className="w-5 h-5" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-[10px] font-bold px-2 py-1 bg-brand-100 dark:bg-brand-900/30 text-brand-600 rounded-full">{u.plan}</span>
+                          <button onClick={() => upgradePlan(u._id, PLANS.PRO)} className="text-slate-400 hover:text-brand-600"><ArrowUpCircle className="w-4 h-4" /></button>
+                        </div>
+                      </div>
                     ))}
-                  </tbody>
-                </table>
+                  </div>
+                </div>
+
+                {/* Notifications & Coupons */}
+                <div className="space-y-6">
+                  <div className="card-premium p-6">
+                    <h3 className="text-lg font-bold dark:text-white mb-4">Broadcast</h3>
+                    <form onSubmit={handleCreateCoupon} className="space-y-3">
+                      <input 
+                        placeholder="Coupon Code" 
+                        value={couponForm.code} 
+                        onChange={e => setCouponForm({...couponForm, code: e.target.value.toUpperCase()})}
+                        className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-lg px-4 py-2 text-sm"
+                      />
+                      <input 
+                        type="number" 
+                        placeholder="Discount %" 
+                        value={couponForm.discountPercent} 
+                        onChange={e => setCouponForm({...couponForm, discountPercent: e.target.value})}
+                        className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-lg px-4 py-2 text-sm"
+                      />
+                      <button type="submit" className="w-full btn-primary text-xs py-2">Create Coupon</button>
+                    </form>
+                  </div>
+
+                  <div className="card-premium p-6">
+                    <h3 className="text-lg font-bold dark:text-white mb-4">Newsletter ({subscribersList.length})</h3>
+                    <div className="max-h-[150px] overflow-y-auto space-y-2 pr-2">
+                      {subscribersList.map(sub => (
+                        <div key={sub._id} className="text-xs p-2 bg-slate-50 dark:bg-slate-900 rounded border dark:border-slate-800 flex justify-between">
+                          <span className="font-bold dark:text-white">{sub.email}</span>
+                          <span className="text-slate-500">{sub.source}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+             </div>
+          </div>
+        )}
+
+        {/* Tab 2: News Management */}
+        {activeTab === 'news' && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in slide-in-from-right duration-500">
+            <div className="lg:col-span-1">
+              <div className="card-premium p-6 sticky top-10">
+                <h3 className="text-xl font-bold dark:text-white mb-6 flex items-center">
+                  <PlusCircle className="w-5 h-5 mr-2 text-brand-600" />
+                  Add News Article
+                </h3>
+                <form onSubmit={handleCreateNews} className="space-y-4">
+                  <input 
+                    placeholder="Headline" 
+                    required 
+                    className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-brand-500"
+                    value={newsForm.title}
+                    onChange={e => setNewsForm({...newsForm, title: e.target.value})}
+                  />
+                  <select 
+                    className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 text-sm"
+                    value={newsForm.category}
+                    onChange={e => setNewsForm({...newsForm, category: e.target.value})}
+                  >
+                    <option>Stock Market</option>
+                    <option>Crypto</option>
+                    <option>Economy</option>
+                    <option>Global News</option>
+                    <option>Opinion</option>
+                  </select>
+                  <textarea 
+                    placeholder="Short Summary" 
+                    rows="3" 
+                    required 
+                    className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 text-sm resize-none"
+                    value={newsForm.summary}
+                    onChange={e => setNewsForm({...newsForm, summary: e.target.value})}
+                  />
+                  <textarea 
+                    placeholder="Full Content (Markdown supported)" 
+                    rows="6" 
+                    required 
+                    className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 text-sm resize-none"
+                    value={newsForm.content}
+                    onChange={e => setNewsForm({...newsForm, content: e.target.value})}
+                  />
+                  <input 
+                    placeholder="Source Link (Optional)" 
+                    className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 text-sm"
+                    value={newsForm.sourceLink}
+                    onChange={e => setNewsForm({...newsForm, sourceLink: e.target.value})}
+                  />
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      checked={newsForm.isTrending}
+                      onChange={e => setNewsForm({...newsForm, isTrending: e.target.checked})}
+                      className="rounded text-brand-600" 
+                    />
+                    <span className="text-sm font-bold text-slate-500">Mark as Trending</span>
+                  </label>
+                  <button type="submit" className="w-full btn-primary py-3">Publish Article</button>
+                </form>
               </div>
             </div>
-            
-            {/* Newsletter Subscribers */}
-            <div className="card-premium p-6">
-              <h3 className="text-xl font-bold dark:text-white flex items-center mb-6">
-                <Users className="w-5 h-5 mr-2 text-brand-600" />
-                Newsletter Subscribers
-              </h3>
-              <div className="overflow-x-auto max-h-80 overflow-y-auto pr-2">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="border-b border-slate-200 dark:border-slate-800 text-sm text-slate-500">
-                      <th className="py-3 px-4 font-bold">Email</th>
-                      <th className="py-3 px-4 font-bold">Source</th>
-                      <th className="py-3 px-4 font-bold">Date Subscribed</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-sm">
-                    {subscribersList.length === 0 ? (
-                      <tr>
-                        <td colSpan="3" className="py-4 px-4 text-center text-slate-500">No subscribers found.</td>
-                      </tr>
-                    ) : (
-                      subscribersList.map((sub) => (
-                        <tr key={sub._id} className="border-b border-slate-100 dark:border-slate-800/50 hover:bg-slate-50/50 dark:hover:bg-slate-900/50 transition-colors">
-                          <td className="py-3 px-4 font-bold dark:text-white">{sub.email}</td>
-                          <td className="py-3 px-4 uppercase text-xs font-bold text-slate-500">{sub.source}</td>
-                          <td className="py-3 px-4 text-slate-500">{new Date(sub.createdAt).toLocaleDateString()}</td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
+
+            <div className="lg:col-span-2 space-y-4">
+              <h3 className="text-xl font-bold dark:text-white mb-6">Published Articles</h3>
+              {newsList.map(news => (
+                <div key={news._id} className="card-premium p-6 flex flex-col md:flex-row justify-between items-start gap-4">
+                  <div>
+                    <div className="flex items-center space-x-2 mb-2">
+                      <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-500 rounded uppercase tracking-wider">{news.category}</span>
+                      {news.isTrending && <span className="px-2 py-0.5 bg-brand-100 text-brand-600 text-[10px] font-bold rounded uppercase">Trending</span>}
+                    </div>
+                    <h4 className="font-bold dark:text-white text-lg mb-1">{news.title}</h4>
+                    <p className="text-xs text-slate-500 line-clamp-1">{news.summary}</p>
+                  </div>
+                  <div className="flex items-center space-x-2 shrink-0">
+                    <a href={`/finor/${news.slug}`} target="_blank" rel="noreferrer" className="p-2 text-slate-400 hover:text-brand-600"><ExternalLink className="w-5 h-5" /></a>
+                    <button onClick={() => handleDeleteNews(news._id)} className="p-2 text-slate-400 hover:text-red-500"><Trash2 className="w-5 h-5" /></button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Tab 3: Course Management */}
+        {activeTab === 'courses' && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in slide-in-from-right duration-500">
+            <div className="lg:col-span-1">
+              <div className="card-premium p-6 sticky top-10">
+                <h3 className="text-xl font-bold dark:text-white mb-6 flex items-center">
+                  <BookOpen className="w-5 h-5 mr-2 text-brand-600" />
+                  Create New Course
+                </h3>
+                <form onSubmit={handleCreateCourse} className="space-y-4">
+                  <input 
+                    placeholder="Course Title" 
+                    required 
+                    className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 text-sm"
+                    value={courseForm.title}
+                    onChange={e => setCourseForm({...courseForm, title: e.target.value})}
+                  />
+                  <input 
+                    placeholder="Short Description" 
+                    required 
+                    className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 text-sm"
+                    value={courseForm.description}
+                    onChange={e => setCourseForm({...courseForm, description: e.target.value})}
+                  />
+                  <input 
+                    placeholder="Video Link (YouTube/Vimeo)" 
+                    required 
+                    className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 text-sm"
+                    value={courseForm.videoUrl}
+                    onChange={e => setCourseForm({...courseForm, videoUrl: e.target.value})}
+                  />
+                  <textarea 
+                    placeholder="Detailed Content / Resources" 
+                    rows="6" 
+                    required 
+                    className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 text-sm resize-none"
+                    value={courseForm.content}
+                    onChange={e => setCourseForm({...courseForm, content: e.target.value})}
+                  />
+                  <div className="grid grid-cols-2 gap-3">
+                    <input 
+                      placeholder="Icon Name" 
+                      className="bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-2 text-sm"
+                      value={courseForm.icon}
+                      onChange={e => setCourseForm({...courseForm, icon: e.target.value})}
+                    />
+                    <input 
+                      placeholder="Category" 
+                      className="bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-2 text-sm"
+                      value={courseForm.category}
+                      onChange={e => setCourseForm({...courseForm, category: e.target.value})}
+                    />
+                  </div>
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      checked={courseForm.isPremium}
+                      onChange={e => setCourseForm({...courseForm, isPremium: e.target.checked})}
+                      className="rounded text-brand-600" 
+                    />
+                    <span className="text-sm font-bold text-slate-500">Premium Course</span>
+                  </label>
+                  <button type="submit" className="w-full btn-primary py-3">Add Course</button>
+                </form>
               </div>
             </div>
 
-            {/* Notifications System */}
-            <div className="card-premium p-6">
-              <h3 className="text-xl font-bold dark:text-white flex items-center mb-6">
-                <BellRing className="w-5 h-5 mr-2 text-brand-600" />
-                Broadcast Notification
-              </h3>
-              <form onSubmit={handleSendNotification} className="space-y-4 max-w-2xl">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                   <div>
-                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">Recipient</label>
-                     <select
-                       value={notifEmail}
-                       onChange={(e) => setNotifEmail(e.target.value)}
-                       className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 dark:text-white"
-                     >
-                       <option value="ALL">All Users</option>
-                       {usersList.map(u => (
-                         <option key={u._id} value={u.email}>{u.name} ({u.email})</option>
-                       ))}
-                     </select>
-                   </div>
+            <div className="lg:col-span-2 space-y-4">
+              <h3 className="text-xl font-bold dark:text-white mb-6">Existing Courses</h3>
+              {coursesList.map(course => (
+                <div key={course._id} className="card-premium p-6 flex flex-col md:flex-row justify-between items-center gap-4">
+                  <div className="flex items-center space-x-4">
+                    <div className="p-3 bg-brand-100 dark:bg-brand-900/30 rounded-xl">
+                      <Video className="w-6 h-6 text-brand-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold dark:text-white text-lg">{course.title}</h4>
+                      <div className="flex items-center space-x-2 text-xs text-slate-500">
+                        <span>{course.category}</span>
+                        {course.isPremium && <span className="text-amber-600 font-bold">★ Premium</span>}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <button onClick={() => handleDeleteCourse(course._id)} className="p-2 text-slate-400 hover:text-red-500 transition-colors">
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </div>
                 </div>
-                <div>
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">Message</label>
-                  <textarea
-                    required
-                    value={notifMessage}
-                    onChange={(e) => setNotifMessage(e.target.value)}
-                    placeholder="Enter your notification message..."
-                    rows="3"
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 dark:text-white resize-none"
-                  ></textarea>
+              ))}
+              {coursesList.length === 0 && (
+                <div className="text-center py-20 bg-slate-100 dark:bg-slate-900/50 rounded-3xl text-slate-500">
+                  No courses added yet.
                 </div>
-                <button type="submit" className="btn-primary py-2.5 text-sm flex items-center shadow-lg">
-                  <Send className="w-4 h-4 mr-2" />
-                  Send Notification
-                </button>
-              </form>
+              )}
             </div>
           </div>
+        )}
 
-          {/* Coupon Management */}
-          <div className="space-y-6">
-            
-            {/* Create Coupon */}
-            <div className="card-premium p-6">
-              <h3 className="text-xl font-bold dark:text-white flex items-center mb-6">
-                <Ticket className="w-5 h-5 mr-2 text-brand-600" />
-                Create Coupon
-              </h3>
-              
-              <form onSubmit={handleCreateCoupon} className="space-y-4">
-                <div>
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">Coupon Code</label>
-                  <input
-                    required
-                    type="text"
-                    value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value)}
-                    placeholder="e.g. SUMMER50"
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 dark:text-white uppercase"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">Discount Percentage (%)</label>
-                  <input
-                    required
-                    type="number"
-                    min="1"
-                    max="100"
-                    value={discountPercent}
-                    onChange={(e) => setDiscountPercent(e.target.value)}
-                    placeholder="e.g. 50"
-                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 dark:text-white"
-                  />
-                </div>
-                <button type="submit" className="w-full btn-primary py-2.5 text-sm">
-                  Create Coupon
-                </button>
-              </form>
-            </div>
-
-            {/* Active Coupons List */}
-            <div className="card-premium p-6">
-               <h4 className="font-bold dark:text-white mb-4">Active Coupons</h4>
-               {coupons.length === 0 ? (
-                 <p className="text-sm text-slate-500 italic">No active coupons available.</p>
-               ) : (
-                 <div className="space-y-3">
-                   {coupons.map((c, i) => (
-                     <div key={i} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-100 dark:border-slate-800">
-                       <div>
-                         <div className="font-bold text-brand-600 dark:text-brand-400">{c.code}</div>
-                         <div className="text-xs text-slate-500">{c.discountPercent}% OFF</div>
-                       </div>
-                       <button 
-                         onClick={() => handleDeleteCoupon(c._id, c.code)}
-                         className="p-2 text-slate-400 hover:text-red-500 transition-colors"
-                       >
-                         <Trash2 className="w-4 h-4" />
-                       </button>
-                     </div>
-                   ))}
-                 </div>
-               )}
-            </div>
-
-          </div>
-
-        </div>
       </div>
     </div>
   );

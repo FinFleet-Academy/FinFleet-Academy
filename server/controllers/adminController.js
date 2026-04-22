@@ -2,6 +2,8 @@ import User from '../models/User.js';
 import Coupon from '../models/Coupon.js';
 import Notification from '../models/Notification.js';
 import Subscriber from '../models/Subscriber.js';
+import News from '../models/News.js';
+import Course from '../models/Course.js';
 
 // ... (other controllers)
 
@@ -77,3 +79,47 @@ export const deleteCoupon = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// News Management
+export const createNews = async (req, res) => {
+  try {
+    const { title, summary, content, category, sourceLink, isTrending } = req.body;
+    // Simple slug generation
+    const slug = title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+    const news = await News.create({ title, slug, summary, content, category, sourceLink, isTrending });
+    res.status(201).json(news);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const deleteNews = async (req, res) => {
+  try {
+    const news = await News.findByIdAndDelete(req.params.id);
+    if (!news) return res.status(404).json({ message: 'News not found' });
+    res.json({ message: 'News deleted' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Course Management
+export const createCourse = async (req, res) => {
+  try {
+    const course = await Course.create(req.body);
+    res.status(201).json(course);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const deleteCourse = async (req, res) => {
+  try {
+    const course = await Course.findByIdAndDelete(req.params.id);
+    if (!course) return res.status(404).json({ message: 'Course not found' });
+    res.json({ message: 'Course deleted' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
