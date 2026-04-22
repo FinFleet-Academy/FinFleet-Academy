@@ -17,6 +17,8 @@ import subscriberRoutes from './routes/subscriberRoutes.js';
 import newsRoutes from './routes/newsRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
+import feedbackRoutes from './routes/feedbackRoutes.js';
+import helpRoutes from './routes/helpRoutes.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
 dotenv.config();
@@ -62,6 +64,8 @@ app.use('/api/subscribers', subscriberRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/feedback', feedbackRoutes);
+app.use('/api/help', helpRoutes);
 
 // Error Handling
 app.use(notFound);

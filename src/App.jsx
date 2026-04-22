@@ -18,6 +18,9 @@ import FinorPage from './pages/FinorPage';
 import NewsDetailPage from './pages/NewsDetailPage';
 import AboutPage from './pages/AboutPage';
 import AboutFinorPage from './pages/AboutFinorPage';
+import ProfilePage from './pages/ProfilePage';
+import FeedbackPage from './pages/FeedbackPage';
+import HelpPage from './pages/HelpPage';
 
 function App() {
   return (
@@ -40,6 +43,9 @@ function App() {
               <Route path="/about" element={<AboutPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/feedback" element={<FeedbackPage />} />
+              <Route path="/help" element={<HelpPage />} />
             </Routes>
           </main>
           <Footer />

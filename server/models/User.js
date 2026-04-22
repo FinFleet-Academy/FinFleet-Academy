@@ -6,6 +6,9 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   plan: { type: String, default: 'FREE' },
   isAdmin: { type: Boolean, default: false },
+  mobile: { type: String, default: '' },
+  bio: { type: String, default: '', maxlength: 300 },
+  profileImage: { type: String, default: '' },
   chatCount: { type: Number, default: 0 },
   lastChatReset: { type: Date, default: Date.now },
   lastMessageAt: { type: Date, default: 0 }
