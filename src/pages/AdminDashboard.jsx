@@ -39,6 +39,7 @@ const AdminDashboard = () => {
   const [contactsList, setContactsList] = useState([]);
   const [feedbackList, setFeedbackList] = useState([]);
   const [helpTickets, setHelpTickets] = useState([]);
+  const [insightsList, setInsightsList] = useState([]);
   const [loading, setLoading] = useState(true);
   
   // Forms state
@@ -49,6 +50,9 @@ const AdminDashboard = () => {
   const [newsForm, setNewsForm] = useState({
     title: '', summary: '', content: '', category: 'Stock Market', sourceLink: '', isTrending: false
   });
+  const [insightForm, setInsightForm] = useState({
+    title: '', content: '', type: 'market_tip'
+  });
   
   const [courseForm, setCourseForm] = useState({
     title: '', description: '', content: '', videoUrl: '', icon: 'BookOpen', category: 'Trading', isPremium: true
@@ -56,7 +60,7 @@ const AdminDashboard = () => {
 
   const loadData = async () => {
     try {
-      const [users, allCoupons, subscribers, allNews, allCourses, allContacts, allFeedback, allTickets] = await Promise.all([
+      const [users, allCoupons, subscribers, allNews, allCourses, allContacts, allFeedback, allTickets, allInsights] = await Promise.all([
         fetchUsers(),
         fetchCoupons(),
         fetchSubscribers(),
@@ -64,7 +68,8 @@ const AdminDashboard = () => {
         axios.get('/api/courses'),
         fetchContacts(),
         axios.get('/api/feedback/admin'),
-        axios.get('/api/help/admin')
+        axios.get('/api/help/admin'),
+        axios.get('/api/insights', { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } })
       ]);
       setUsersList(users);
       setCoupons(allCoupons);
@@ -74,6 +79,7 @@ const AdminDashboard = () => {
       setContactsList(allContacts);
       setFeedbackList(allFeedback.data);
       setHelpTickets(allTickets.data);
+      setInsightsList(allInsights.data);
     } catch (error) {
       console.error("Admin Load Error:", error);
       toast.error("Failed to fetch admin data");
@@ -135,6 +141,20 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleCreateInsight = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post('/api/insights', insightForm, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      toast.success("Daily Insight published!");
+      setInsightForm({ title: '', content: '', type: 'market_tip' });
+      loadData();
+    } catch (error) {
+      toast.error("Failed to publish insight");
+    }
+  };
+
   const handleCreateCourse = async (e) => {
     e.preventDefault();
     try {
@@ -187,6 +207,7 @@ const AdminDashboard = () => {
         <nav className="space-y-2">
           {[
             { id: 'overview',  name: 'Overview',      icon: LayoutDashboard },
+            { id: 'insights',  name: 'Daily Insights',icon: Star },
             { id: 'news',      name: 'News Feed',     icon: Newspaper },
             { id: 'courses',   name: 'Courses',       icon: BookOpen },
             { id: 'messages',  name: 'Messages',      icon: MessageSquare },
@@ -212,6 +233,48 @@ const AdminDashboard = () => {
       {/* Main Content Area */}
       <div className="flex-1 p-6 lg:p-10 overflow-y-auto">
         
+        {/* Tab: Insights */}
+        {activeTab === 'insights' && (
+          <div className="space-y-8 animate-in fade-in duration-500">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold dark:text-white">Daily Insights</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <form onSubmit={handleCreateInsight} className="card-premium p-6 lg:col-span-1 space-y-4">
+                <h3 className="font-bold dark:text-white mb-4">Post New Insight</h3>
+                <input required type="text" placeholder="Headline / Title" value={insightForm.title} onChange={e => setInsightForm({...insightForm, title: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none dark:text-white" />
+                <textarea required placeholder="Content / Insight Text" rows="4" value={insightForm.content} onChange={e => setInsightForm({...insightForm, content: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none dark:text-white resize-none" />
+                <select value={insightForm.type} onChange={e => setInsightForm({...insightForm, type: e.target.value})} className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none dark:text-white">
+                  <option value="market_tip">Market Tip</option>
+                  <option value="investing_advice">Investing Advice</option>
+                  <option value="crypto">Crypto Update</option>
+                </select>
+                <button type="submit" className="btn-primary w-full py-2.5 flex items-center justify-center space-x-2"><PlusCircle className="w-4 h-4" /> <span>Post Insight</span></button>
+              </form>
+              
+              <div className="card-premium p-6 lg:col-span-2">
+                <h3 className="font-bold dark:text-white mb-4">Recent Insights</h3>
+                <div className="space-y-4">
+                  {insightsList.map(insight => (
+                    <div key={insight._id} className="p-4 border border-slate-100 dark:border-slate-800 rounded-xl flex items-start justify-between">
+                      <div>
+                        <h4 className="font-bold text-sm dark:text-white">{insight.title}</h4>
+                        <p className="text-xs text-slate-500 mt-1 line-clamp-2">{insight.content}</p>
+                        <div className="flex space-x-2 mt-2">
+                          <span className="text-[10px] bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-500">{new Date(insight.date).toLocaleDateString()}</span>
+                          <span className="text-[10px] bg-brand-50 text-brand-600 px-2 py-0.5 rounded capitalize">{insight.type.replace('_', ' ')}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {insightsList.length === 0 && <p className="text-sm text-slate-500">No insights posted yet.</p>}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Tab 1: Overview */}
         {activeTab === 'overview' && (
           <div className="space-y-8 animate-in fade-in duration-500">
