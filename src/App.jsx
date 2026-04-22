@@ -16,6 +16,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import FinorPage from './pages/FinorPage';
 import NewsDetailPage from './pages/NewsDetailPage';
 import AboutPage from './pages/AboutPage';
+import AboutFinorPage from './pages/AboutFinorPage';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/courses" element={<CoursesPage />} />
               <Route path="/pricing" element={<PricingPage />} />
+              <Route path="/finor/about" element={<AboutFinorPage />} />
               <Route path="/finor" element={<FinorPage />} />
               <Route path="/finor/:slug" element={<NewsDetailPage />} />
               <Route path="/chatbot" element={<ChatPage />} />
