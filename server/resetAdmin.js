@@ -3,7 +3,7 @@ import User from './models/User.js';
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 
-dotenv.config();
+dotenv.config({ path: './server/.env' });
 
 const resetAdminPassword = async () => {
   try {
