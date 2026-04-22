@@ -36,7 +36,7 @@ const LoginPage = () => {
       >
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center space-x-2 mb-6">
-            <div className="w-12 h-12 bg-brand-600 rounded-2xl flex items-center justify-center shadow-xl">
+            <div className="w-12 h-12 bg-brand-600 rounded-2xl flex items-center justify-center shadow-sm">
               <Rocket className="text-white w-7 h-7" />
             </div>
           </Link>

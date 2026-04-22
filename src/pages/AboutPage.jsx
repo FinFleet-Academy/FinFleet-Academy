@@ -56,7 +56,7 @@ const AboutPage = () => {
               transition={{ duration: 0.6 }}
             >
               <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
-                About <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-blue-500">FinFleet Academy</span>
+                About <span className="text-brand-600">FinFleet Academy</span>
               </h1>
               <p className="text-xl md:text-2xl text-slate-400 mb-8 font-medium">
                 Learn Finance. Build Confidence. Create Wealth.
@@ -98,14 +98,14 @@ const AboutPage = () => {
               transition={{ duration: 0.8 }}
               className="grid grid-cols-1 gap-6"
             >
-              <div className="p-8 bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl border border-slate-700">
+              <div className="p-8 bg-slate-900 rounded-3xl border border-slate-700">
                 <Target className="w-10 h-10 text-brand-500 mb-4" />
                 <h3 className="text-2xl font-bold text-white mb-3">Our Vision</h3>
                 <p className="text-slate-400">
                   To empower individuals to make smarter financial decisions with confidence. We believe that the right knowledge, at the right time, can completely change a person’s financial future.
                 </p>
               </div>
-              <div className="p-8 bg-gradient-to-br from-brand-900/20 to-slate-900 rounded-3xl border border-brand-500/20">
+              <div className="p-8 bg-brand-900/20 rounded-3xl border border-brand-500/20">
                 <h3 className="text-2xl font-bold text-white mb-4">What We Focus On</h3>
                 <ul className="space-y-3">
                   {['Stock market fundamentals', 'Personal finance education', 'Investment mindset', 'Practical learning over theory'].map((item, idx) => (
@@ -139,7 +139,7 @@ const AboutPage = () => {
       {/* CTA Section */}
       <section className="py-24 relative">
         <div className="container mx-auto px-6">
-          <div className="max-w-5xl mx-auto bg-gradient-to-r from-brand-600 to-blue-700 rounded-[3rem] p-12 text-center relative overflow-hidden">
+          <div className="max-w-5xl mx-auto bg-brand-600 rounded-[3rem] p-12 text-center relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
             <div className="relative z-10">
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Ready to Master Your Money?</h2>

@@ -153,7 +153,7 @@ const FeedbackPage = () => {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full flex items-center justify-center space-x-2 py-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold transition-all shadow-lg shadow-brand-500/25 disabled:opacity-60"
+            className="w-full flex items-center justify-center space-x-2 py-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold transition-colors shadow-sm disabled:opacity-60"
           >
             {submitting ? (
               <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />

@@ -82,7 +82,7 @@ const ProfilePage = () => {
                 {form.profileImage ? (
                   <img src={form.profileImage} alt="Profile" className="w-24 h-24 rounded-full object-cover ring-4 ring-brand-500/30" />
                 ) : (
-                  <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white text-2xl font-bold ring-4 ring-brand-500/20">
+                  <div className="w-24 h-24 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-300 text-2xl font-bold">
                     {initials}
                   </div>
                 )}
@@ -199,7 +199,7 @@ const ProfilePage = () => {
               <button
                 type="submit"
                 disabled={saving}
-                className="w-full flex items-center justify-center space-x-2 py-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold transition-all shadow-lg shadow-brand-500/25 disabled:opacity-60"
+                className="w-full flex items-center justify-center space-x-2 py-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold transition-colors shadow-sm disabled:opacity-60"
               >
                 {saving ? (
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />

@@ -70,7 +70,7 @@ const BudgetTracker = () => {
     <div className="space-y-6">
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="card-premium p-6 bg-gradient-to-br from-brand-600 to-brand-700 text-white">
+        <div className="card-premium p-6 bg-brand-600 text-white">
           <div className="flex justify-between items-center mb-2">
             <span className="text-xs font-bold uppercase tracking-wider opacity-80">Total Balance</span>
             <IndianRupee className="w-4 h-4" />

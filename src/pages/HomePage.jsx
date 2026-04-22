@@ -65,7 +65,7 @@ const HomePage = () => {
             
             <motion.h1 variants={itemVariants} className="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-6">
               Master Trading. <br />
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-brand-600 via-accent-success to-brand-400">
+              <span className="text-brand-600">
                 Build Wealth.
               </span>
             </motion.h1>
@@ -111,7 +111,7 @@ const HomePage = () => {
       {/* Coming Soon Section */}
       <section className="py-20 relative overflow-hidden">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-800 dark:to-slate-900 rounded-[2.5rem] p-10 md:p-16 text-center relative overflow-hidden shadow-2xl border border-slate-700 dark:border-slate-700">
+          <div className="bg-slate-900 rounded-[2.5rem] p-10 md:p-16 text-center relative overflow-hidden">
             {/* Glow effects */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-brand-500/10 rounded-full -mr-32 -mt-32 blur-3xl mix-blend-screen" />
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-accent-success/10 rounded-full -ml-32 -mb-32 blur-3xl mix-blend-screen" />
@@ -143,7 +143,7 @@ const HomePage = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     disabled={isSubmitting}
                   />
-                  <button type="submit" disabled={isSubmitting} className="bg-gradient-to-r from-brand-600 to-brand-500 text-white font-bold px-8 py-4 rounded-full hover:shadow-lg hover:shadow-brand-500/25 transition-all w-full sm:w-auto flex-shrink-0 disabled:opacity-50">
+                  <button type="submit" disabled={isSubmitting} className="bg-brand-600 text-white font-bold px-8 py-4 rounded-full hover:bg-brand-700 transition-colors w-full sm:w-auto flex-shrink-0 disabled:opacity-50">
                     {isSubmitting ? 'Submitting...' : 'Notify Me'}
                   </button>
                 </form>
@@ -255,7 +255,7 @@ const HomePage = () => {
       {/* CTA Section */}
       <section className="py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gradient-to-r from-brand-600 to-brand-800 rounded-[32px] p-8 md:p-16 text-center relative overflow-hidden shadow-2xl">
+          <div className="bg-brand-600 rounded-[32px] p-8 md:p-16 text-center relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl" />
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-accent-success/20 rounded-full -ml-32 -mb-32 blur-3xl" />
             

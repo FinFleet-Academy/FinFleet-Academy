@@ -39,22 +39,22 @@ const Navbar = () => {
   const handleLogout = () => { logout(); setDropdownOpen(false); setIsOpen(false); };
 
   return (
-    <nav className="sticky top-0 z-50 glass-panel border-b border-slate-200 dark:border-slate-800">
+    <nav className="sticky top-0 z-50 glass-panel">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-20 items-center">
+        <div className="flex justify-between h-16 items-center">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
-            <div className="w-10 h-10 bg-gradient-to-tr from-brand-600 to-accent-success rounded-xl flex items-center justify-center shadow-lg transform group-hover:rotate-12 transition-transform shrink-0">
-              <Rocket className="text-white w-6 h-6" />
+            <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center shadow-sm shrink-0">
+              <Rocket className="text-white w-5 h-5" />
             </div>
             {location.pathname === '/finor' ? (
               <div className="flex flex-col -space-y-1">
-                <span className="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400">Finor</span>
-                <span className="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-widest">By FinFleet Academy</span>
+                <span className="text-xl font-bold text-slate-900 dark:text-white">Finor</span>
+                <span className="text-[10px] font-medium text-slate-500 uppercase tracking-widest">By FinFleet</span>
               </div>
             ) : (
-              <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400">
-                FinFleet<span className="text-brand-600 dark:text-brand-400">Academy</span>
+              <span className="text-xl font-bold text-slate-900 dark:text-white">
+                FinFleet<span className="text-brand-600">Academy</span>
               </span>
             )}
           </Link>
@@ -82,7 +82,7 @@ const Navbar = () => {
                   {user?.profileImage ? (
                     <img src={user.profileImage} alt="avatar" className="w-7 h-7 rounded-full object-cover" />
                   ) : (
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white text-xs font-bold">{initials}</div>
+                    <div className="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-700 dark:text-slate-300 text-xs font-bold">{initials}</div>
                   )}
                   <span className="text-sm font-medium dark:text-white">{user?.name?.split(' ')[0]}</span>
                   <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />

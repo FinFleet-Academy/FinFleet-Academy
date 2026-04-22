@@ -111,7 +111,7 @@ const PricingCard = ({ tier, isPopular }) => {
     <motion.div 
       whileHover={{ y: -8 }}
       className={`card-premium relative h-full flex flex-col ${
-        isPopular ? 'border-brand-500/50 shadow-brand-500/10 ring-1 ring-brand-500/20' : ''
+        isPopular ? 'border-brand-500/50 ring-1 ring-brand-500/20' : ''
       }`}
     >
       {isPopular && (
@@ -169,7 +169,7 @@ const PricingCard = ({ tier, isPopular }) => {
           isCurrentPlan 
             ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-default'
             : isPopular 
-              ? 'bg-brand-600 text-white hover:bg-brand-700 shadow-lg shadow-brand-500/30' 
+              ? 'bg-brand-600 text-white hover:bg-brand-700 shadow-sm' 
               : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white hover:bg-slate-50'
         }`}
       >

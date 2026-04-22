@@ -32,7 +32,7 @@ const SignupPage = () => {
         {/* Left Side: Brand/Value Prop */}
         <div className="hidden lg:flex flex-col justify-center space-y-8 p-6">
           <div className="inline-flex items-center space-x-2">
-            <div className="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center shadow-sm">
               <Rocket className="text-white w-6 h-6" />
             </div>
             <span className="text-xl font-bold dark:text-white">FinFleet Academy</span>

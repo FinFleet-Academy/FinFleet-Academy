@@ -46,7 +46,7 @@ const Dashboard = () => {
             <h1 className="text-3xl font-bold dark:text-white">Welcome back, {user?.name || 'Student'}!</h1>
             <p className="text-slate-500 dark:text-slate-400 mt-1">Check your progress and continue your learning journey.</p>
           </div>
-          <div className="mt-4 md:mt-0 flex items-center space-x-2 bg-brand-600 text-white px-4 py-2 rounded-xl shadow-lg shadow-brand-500/20">
+          <div className="mt-4 md:mt-0 flex items-center space-x-2 bg-brand-600 text-white px-4 py-2 rounded-xl shadow-sm hover:bg-brand-700 transition-colors cursor-pointer">
             <Star className="w-4 h-4 fill-current" />
             <span className="text-sm font-bold">{plan} Member</span>
           </div>
@@ -202,10 +202,10 @@ const Dashboard = () => {
             </div>
 
             {/* Newsletter/Insights Card */}
-            <div className="card-premium p-6 bg-gradient-to-br from-brand-600 to-brand-700 text-white border-0 shadow-brand-500/20">
-              <h4 className="font-bold mb-2">Market Insights</h4>
-              <p className="text-xs text-brand-100 mb-6">"BTC is showing strong support at ₹54L. Watch for a breakout above ₹56L..."</p>
-              <button className="w-full py-2 bg-white text-brand-700 rounded-lg text-xs font-bold shadow-lg">Read Daily Brief</button>
+            <div className="card-premium p-6 border border-slate-200 dark:border-slate-800">
+              <h4 className="font-bold mb-2 dark:text-white">Market Insights</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">"BTC is showing strong support at ₹54L. Watch for a breakout above ₹56L..."</p>
+              <button className="w-full py-2 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-200 rounded-lg text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">Read Daily Brief</button>
             </div>
           </div>
 

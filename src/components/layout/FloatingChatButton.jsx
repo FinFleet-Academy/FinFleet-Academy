@@ -19,7 +19,7 @@ const FloatingChatButton = () => {
     >
       <Link
         to="/chatbot"
-        className="flex items-center justify-center w-14 h-14 bg-brand-600 hover:bg-brand-700 text-white rounded-full shadow-2xl shadow-brand-500/40 group relative"
+        className="flex items-center justify-center w-14 h-14 bg-brand-600 hover:bg-brand-700 text-white rounded-full shadow-lg group relative transition-colors"
       >
         <MessageSquare className="w-6 h-6" />
         <div className="absolute -top-1 -right-1">

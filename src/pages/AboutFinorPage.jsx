@@ -56,7 +56,7 @@ const AboutFinorPage = () => {
               <span>Finor by FinFleet Academy</span>
             </div>
             <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 tracking-tight">
-              About <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-emerald-400">Finor</span>
+              About <span className="text-brand-600">Finor</span>
             </h1>
             <p className="text-xl md:text-2xl text-slate-400 mb-10 max-w-3xl mx-auto font-medium leading-relaxed">
               Financial News, Simplified. We cut through the noise to bring you the insights that truly matter.
@@ -108,7 +108,7 @@ const AboutFinorPage = () => {
                  <p className="text-slate-400 mb-6">
                     Our editors work around the clock to verify data and present it in a way that is actionable and honest.
                  </p>
-                 <div className="h-1 w-full bg-gradient-to-r from-brand-600 to-transparent rounded-full opacity-30"></div>
+                 <div className="h-1 w-full bg-brand-600 rounded-full opacity-30"></div>
               </div>
               <div className="p-8 bg-brand-600/10 rounded-[2.5rem] border border-brand-500/20">
                  <div className="flex items-center space-x-4 mb-6">
@@ -149,7 +149,7 @@ const AboutFinorPage = () => {
       {/* Final CTA */}
       <section className="py-24">
         <div className="container mx-auto px-6 text-center">
-          <div className="max-w-4xl mx-auto p-12 bg-gradient-to-br from-slate-900 to-brand-900/30 rounded-[3rem] border border-slate-800 shadow-2xl relative overflow-hidden">
+          <div className="max-w-4xl mx-auto p-12 bg-slate-900 rounded-[3rem] border border-slate-800 shadow-xl relative overflow-hidden">
              <div className="relative z-10">
                 <h2 className="text-4xl font-bold text-white mb-6">Stay Ahead with Smarter News</h2>
                 <p className="text-slate-400 text-xl mb-10">

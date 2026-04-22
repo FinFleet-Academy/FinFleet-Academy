@@ -108,7 +108,7 @@ const FinorPage = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {trendingNews.map((news, idx) => (
                 <Link key={news._id} to={`/finor/${news.slug}`} className="group relative h-80 rounded-3xl overflow-hidden shadow-xl">
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent z-10" />
+                  <div className="absolute inset-0 bg-slate-950/40 z-10" />
                   {/* Decorative background for news without image */}
                   <div className="absolute inset-0 bg-slate-800 group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute top-6 left-6 z-20">
@@ -228,7 +228,7 @@ const FinorPage = () => {
                </div>
 
                {/* Newsletter Sidebar */}
-               <div className="bg-gradient-to-br from-brand-600 to-brand-800 rounded-3xl p-8 text-white relative overflow-hidden">
+               <div className="bg-brand-600 rounded-3xl p-8 text-white relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl" />
                   <div className="relative z-10">
                      <h3 className="text-xl font-bold mb-3">Newsletter</h3>

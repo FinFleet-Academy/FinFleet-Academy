@@ -131,7 +131,7 @@ const ChatPage = () => {
           </div>
 
           {!isAuthenticated && (
-             <div className="card-premium p-6 bg-gradient-to-br from-brand-600 to-brand-700 text-white">
+             <div className="card-premium p-6 bg-brand-600 text-white">
                 <h4 className="font-bold mb-2">Login Required</h4>
                 <p className="text-xs text-brand-100 mb-4">Please log in to check your plan status and access the AI.</p>
                 <Link to="/login" className="block w-full text-center py-2 bg-white text-brand-700 rounded-lg text-sm font-bold shadow-lg">Login Now</Link>
@@ -148,7 +148,7 @@ const ChatPage = () => {
         </div>
 
         {/* Chat Interface */}
-        <div className="flex-grow flex flex-col card-premium p-0 overflow-hidden relative border-brand-500/10 shadow-2xl">
+        <div className="flex-grow flex flex-col card-premium p-0 overflow-hidden relative">
           
           {/* Header */}
           <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-white dark:bg-slate-900/50">
@@ -180,8 +180,8 @@ const ChatPage = () => {
               >
                 <div className={`max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed shadow-sm ${
                   m.role === 'user' 
-                    ? 'bg-brand-600 text-white rounded-tr-none' 
-                    : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-tl-none border border-slate-100 dark:border-slate-700'
+                    ? 'bg-slate-800 dark:bg-slate-700 text-white rounded-tr-none' 
+                    : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 rounded-tl-none border border-slate-200 dark:border-slate-800'
                 }`}>
                   {m.content}
                 </div>
@@ -222,7 +222,7 @@ const ChatPage = () => {
                 <button 
                   type="submit"
                   disabled={!input.trim() || isTyping}
-                  className="p-3 bg-brand-600 text-white rounded-xl hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-brand-500/20"
+                  className="p-3 bg-brand-600 text-white rounded-xl hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
                 >
                   <Send className="w-5 h-5" />
                 </button>
