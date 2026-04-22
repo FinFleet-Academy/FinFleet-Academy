@@ -70,9 +70,10 @@ const FinorPage = () => {
                 <span className="flex h-2 w-2 rounded-full bg-brand-500 animate-pulse" />
                 <span>Live Market Insights</span>
               </div>
-              <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4 leading-tight">
+              <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-2 leading-tight">
                 Finor News Platform
               </h1>
+              <p className="text-sm font-bold text-brand-600 dark:text-brand-400 uppercase tracking-widest mb-6">By FinFleet Academy</p>
               <p className="text-lg text-slate-600 dark:text-slate-400">
                 Your trusted source for real-time market news, crypto insights, and global economic trends. 
                 <span className="text-brand-600 font-bold ml-1">Stay ahead of the curve.</span>
