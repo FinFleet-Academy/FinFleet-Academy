@@ -59,11 +59,11 @@ const PricingCard = ({ tier, isPopular }) => {
         <div className="flex items-baseline flex-wrap gap-2">
           {hasDiscount ? (
             <>
-              <span className="text-xl font-bold text-slate-400 line-through">${tier.price}</span>
-              <span className="text-4xl font-extrabold text-accent-success">${finalPrice}</span>
+              <span className="text-xl font-bold text-slate-400 line-through">₹{tier.price}</span>
+              <span className="text-4xl font-extrabold text-accent-success">₹{finalPrice}</span>
             </>
           ) : (
-            <span className="text-4xl font-extrabold dark:text-white">${tier.price}</span>
+            <span className="text-4xl font-extrabold dark:text-white">₹{tier.price}</span>
           )}
           <span className="text-slate-500 ml-1">/month</span>
         </div>
@@ -106,7 +106,7 @@ const PricingCard = ({ tier, isPopular }) => {
   );
 };
 
-const CoursesPage = () => {
+const PricingPage = () => {
   const { appliedCoupon, validateAndApplyCoupon, removeCoupon } = useAuth();
   const [couponInput, setCouponInput] = useState('');
 
@@ -142,7 +142,7 @@ const CoursesPage = () => {
     },
     {
       name: PLANS.PRO,
-      price: 29,
+      price: 199,
       desc: 'Advanced tools and advice for serious traders.',
       cta: 'Go Pro',
       isPopular: false,
@@ -160,7 +160,7 @@ const CoursesPage = () => {
     },
     {
       name: PLANS.ELITE,
-      price: 99,
+      price: 699,
       desc: 'Everything you need to master the markets.',
       cta: 'Upgrade to Elite',
       isPopular: true,
@@ -178,7 +178,7 @@ const CoursesPage = () => {
     },
     {
       name: PLANS.PRIME,
-      price: 249,
+      price: 1999,
       desc: 'The ultimate experience for professional results.',
       cta: 'Get Elite Prime',
       icon: Crown,
@@ -295,4 +295,4 @@ const CoursesPage = () => {
   );
 };
 
-export default CoursesPage;
+export default PricingPage;

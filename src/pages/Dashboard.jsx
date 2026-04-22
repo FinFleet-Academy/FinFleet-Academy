@@ -204,7 +204,7 @@ const Dashboard = () => {
             {/* Newsletter/Insights Card */}
             <div className="card-premium p-6 bg-gradient-to-br from-brand-600 to-brand-700 text-white border-0 shadow-brand-500/20">
               <h4 className="font-bold mb-2">Market Insights</h4>
-              <p className="text-xs text-brand-100 mb-6">"BTC is showing strong support at $64k. Watch for a breakout above $66.5k..."</p>
+              <p className="text-xs text-brand-100 mb-6">"BTC is showing strong support at ₹54L. Watch for a breakout above ₹56L..."</p>
               <button className="w-full py-2 bg-white text-brand-700 rounded-lg text-xs font-bold shadow-lg">Read Daily Brief</button>
             </div>
           </div>
