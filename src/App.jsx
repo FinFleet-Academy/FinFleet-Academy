@@ -15,6 +15,7 @@ import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import FinorPage from './pages/FinorPage';
 import NewsDetailPage from './pages/NewsDetailPage';
+import AboutPage from './pages/AboutPage';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/about" element={<AboutPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
             </Routes>

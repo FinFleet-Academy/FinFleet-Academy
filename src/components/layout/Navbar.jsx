@@ -13,9 +13,9 @@ const Navbar = () => {
 
   const navLinks = [
     { name: 'Home', path: '/' },
+    { name: 'About', path: '/about' },
     { name: 'Academy', path: '/courses' },
     { name: 'Pricing', path: '/pricing' },
-    { name: 'Market', path: '/#features' },
     { name: 'Finor', path: '/finor' },
     { name: 'AI Chatbot', path: '/chatbot' },
   ];

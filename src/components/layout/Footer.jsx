@@ -65,7 +65,7 @@ const Footer = () => {
               <li><Link to="/courses" className="text-slate-500 hover:text-brand-600 transition-colors">All Courses</Link></li>
               <li><a href="#" className="text-slate-500 hover:text-brand-600 transition-colors">Live Webinars</a></li>
               <li><a href="#" className="text-slate-500 hover:text-brand-600 transition-colors">Free E-books</a></li>
-              <li><a href="#" className="text-slate-500 hover:text-brand-600 transition-colors">Market News</a></li>
+              <li><Link to="/finor" className="text-slate-500 hover:text-brand-600 transition-colors">Market News</Link></li>
             </ul>
           </div>
 
@@ -73,10 +73,11 @@ const Footer = () => {
           <div>
             <h4 className="text-slate-900 dark:text-white font-bold mb-6">Company</h4>
             <ul className="space-y-4 text-sm">
+              <li><Link to="/about" className="text-slate-500 hover:text-brand-600 transition-colors">About Us</Link></li>
+              <li><Link to="/finor" className="text-slate-500 hover:text-brand-600 transition-colors">Finor</Link></li>
               <li><Link to="/contact" className="text-slate-500 hover:text-brand-600 transition-colors">Contact Us</Link></li>
-              <li><a href="#" className="text-slate-500 hover:text-brand-600 transition-colors">About Us</a></li>
-              <li><a href="#" className="text-slate-500 hover:text-brand-600 transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="text-slate-500 hover:text-brand-600 transition-colors">Terms of Service</a></li>
+              <li><Link to="/privacy" className="text-slate-500 hover:text-brand-600 transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/terms" className="text-slate-500 hover:text-brand-600 transition-colors">Terms of Service</Link></li>
             </ul>
           </div>
 

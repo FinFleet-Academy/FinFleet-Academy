@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { TrendingUp, Activity, BarChart2, Globe, ArrowRight, Calendar, Bookmark } from 'lucide-react';
+import { TrendingUp, Activity, BarChart2, Globe, ArrowRight, Calendar, Bookmark, Lightbulb } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { Link } from 'react-router-dom';
@@ -90,6 +90,66 @@ const FinorPage = () => {
                      <div className="text-xs text-slate-500 font-medium">Strongly Bullish</div>
                   </div>
                </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* About Finor Section */}
+      <section className="py-16 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="space-y-6"
+            >
+              <div>
+                <h2 className="text-3xl font-bold dark:text-white mb-2">About Finor</h2>
+                <p className="text-brand-600 font-bold text-lg">Financial News, Simplified</p>
+              </div>
+              <div className="space-y-4 text-slate-600 dark:text-slate-400 leading-relaxed">
+                <p>
+                  Finor is a financial news platform by FinFleet Academy, built to deliver clear, reliable, and simplified insights from the world of finance.
+                </p>
+                <p>
+                  In a market full of noise, complex jargon, and overwhelming information, Finor focuses on what truly matters—helping you understand the news, not just read it.
+                </p>
+                <p>
+                  Our goal is to break down complex financial information into simple, meaningful insights that help you stay informed and think smarter.
+                </p>
+              </div>
+              <div className="pt-4">
+                <button 
+                  onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })}
+                  className="btn-primary flex items-center"
+                >
+                  Stay ahead with smarter news <ArrowRight className="ml-2 w-4 h-4" />
+                </button>
+              </div>
+            </motion.div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {[
+                { icon: Lightbulb, title: 'Simplified News', desc: 'Complex topics explained clearly.' },
+                { icon: Globe, title: 'Market Coverage', desc: 'Stocks, crypto, and economy.' },
+                { icon: Activity, title: 'Actionable Insights', desc: 'Understand the “why” behind news.' },
+                { icon: TrendingUp, title: 'Built for Modern Investors', desc: 'Designed for today’s learners.' }
+              ].map((item, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
+                  className="p-5 bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-2xl"
+                >
+                  <item.icon className="w-8 h-8 text-brand-600 mb-3" />
+                  <h4 className="font-bold text-slate-900 dark:text-white text-sm mb-1">{item.title}</h4>
+                  <p className="text-xs text-slate-500">{item.desc}</p>
+                </motion.div>
+              ))}
             </div>
           </div>
         </div>
