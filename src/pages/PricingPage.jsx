@@ -4,20 +4,86 @@ import { Check, X, Shield, Star, Crown, Zap, Tag } from 'lucide-react';
 import { PLANS, useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import axios from 'axios';
 
 const PricingCard = ({ tier, isPopular }) => {
-  const { plan, upgradePlan, isAuthenticated, appliedCoupon } = useAuth();
+  const { user, plan, setPlan, isAuthenticated, appliedCoupon } = useAuth();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
-  const handleUpgrade = () => {
+  const handleUpgrade = async () => {
     if (!isAuthenticated) {
       navigate('/login');
       return;
     }
-    upgradePlan(tier.name);
-    let msg = `Successfully upgraded to ${tier.name}!`;
-    if (appliedCoupon && tier.price > 0) msg += ` (Applied ${appliedCoupon.discountPercent}% off)`;
-    toast.success(msg);
+
+    if (tier.price === 0) {
+      toast.error("You are already on the Free plan!");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // 1. Create order on backend
+      const { data: order } = await axios.post('/api/payments/create-order', {
+        plan: tier.name
+      });
+
+      // 2. Configure Razorpay Options
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_your_key_id',
+        amount: order.amount,
+        currency: order.currency,
+        name: "FinFleet Academy",
+        description: `Upgrade to ${tier.name} Subscription`,
+        image: "https://finfleetacademy.com/vite.svg", // logo url
+        order_id: order.id,
+        handler: async function (response) {
+          try {
+            // 3. Verify payment on backend
+            const { data } = await axios.post('/api/payments/verify-payment', {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              plan: tier.name
+            });
+
+            if (data.success) {
+              setPlan(tier.name);
+              toast.success(`Welcome to ${tier.name}! Your account has been upgraded.`);
+              navigate('/dashboard');
+            }
+          } catch (error) {
+            console.error("Verification failed", error);
+            toast.error("Payment verification failed. Please contact support.");
+          }
+        },
+        prefill: {
+          name: user?.name,
+          email: user?.email,
+        },
+        theme: {
+          color: "#2563eb", // brand-600
+        },
+        modal: {
+          ondismiss: function() {
+            setLoading(false);
+          }
+        }
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', function (response) {
+        toast.error("Payment failed: " + response.error.description);
+        setLoading(false);
+      });
+      rzp.open();
+
+    } catch (error) {
+      console.error("Order creation failed", error);
+      toast.error(error.response?.data?.message || "Failed to initiate payment");
+      setLoading(false);
+    }
   };
 
   const isCurrentPlan = plan === tier.name;
@@ -29,7 +95,6 @@ const PricingCard = ({ tier, isPopular }) => {
   if (appliedCoupon && tier.price > 0) {
     const discountAmount = (tier.price * appliedCoupon.discountPercent) / 100;
     finalPrice = Math.max(0, tier.price - discountAmount);
-    // Round to whole number for display
     finalPrice = Math.round(finalPrice);
     hasDiscount = true;
   }
@@ -91,8 +156,8 @@ const PricingCard = ({ tier, isPopular }) => {
 
       <button
         onClick={handleUpgrade}
-        disabled={isCurrentPlan}
-        className={`w-full py-4 rounded-xl font-bold transition-all ${
+        disabled={isCurrentPlan || loading}
+        className={`w-full py-4 rounded-xl font-bold transition-all flex items-center justify-center space-x-2 ${
           isCurrentPlan 
             ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-default'
             : isPopular 
@@ -100,7 +165,8 @@ const PricingCard = ({ tier, isPopular }) => {
               : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white hover:bg-slate-50'
         }`}
       >
-        {isCurrentPlan ? 'Current Plan' : tier.cta}
+        {loading && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
+        <span>{isCurrentPlan ? 'Current Plan' : loading ? 'Processing...' : tier.cta}</span>
       </button>
     </motion.div>
   );

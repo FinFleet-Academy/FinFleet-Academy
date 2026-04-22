@@ -197,6 +197,7 @@ export const AuthProvider = ({ children }) => {
       user, 
       token,
       plan, 
+      setPlan,
       isAdmin,
       chatCount,
       coupons,
