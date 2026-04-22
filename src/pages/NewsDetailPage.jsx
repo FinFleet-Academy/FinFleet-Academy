@@ -8,6 +8,8 @@ const NewsDetailPage = () => {
   const { slug } = useParams();
   const [news, setNews] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [explanation, setExplanation] = useState('');
+  const [explaining, setExplaining] = useState(false);
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -22,6 +24,19 @@ const NewsDetailPage = () => {
     };
     fetchNews();
   }, [slug]);
+
+  const handleExplain = async () => {
+    try {
+      setExplaining(true);
+      const response = await axios.post('/api/news/explain', { content: news.content });
+      setExplanation(response.data.explanation);
+    } catch (error) {
+      console.error('Error explaining news:', error);
+      setExplanation('Failed to generate explanation. Please try again later.');
+    } finally {
+      setExplaining(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -71,6 +86,31 @@ const NewsDetailPage = () => {
           <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-8 leading-tight">
             {news.title}
           </h1>
+
+          {/* AI Explanation Feature */}
+          <div className="mb-10 p-6 bg-brand-50 dark:bg-brand-900/10 rounded-2xl border border-brand-100 dark:border-brand-800/50">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold dark:text-white flex items-center">
+                <span className="w-8 h-8 rounded-full bg-brand-600 text-white flex items-center justify-center mr-3 text-sm">AI</span>
+                Explain this News
+              </h3>
+              {!explanation && (
+                <button 
+                  onClick={handleExplain} 
+                  disabled={explaining}
+                  className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold rounded-lg transition-colors disabled:opacity-50"
+                >
+                  {explaining ? 'Analyzing...' : 'Simplify'}
+                </button>
+              )}
+            </div>
+            
+            {explanation && (
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed whitespace-pre-line">
+                {explanation}
+              </motion.div>
+            )}
+          </div>
 
           <div className="prose prose-slate dark:prose-invert max-w-none mb-12">
             {news.content.split('\n\n').map((para, i) => (

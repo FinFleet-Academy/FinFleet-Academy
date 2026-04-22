@@ -33,6 +33,11 @@ const courseSchema = new mongoose.Schema({
     type: String,
     default: 'Trading'
   },
+  difficulty: {
+    type: String,
+    enum: ['Beginner', 'Intermediate', 'Advanced'],
+    default: 'Beginner'
+  },
   isPremium: {
     type: Boolean,
     default: false

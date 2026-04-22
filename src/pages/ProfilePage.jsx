@@ -105,6 +105,26 @@ const ProfilePage = () => {
                 Upgrade Plan →
               </a>
             </div>
+
+            {/* Referral Code */}
+            {user?.referralCode && (
+              <div className="card-premium p-6">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Your Referral Code</p>
+                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                  <span className="font-mono font-bold text-slate-700 dark:text-slate-300">{user.referralCode}</span>
+                  <button 
+                    onClick={() => {
+                      navigator.clipboard.writeText(user.referralCode);
+                      toast.success('Referral code copied!');
+                    }}
+                    className="text-xs font-bold text-brand-600 hover:text-brand-700"
+                  >
+                    Copy
+                  </button>
+                </div>
+                <p className="text-[10px] text-slate-400 mt-2">Share this code with friends to earn rewards.</p>
+              </div>
+            )}
           </motion.div>
 
           {/* Right column — Form */}

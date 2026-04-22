@@ -12,7 +12,7 @@ const generateToken = (id) => {
 
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password, plan } = req.body;
+    const { name, email, password, plan, referralCode: inputReferral } = req.body;
 
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -22,15 +22,39 @@ export const registerUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    // Generate unique referral code
+    const baseCode = name.replace(/[^a-zA-Z0-9]/g, '').substring(0, 4).toUpperCase();
+    const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
+    const myReferralCode = `${baseCode}${randomStr}`;
+
+    let referredById = null;
+    if (inputReferral) {
+      const referrer = await User.findOne({ referralCode: inputReferral.toUpperCase() });
+      if (referrer) {
+        referredById = referrer._id;
+        // Optionally reward referrer immediately (e.g. +10 AI messages)
+        // This can be done after user creation
+      }
+    }
+
     const user = await User.create({
       name,
       email,
       password: hashedPassword,
       plan: plan || 'FREE',
-      isAdmin: email === 'admin@finfleet.com'
+      isAdmin: email === 'admin@finfleet.com',
+      referralCode: myReferralCode,
+      referredBy: inputReferral ? inputReferral.toUpperCase() : null
     });
 
     if (user) {
+      if (referredById) {
+         await User.findByIdAndUpdate(referredById, {
+           $push: { referredUsers: user._id }
+           // Add chat count reward or similar logic here if needed
+         });
+      }
+
       // Create welcome notification
       await Notification.create({
         userEmail: user.email,
@@ -55,6 +79,7 @@ export const registerUser = async (req, res) => {
         plan: user.plan,
         isAdmin: user.isAdmin,
         chatCount: user.chatCount,
+        referralCode: user.referralCode,
         token: generateToken(user._id),
       });
     } else {

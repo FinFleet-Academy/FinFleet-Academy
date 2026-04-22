@@ -6,7 +6,7 @@ import { useAuth, PLANS } from '../../context/AuthContext';
 import { toast } from 'react-hot-toast';
 
 const SignupPage = () => {
-  const [formData, setFormData] = useState({ name: '', email: '', password: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', password: '', referralCode: '' });
   const [selectedPlan, setSelectedPlan] = useState(PLANS.FREE);
   const { registerUser } = useAuth();
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ const SignupPage = () => {
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      await registerUser(formData.name, formData.email, formData.password, selectedPlan);
+      await registerUser(formData.name, formData.email, formData.password, selectedPlan, formData.referralCode);
       toast.success(`Welcome to the Fleet, ${formData.name}! Your ${selectedPlan} plan is active.`);
       navigate('/');
     } catch (err) {
@@ -119,6 +119,20 @@ const SignupPage = () => {
                   onChange={(e) => setFormData({...formData, password: e.target.value})}
                   className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-12 pr-4 py-3 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none dark:text-white"
                   placeholder="••••••••"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Referral Code (Optional)</label>
+              <div className="relative">
+                <Rocket className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <input
+                  type="text"
+                  value={formData.referralCode}
+                  onChange={(e) => setFormData({...formData, referralCode: e.target.value})}
+                  className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-12 pr-4 py-3 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none dark:text-white uppercase"
+                  placeholder="e.g. JOHNX123"
                 />
               </div>
             </div>

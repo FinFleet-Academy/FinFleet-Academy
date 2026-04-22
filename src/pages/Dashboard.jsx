@@ -8,23 +8,31 @@ import axios from 'axios';
 const Dashboard = () => {
   const { user, plan, notifications, markNotificationRead } = useAuth();
   const [courses, setCourses] = React.useState([]);
+  const [bookmarks, setBookmarks] = React.useState([]);
+  const [dailyInsight, setDailyInsight] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data } = await axios.get('/api/courses/progress');
-        // Map progress data to course format or handle empty state
-        const mappedCourses = data.map(p => ({
+        const [courseRes, bookmarkRes, insightRes] = await Promise.all([
+          axios.get('/api/courses/progress').catch(() => ({ data: [] })),
+          axios.get('/api/bookmarks').catch(() => ({ data: [] })),
+          axios.get('/api/insights/today').catch(() => ({ data: null }))
+        ]);
+        
+        const mappedCourses = courseRes.data.map(p => ({
           title: p.courseId.title,
-          progress: p.completed ? 100 : 50, // Mocking progress for now as Progress model only has 'completed'
-          icon: BookOpen, // Dynamic icons would need a mapping
+          progress: p.completed ? 100 : 50,
+          icon: BookOpen,
           color: p.courseId.color || 'text-brand-600',
           bg: p.courseId.bg || 'bg-brand-100'
         }));
         setCourses(mappedCourses);
+        setBookmarks(bookmarkRes.data.slice(0, 3)); // Show top 3 bookmarks
+        setDailyInsight(insightRes.data);
       } catch (err) {
-        console.error("Failed to fetch courses", err);
+        console.error("Failed to fetch dashboard data", err);
       } finally {
         setLoading(false);
       }
@@ -55,9 +63,9 @@ const Dashboard = () => {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           {[
-            { label: 'Courses in Progress', value: '3', icon: BookOpen, detail: '+1 this week' },
-            { label: 'Learning Hours', value: '24.5', icon: Clock, detail: 'Top 10% student' },
-            { label: 'Completed Lessons', value: '42', icon: PlayCircle, detail: '6 lessons to next level' },
+            { label: 'Courses in Progress', value: courses.length || '0', icon: BookOpen, detail: 'Keep learning' },
+            { label: 'AI Messages Used', value: user?.chatCount || '0', icon: Star, detail: 'Reset Daily' },
+            { label: 'Saved Items', value: bookmarks.length || '0', icon: Award, detail: 'Quick access' },
             { label: 'Certificates Won', value: '2', icon: Trophy, detail: 'Foundation & Basics' },
           ].map((stat, i) => (
             <div key={i} className="card-premium p-6">
@@ -203,9 +211,19 @@ const Dashboard = () => {
 
             {/* Newsletter/Insights Card */}
             <div className="card-premium p-6 border border-slate-200 dark:border-slate-800">
-              <h4 className="font-bold mb-2 dark:text-white">Market Insights</h4>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">"BTC is showing strong support at ₹54L. Watch for a breakout above ₹56L..."</p>
-              <button className="w-full py-2 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-200 rounded-lg text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">Read Daily Brief</button>
+              <h4 className="font-bold mb-2 dark:text-white flex items-center">
+                <TrendingUp className="w-4 h-4 mr-2 text-brand-600" />
+                Daily Insight
+              </h4>
+              {dailyInsight ? (
+                <>
+                  <h5 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-1">{dailyInsight.title}</h5>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 line-clamp-3">{dailyInsight.content}</p>
+                </>
+              ) : (
+                <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">Stay tuned for today's market insight.</p>
+              )}
+              <button className="w-full py-2 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-200 rounded-lg text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">Read Full Brief</button>
             </div>
           </div>
 

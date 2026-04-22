@@ -11,7 +11,10 @@ const userSchema = new mongoose.Schema({
   profileImage: { type: String, default: '' },
   chatCount: { type: Number, default: 0 },
   lastChatReset: { type: Date, default: Date.now },
-  lastMessageAt: { type: Date, default: 0 }
+  lastMessageAt: { type: Date, default: 0 },
+  referralCode: { type: String, unique: true, sparse: true },
+  referredBy: { type: String, default: null },
+  referredUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
 }, { timestamps: true });
 
 export default mongoose.model('User', userSchema);

@@ -25,6 +25,7 @@ const Navbar = () => {
     { name: 'Academy', path: '/courses' },
     { name: 'Pricing', path: '/pricing' },
     { name: 'Finor', path: '/finor' },
+    { name: 'Tools', path: '/tools' },
     { name: 'AI Chatbot', path: '/chatbot' },
   ];
 
