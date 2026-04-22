@@ -11,6 +11,7 @@ import notificationRoutes from './routes/notificationRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
 import subscriberRoutes from './routes/subscriberRoutes.js';
 import newsRoutes from './routes/newsRoutes.js';
+import chatRoutes from './routes/chatRoutes.js';
 
 dotenv.config();
 
@@ -41,6 +42,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/contacts', contactRoutes);
 app.use('/api/subscribers', subscriberRoutes);
 app.use('/api/news', newsRoutes);
+app.use('/api/chat', chatRoutes);
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/finfleet')

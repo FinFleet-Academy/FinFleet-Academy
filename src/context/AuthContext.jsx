@@ -216,6 +216,7 @@ export const AuthProvider = ({ children }) => {
       markNotificationRead,
       adminSendNotification,
       updateChatCount,
+      setChatCount,
       createNews,
       deleteNews,
       createCourse,

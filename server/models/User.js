@@ -6,7 +6,8 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   plan: { type: String, default: 'FREE' },
   isAdmin: { type: Boolean, default: false },
-  chatCount: { type: Number, default: 0 }
+  chatCount: { type: Number, default: 0 },
+  lastChatReset: { type: Date, default: Date.now }
 }, { timestamps: true });
 
 export default mongoose.model('User', userSchema);

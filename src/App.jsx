@@ -4,6 +4,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
+import FloatingChatButton from './components/layout/FloatingChatButton';
 import HomePage from './pages/HomePage';
 import CoursesPage from './pages/CoursesPage';
 import PricingPage from './pages/PricingPage';
@@ -42,6 +43,7 @@ function App() {
             </Routes>
           </main>
           <Footer />
+          <FloatingChatButton />
         </div>
       </AuthProvider>
     </ThemeProvider>
