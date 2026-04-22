@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, Send, Sparkles, AlertCircle, TrendingUp, HelpCircle, Lock, Crown } from 'lucide-react';
 import { PLANS, useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
+import axios from 'axios';
 
 const ChatPage = () => {
   const { plan, chatCount, setChatCount, isAuthenticated } = useAuth();
