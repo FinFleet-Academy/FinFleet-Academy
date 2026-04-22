@@ -86,6 +86,11 @@ const Navbar = () => {
                   <User className="w-4 h-4 text-brand-600" />
                   <span className="text-sm font-medium">{user.name}</span>
                 </div>
+                {isAdmin && (
+                  <Link to="/admin" className="text-sm font-bold text-brand-600 hover:text-brand-500 transition-colors">
+                    Admin
+                  </Link>
+                )}
                 <button
                   onClick={logout}
                   className="p-2 text-slate-500 hover:text-red-500 transition-colors"
@@ -141,7 +146,7 @@ const Navbar = () => {
                   {link.name}
                 </Link>
               ))}
-              {!isAuthenticated && (
+              {!isAuthenticated ? (
                 <div className="pt-4 grid grid-cols-2 gap-3">
                   <Link
                     to="/login"
@@ -157,6 +162,33 @@ const Navbar = () => {
                   >
                     Sign Up
                   </Link>
+                </div>
+              ) : (
+                <div className="pt-4 space-y-3">
+                  <div className="flex items-center space-x-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+                    <div className="w-8 h-8 bg-brand-600 rounded-full flex items-center justify-center text-white text-xs font-bold uppercase">
+                      {user.name.charAt(0)}
+                    </div>
+                    <div className="text-sm font-bold dark:text-white">{user.name}</div>
+                  </div>
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      onClick={() => setIsOpen(false)}
+                      className="block px-3 py-2 text-base font-bold text-brand-600 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg"
+                    >
+                      Admin Dashboard
+                    </Link>
+                  )}
+                  <button
+                    onClick={() => {
+                      logout();
+                      setIsOpen(false);
+                    }}
+                    className="w-full text-left px-3 py-2 text-base font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg"
+                  >
+                    Logout
+                  </button>
                 </div>
               )}
             </div>

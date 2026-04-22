@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import News from './models/News.js';
 
-dotenv.config();
+dotenv.config({ path: './server/.env' });
 
 const newsData = [
   {
