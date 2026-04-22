@@ -3,6 +3,12 @@ import Joi from 'joi';
 export const validateChat = (req, res, next) => {
   const schema = Joi.object({
     message: Joi.string().required().max(1000).trim(),
+    history: Joi.array().items(
+      Joi.object({
+        role: Joi.string().valid('user', 'assistant').required(),
+        content: Joi.string().required()
+      })
+    ).optional(),
   });
 
   const { error } = schema.validate(req.body);
