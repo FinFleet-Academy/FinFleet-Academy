@@ -3,7 +3,8 @@ import { useAuth, PLANS } from '../context/AuthContext';
 import { 
   Users, Ticket, Trash2, ArrowUpCircle, XCircle, Search, ShieldAlert, 
   BellRing, Send, Newspaper, BookOpen, PlusCircle, LayoutDashboard,
-  ExternalLink, Video, CheckCircle, MessageSquare, Mail, Clock
+  ExternalLink, Video, CheckCircle, MessageSquare, Mail, Clock,
+  Star, LifeBuoy, AlertCircle, CheckCircle2
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
@@ -36,6 +37,8 @@ const AdminDashboard = () => {
   const [newsList, setNewsList] = useState([]);
   const [coursesList, setCoursesList] = useState([]);
   const [contactsList, setContactsList] = useState([]);
+  const [feedbackList, setFeedbackList] = useState([]);
+  const [helpTickets, setHelpTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   
   // Forms state
@@ -53,13 +56,15 @@ const AdminDashboard = () => {
 
   const loadData = async () => {
     try {
-      const [users, allCoupons, subscribers, allNews, allCourses, allContacts] = await Promise.all([
+      const [users, allCoupons, subscribers, allNews, allCourses, allContacts, allFeedback, allTickets] = await Promise.all([
         fetchUsers(),
         fetchCoupons(),
         fetchSubscribers(),
         axios.get('/api/news'),
         axios.get('/api/courses'),
-        fetchContacts()
+        fetchContacts(),
+        axios.get('/api/feedback/admin'),
+        axios.get('/api/help/admin')
       ]);
       setUsersList(users);
       setCoupons(allCoupons);
@@ -67,6 +72,8 @@ const AdminDashboard = () => {
       setNewsList(allNews.data);
       setCoursesList(allCourses.data);
       setContactsList(allContacts);
+      setFeedbackList(allFeedback.data);
+      setHelpTickets(allTickets.data);
     } catch (error) {
       console.error("Admin Load Error:", error);
       toast.error("Failed to fetch admin data");
@@ -179,10 +186,12 @@ const AdminDashboard = () => {
         
         <nav className="space-y-2">
           {[
-            { id: 'overview', name: 'Overview', icon: LayoutDashboard },
-            { id: 'news', name: 'News Feed', icon: Newspaper },
-            { id: 'courses', name: 'Courses', icon: BookOpen },
-            { id: 'messages', name: 'Messages', icon: MessageSquare }
+            { id: 'overview',  name: 'Overview',      icon: LayoutDashboard },
+            { id: 'news',      name: 'News Feed',     icon: Newspaper },
+            { id: 'courses',   name: 'Courses',       icon: BookOpen },
+            { id: 'messages',  name: 'Messages',      icon: MessageSquare },
+            { id: 'feedback',  name: 'Feedback',      icon: Star },
+            { id: 'help',      name: 'Help Tickets',  icon: LifeBuoy },
           ].map(tab => (
             <button
               key={tab.id}
@@ -206,15 +215,17 @@ const AdminDashboard = () => {
         {/* Tab 1: Overview */}
         {activeTab === 'overview' && (
           <div className="space-y-8 animate-in fade-in duration-500">
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
                 {[
-                  { label: 'Total Users', value: usersList.length, icon: Users, color: 'text-blue-600', bg: 'bg-blue-100' },
-                  { label: 'Subscribers', value: subscribersList.length, icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-100' },
-                  { label: 'Messages', value: contactsList.length, icon: Mail, color: 'text-red-600', bg: 'bg-red-100' },
-                  { label: 'Courses', value: coursesList.length, icon: BookOpen, color: 'text-orange-600', bg: 'bg-orange-100' }
+                  { label: 'Total Users',   value: usersList.length,    icon: Users,      color: 'text-blue-600',    bg: 'bg-blue-100',    tab: null },
+                  { label: 'Subscribers',   value: subscribersList.length, icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-100', tab: null },
+                  { label: 'Messages',      value: contactsList.length,  icon: Mail,       color: 'text-red-600',     bg: 'bg-red-100',     tab: 'messages' },
+                  { label: 'Courses',       value: coursesList.length,   icon: BookOpen,   color: 'text-orange-600',  bg: 'bg-orange-100',  tab: 'courses' },
+                  { label: 'Feedback',      value: feedbackList.length,  icon: Star,       color: 'text-amber-600',   bg: 'bg-amber-100',   tab: 'feedback' },
+                  { label: 'Open Tickets',  value: helpTickets.filter(t => t.status !== 'resolved').length, icon: LifeBuoy, color: 'text-purple-600', bg: 'bg-purple-100', tab: 'help' },
                 ].map((stat, i) => (
-                  <div key={i} className="card-premium p-4 flex items-center space-x-4 cursor-pointer" onClick={() => stat.label === 'Messages' && setActiveTab('messages')}>
-                    <div className={`p-3 ${stat.bg} rounded-xl`}>
+                  <div key={i} className="card-premium p-4 flex items-center space-x-4 cursor-pointer hover:border-brand-500/30 transition-colors" onClick={() => stat.tab && setActiveTab(stat.tab)}>
+                    <div className={`p-3 ${stat.bg} dark:bg-opacity-20 rounded-xl shrink-0`}>
                       <stat.icon className={`w-6 h-6 ${stat.color}`} />
                     </div>
                     <div>
@@ -516,6 +527,119 @@ const AdminDashboard = () => {
                   </div>
                 )}
              </div>
+          </div>
+        )}
+
+        {/* Tab: Feedback */}
+        {activeTab === 'feedback' && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h3 className="text-2xl font-bold dark:text-white">User Feedback</h3>
+              <div className="text-sm text-slate-500 font-bold">{feedbackList.length} total entries</div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4">
+              {feedbackList.length === 0 ? (
+                <div className="text-center py-20 bg-slate-100 dark:bg-slate-900/50 rounded-3xl text-slate-500">No feedback submitted yet.</div>
+              ) : (
+                feedbackList.map((fb) => (
+                  <div key={fb._id} className="card-premium p-6">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-3">
+                      <div>
+                        <p className="font-bold dark:text-white">{fb.name}</p>
+                        <p className="text-xs text-slate-400">{fb.email} &middot; {new Date(fb.createdAt).toLocaleDateString('en-IN', { year:'numeric', month:'short', day:'numeric' })}</p>
+                      </div>
+                      <div className="flex items-center space-x-0.5">
+                        {[1,2,3,4,5].map(s => (
+                          <Star key={s} className={`w-5 h-5 ${s <= fb.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-200 dark:text-slate-700'}`} />
+                        ))}
+                        <span className="ml-2 text-sm font-bold text-amber-500">{fb.rating}/5</span>
+                      </div>
+                    </div>
+                    <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800">{fb.message}</p>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Tab: Help Tickets */}
+        {activeTab === 'help' && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h3 className="text-2xl font-bold dark:text-white">Help Tickets</h3>
+              <div className="text-sm text-slate-500 font-bold">
+                {helpTickets.filter(t => t.status !== 'resolved').length} open &middot; {helpTickets.length} total
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4">
+              {helpTickets.length === 0 ? (
+                <div className="text-center py-20 bg-slate-100 dark:bg-slate-900/50 rounded-3xl text-slate-500">No help tickets submitted yet.</div>
+              ) : (
+                helpTickets.map((ticket) => {
+                  const statusStyles = {
+                    open:        'text-amber-600 bg-amber-100 dark:bg-amber-900/20',
+                    in_progress: 'text-blue-600 bg-blue-100 dark:bg-blue-900/20',
+                    resolved:    'text-emerald-600 bg-emerald-100 dark:bg-emerald-900/20',
+                  };
+                  return (
+                    <div key={ticket._id} className={`card-premium p-6 border-l-4 ${
+                      ticket.status === 'resolved' ? 'border-emerald-500' : ticket.status === 'in_progress' ? 'border-blue-500' : 'border-amber-500'
+                    }`}>
+                      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-3">
+                        <div className="flex-grow">
+                          <div className="flex items-center gap-3 mb-1 flex-wrap">
+                            <h4 className="font-bold dark:text-white">{ticket.subject}</h4>
+                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${statusStyles[ticket.status]}`}>
+                              {ticket.status.replace('_',' ')}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-500">{ticket.name} &middot; {ticket.email}</p>
+                          <p className="text-xs text-slate-400 mt-0.5">{new Date(ticket.createdAt).toLocaleDateString('en-IN', { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })}</p>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          {ticket.status !== 'in_progress' && ticket.status !== 'resolved' && (
+                            <button
+                              onClick={async () => {
+                                await axios.put(`/api/help/admin/${ticket._id}`, { status: 'in_progress' });
+                                loadData();
+                                toast.success('Marked as In Progress');
+                              }}
+                              className="px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors"
+                            >
+                              In Progress
+                            </button>
+                          )}
+                          {ticket.status !== 'resolved' && (
+                            <button
+                              onClick={async () => {
+                                await axios.put(`/api/help/admin/${ticket._id}`, { status: 'resolved' });
+                                loadData();
+                                toast.success('Ticket resolved!');
+                              }}
+                              className="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-100 text-emerald-600 hover:bg-emerald-200 transition-colors"
+                            >
+                              Resolve
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
+                        {ticket.description}
+                      </div>
+                      {ticket.screenshotUrl && (
+                        <a href={ticket.screenshotUrl} target="_blank" rel="noopener noreferrer"
+                          className="inline-flex items-center space-x-1 mt-3 text-xs text-brand-600 hover:underline">
+                          <ExternalLink className="w-3 h-3" /><span>View Screenshot</span>
+                        </a>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
           </div>
         )}
 
