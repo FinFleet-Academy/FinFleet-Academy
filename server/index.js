@@ -23,6 +23,9 @@ import bookmarkRoutes from './routes/bookmarkRoutes.js';
 import commentRoutes from './routes/commentRoutes.js';
 import insightRoutes from './routes/insightRoutes.js';
 import communityChatRoutes from './routes/communityChatRoutes.js';
+import followRoutes from './routes/followRoutes.js';
+import privateChatRoutes from './routes/privateChatRoutes.js';
+import announcementRoutes from './routes/announcementRoutes.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
 dotenv.config();
@@ -42,10 +45,25 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
+const allowedOrigins = [
+  'https://finfleetacademy.com',
+  'https://www.finfleetacademy.com',
+  process.env.CLIENT_URL,
+  'http://localhost:5173',
+  'http://localhost:3000',
+].filter(Boolean);
+
 const corsOptions = {
-  origin: process.env.CLIENT_URL || '*',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error(`CORS blocked: ${origin}`));
+  },
   credentials: true,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
 app.use(cors(corsOptions));
@@ -74,6 +92,9 @@ app.use('/api/bookmarks', bookmarkRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/insights', insightRoutes);
 app.use('/api/community-chat', communityChatRoutes);
+app.use('/api/follow', followRoutes);
+app.use('/api/private-chat', privateChatRoutes);
+app.use('/api/announcements', announcementRoutes);
 
 // Error Handling
 app.use(notFound);
