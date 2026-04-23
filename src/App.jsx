@@ -26,6 +26,7 @@ import HelpPage from './pages/HelpPage';
 import ToolsPage from './pages/ToolsPage';
 import CommunityPage from './pages/CommunityPage';
 import PublicProfilePage from './pages/PublicProfilePage';
+import CourseDetailPage from './pages/CourseDetailPage';
 
 // Show splash only once per browser session
 const shouldShowSplash = !sessionStorage.getItem('finfleet_intro_seen');
@@ -71,6 +72,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/courses" element={<CoursesPage />} />
+                <Route path="/courses/:courseId" element={<CourseDetailPage />} />
                 <Route path="/pricing" element={<PricingPage />} />
                 <Route path="/finor/about" element={<AboutFinorPage />} />
                 <Route path="/finor" element={<FinorPage />} />

@@ -10,6 +10,19 @@ export const getCourses = async (req, res) => {
   }
 };
 
+export const getCourseById = async (req, res) => {
+  try {
+    const course = await Course.findById(req.params.id);
+    if (course) {
+      res.json(course);
+    } else {
+      res.status(404).json({ message: 'Course not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const getProgress = async (req, res) => {
   try {
     const progress = await Progress.find({ userId: req.user._id }).populate('courseId');

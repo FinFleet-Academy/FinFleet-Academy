@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
-import { Users, MessageSquare, Megaphone, Search, Send, Heart, MessageCircle, Trash2, UserPlus, UserCheck, ChevronRight, X } from 'lucide-react';
+import { Users, MessageSquare, Megaphone, Search, Send, Heart, MessageCircle, Trash2, UserPlus, UserCheck, ChevronRight, X, MessageSquareQuote } from 'lucide-react';
+import LikeButton from '../components/shared/LikeButton';
+import CommentSection from '../components/shared/CommentSection';
 
 // ─── PEOPLE TAB ───────────────────────────────────────────────────────────────
 const PeopleTab = ({ currentUser }) => {
@@ -219,7 +221,6 @@ const AnnouncementsTab = ({ currentUser, isAdmin }) => {
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(null);
-  const [commentInputs, setCommentInputs] = useState({});
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [form, setForm] = useState({ title: '', content: '', tags: '' });
 
@@ -232,26 +233,6 @@ const AnnouncementsTab = ({ currentUser, isAdmin }) => {
   };
 
   useEffect(() => { fetchAnnouncements(); }, []);
-
-  const handleLike = async (id) => {
-    try {
-      const { data } = await axios.post(`/api/announcements/${id}/like`);
-      setAnnouncements(prev => prev.map(a => a._id === id
-        ? { ...a, likes: data.liked ? [...a.likes, currentUser._id] : a.likes.filter(l => l !== currentUser._id) }
-        : a
-      ));
-    } catch { toast.error('Failed to like'); }
-  };
-
-  const handleComment = async (id) => {
-    const text = commentInputs[id];
-    if (!text?.trim()) return;
-    try {
-      const { data } = await axios.post(`/api/announcements/${id}/comments`, { text });
-      setAnnouncements(prev => prev.map(a => a._id === id ? { ...a, comments: [...a.comments, data] } : a));
-      setCommentInputs(prev => ({ ...prev, [id]: '' }));
-    } catch { toast.error('Failed to comment'); }
-  };
 
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this announcement?')) return;
@@ -306,7 +287,6 @@ const AnnouncementsTab = ({ currentUser, isAdmin }) => {
         <div className="text-center py-12 text-slate-400">No announcements yet.</div>
       ) : (
         announcements.map(ann => {
-          const liked = ann.likes?.includes(currentUser?._id);
           const isExpanded = expanded === ann._id;
           return (
             <div key={ann._id} className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
@@ -340,43 +320,18 @@ const AnnouncementsTab = ({ currentUser, isAdmin }) => {
                   </button>
                 )}
 
-                <div className="flex items-center space-x-4 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
-                  <button onClick={() => handleLike(ann._id)} className={`flex items-center space-x-1.5 text-sm transition-colors ${liked ? 'text-red-500' : 'text-slate-400 hover:text-red-500'}`}>
-                    <Heart className={`w-4 h-4 ${liked ? 'fill-current' : ''}`} />
-                    <span>{ann.likes?.length || 0}</span>
-                  </button>
-                  <button onClick={() => setExpanded(isExpanded ? null : ann._id)} className="flex items-center space-x-1.5 text-sm text-slate-400 hover:text-brand-600 transition-colors">
-                    <MessageCircle className="w-4 h-4" />
-                    <span>{ann.comments?.length || 0} comments</span>
+                <div className="flex items-center space-x-3 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                  <LikeButton targetId={ann._id} targetType="announcement" size="sm" />
+                  <button onClick={() => setExpanded(isExpanded ? null : ann._id)} 
+                    className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-sm font-semibold transition-all ${isExpanded ? 'text-brand-600 bg-brand-50 dark:bg-brand-900/20' : 'text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200'}`}>
+                    <MessageSquareQuote className="w-4 h-4" />
+                    <span>Comments</span>
                   </button>
                 </div>
 
                 {isExpanded && (
-                  <div className="mt-4 space-y-3">
-                    {ann.comments?.map((c, i) => (
-                      <div key={i} className="flex items-start space-x-3">
-                        <div className="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold flex items-center justify-center text-xs shrink-0">
-                          {c.user?.name?.[0]?.toUpperCase() || 'U'}
-                        </div>
-                        <div>
-                          <span className="text-xs font-semibold dark:text-white">{c.user?.name || 'User'} · </span>
-                          <span className="text-xs text-slate-500">{new Date(c.createdAt).toLocaleDateString()}</span>
-                          <p className="text-sm text-slate-600 dark:text-slate-300 mt-0.5">{c.text}</p>
-                        </div>
-                      </div>
-                    ))}
-                    <div className="flex space-x-2 mt-3">
-                      <input
-                        value={commentInputs[ann._id] || ''}
-                        onChange={e => setCommentInputs(p => ({ ...p, [ann._id]: e.target.value }))}
-                        onKeyDown={e => e.key === 'Enter' && handleComment(ann._id)}
-                        placeholder="Write a comment..."
-                        className="flex-1 px-3 py-2 text-sm bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500/50 dark:text-white"
-                      />
-                      <button onClick={() => handleComment(ann._id)} className="px-3 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors">
-                        <Send className="w-4 h-4" />
-                      </button>
-                    </div>
+                  <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                    <CommentSection targetId={ann._id} targetType="announcement" />
                   </div>
                 )}
               </div>

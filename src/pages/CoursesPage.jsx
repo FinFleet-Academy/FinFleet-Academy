@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { BookOpen, CheckCircle2, Circle, PlayCircle, Star, Search, Filter, ArrowRight } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 
 const CoursesPage = () => {
   const [courses, setCourses] = useState([]);
@@ -134,9 +135,11 @@ const CoursesPage = () => {
                     </span>
                   </div>
                   
-                  <h3 className="text-xl font-bold dark:text-white mb-3 group-hover:text-brand-600 transition-colors">
-                    {course.title}
-                  </h3>
+                  <Link to={`/courses/${course._id}`}>
+                    <h3 className="text-xl font-bold dark:text-white mb-3 group-hover:text-brand-600 transition-colors">
+                      {course.title}
+                    </h3>
+                  </Link>
                   
                   <p className="text-sm text-slate-500 dark:text-slate-400 mb-8 flex-grow">
                     {course.description || "Master the core principles and advanced strategies in this comprehensive module."}
@@ -151,10 +154,10 @@ const CoursesPage = () => {
                       <span>{isCompleted(course._id) ? 'Completed' : 'Mark Complete'}</span>
                     </button>
                     
-                    <button className="flex items-center space-x-1 text-sm font-bold text-brand-600 group-hover:underline">
+                    <Link to={`/courses/${course._id}`} className="flex items-center space-x-1 text-sm font-bold text-brand-600 group-hover:underline">
                       <span>Start Learning</span>
                       <ArrowRight className="w-4 h-4" />
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </motion.div>

@@ -26,6 +26,7 @@ import communityChatRoutes from './routes/communityChatRoutes.js';
 import followRoutes from './routes/followRoutes.js';
 import privateChatRoutes from './routes/privateChatRoutes.js';
 import announcementRoutes from './routes/announcementRoutes.js';
+import likeRoutes from './routes/likeRoutes.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
 dotenv.config();
@@ -95,6 +96,7 @@ app.use('/api/community-chat', communityChatRoutes);
 app.use('/api/follow', followRoutes);
 app.use('/api/private-chat', privateChatRoutes);
 app.use('/api/announcements', announcementRoutes);
+app.use('/api/likes', likeRoutes);
 
 // Error Handling
 app.use(notFound);
