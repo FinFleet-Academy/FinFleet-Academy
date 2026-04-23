@@ -53,7 +53,11 @@ const AdminDashboard = () => {
 
   const loadData = async () => {
     try {
-      const [users, allCoupons, subscribers, allNews, allCourses, allContacts, allFeedback, allTickets, allInsights, allAnalytics] = await Promise.all([
+      const [
+        users, allCoupons, subscribers, allNews, allCourses, 
+        allContacts, allFeedback, allTickets, allInsights, 
+        allLiveClasses, allAnalytics
+      ] = await Promise.all([
         fetchUsers(), fetchCoupons(), fetchSubscribers(),
         axios.get('/api/news'), axios.get('/api/courses'),
         fetchContacts(), axios.get('/api/feedback/admin'),

@@ -12,6 +12,26 @@ import { toast } from 'react-hot-toast';
 import CommentSection from '../components/shared/CommentSection';
 import LikeButton from '../components/shared/LikeButton';
 
+const getYouTubeEmbedUrl = (url) => {
+  if (!url) return null;
+  let videoId = '';
+  
+  try {
+    if (url.includes('youtu.be/')) {
+      videoId = url.split('youtu.be/')[1]?.split(/[?#]/)[0];
+    } else if (url.includes('youtube.com/watch')) {
+      const urlObj = new URL(url);
+      videoId = urlObj.searchParams.get('v');
+    } else if (url.includes('youtube.com/embed/')) {
+      videoId = url.split('youtube.com/embed/')[1]?.split(/[?#]/)[0];
+    }
+  } catch (e) {
+    console.error("URL Parsing Error", e);
+  }
+
+  return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+};
+
 const CourseDetailPage = () => {
   const { courseId } = useParams();
   const { user, plan, isAuthenticated } = useAuth();
@@ -152,7 +172,7 @@ const CourseDetailPage = () => {
                    </div>
                 ) : course.videoUrl ? (
                   <iframe
-                    src={course.videoUrl.replace('watch?v=', 'embed/')}
+                    src={getYouTubeEmbedUrl(course.videoUrl)}
                     title={course.title}
                     className="w-full h-full"
                     allowFullScreen
