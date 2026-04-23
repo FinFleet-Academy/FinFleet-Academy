@@ -12,66 +12,88 @@ const LiveChartHero = () => {
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
-    const chart = createChart(chartContainerRef.current, {
-      layout: {
-        background: { type: ColorType.Solid, color: 'transparent' },
-        textColor: '#94a3b8',
-      },
-      grid: {
-        vertLines: { visible: false },
-        horzLines: { color: 'rgba(255, 255, 255, 0.05)' },
-      },
-      width: chartContainerRef.current.clientWidth || 500,
-      height: 350,
-      timeScale: { visible: false },
-      rightPriceScale: { visible: false },
-      handleScroll: false,
-      handleScale: false,
-    });
-
-    const series = chart.addAreaSeries({
-      lineColor: '#22c55e',
-      topColor: 'rgba(34, 197, 94, 0.2)',
-      bottomColor: 'rgba(34, 197, 94, 0)',
-      lineWidth: 2,
-      crosshairMarkerVisible: false,
-    });
-
-    // Initial Data
-    let data = [];
-    let time = Math.floor(Date.now() / 1000) - 100;
-    let price = 2500;
-    for (let i = 0; i < 100; i++) {
-      price = price + (Math.random() - 0.5) * 10;
-      data.push({ time: time++, value: price });
-    }
-    series.setData(data);
-
-    // Live Update Simulation
-    const interval = setInterval(() => {
-      const lastPrice = data[data.length - 1].value;
-      const noise = (Math.random() - 0.5) * 5;
-      const newPrice = lastPrice + noise;
-      const newPoint = { time: time++, value: newPrice };
+    const initChart = () => {
+      if (!chartContainerRef.current) return;
       
-      data.push(newPoint);
-      if (data.length > 150) data.shift();
-      
-      series.update(newPoint);
-      setCurrentPrice(newPrice);
-      setChange(((newPrice - 2500) / 2500 * 100).toFixed(2));
-    }, 2000);
+      const chart = createChart(chartContainerRef.current, {
+        layout: {
+          background: { type: ColorType.Solid, color: 'transparent' },
+          textColor: '#94a3b8',
+        },
+        grid: {
+          vertLines: { visible: false },
+          horzLines: { color: 'rgba(255, 255, 255, 0.05)' },
+        },
+        width: chartContainerRef.current.clientWidth || 500,
+        height: 350,
+        timeScale: { visible: false },
+        rightPriceScale: { visible: false },
+        handleScroll: false,
+        handleScale: false,
+      });
 
-    const handleResize = () => {
-      chart.applyOptions({ width: chartContainerRef.current.clientWidth });
+      // Using addSeries for better v5 compatibility
+      const series = chart.addAreaSeries({
+        lineColor: '#22c55e',
+        topColor: 'rgba(34, 197, 94, 0.2)',
+        bottomColor: 'rgba(34, 197, 94, 0)',
+        lineWidth: 2,
+        crosshairMarkerVisible: false,
+      });
+
+      // Initial Data
+      let data = [];
+      let time = Math.floor(Date.now() / 1000) - 100;
+      let price = 2500;
+      for (let i = 0; i < 100; i++) {
+        price = price + (Math.random() - 0.5) * 10;
+        data.push({ time: time++, value: price });
+      }
+      series.setData(data);
+
+      // Live Update Simulation
+      const interval = setInterval(() => {
+        const lastPrice = data[data.length - 1].value;
+        const noise = (Math.random() - 0.5) * 5;
+        const newPrice = lastPrice + noise;
+        const newPoint = { time: time++, value: newPrice };
+        
+        data.push(newPoint);
+        if (data.length > 150) data.shift();
+        
+        series.update(newPoint);
+        setCurrentPrice(newPrice);
+        setChange(((newPrice - 2500) / 2500 * 100).toFixed(2));
+      }, 2000);
+
+      const handleResize = () => {
+        chart.applyOptions({ width: chartContainerRef.current.clientWidth });
+      };
+
+      window.addEventListener('resize', handleResize);
+
+      return { chart, interval, handleResize };
     };
 
-    window.addEventListener('resize', handleResize);
+    // Small delay to ensure container is rendered and has dimensions
+    const timer = setTimeout(() => {
+      const resources = initChart();
+      
+      // Cleanup cleanup
+      if (resources) {
+        window._chartResources = resources; // Temporary store for cleanup
+      }
+    }, 100);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
-      clearInterval(interval);
-      chart.remove();
+      clearTimeout(timer);
+      if (window._chartResources) {
+        const { chart, interval, handleResize } = window._chartResources;
+        window.removeEventListener('resize', handleResize);
+        clearInterval(interval);
+        chart.remove();
+        delete window._chartResources;
+      }
     };
   }, []);
 
