@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   TrendingUp, Activity, BarChart2, Globe, ArrowRight, 
   Calendar, Bookmark, Star, Zap, Share2, Search,
-  BellRing, Filter
+  BellRing, Filter, ShieldCheck
 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
