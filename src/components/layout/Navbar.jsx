@@ -26,7 +26,7 @@ const Navbar = () => {
 
   const navLinks = [
     { name: 'Courses', path: '/courses' },
-    { name: 'Market News', path: '/finor' },
+    { name: 'Finor', path: '/finor' },
     { name: 'Live Classes', path: '/live-classes' },
     { name: 'Tools', path: '/tools' },
     { name: 'Community', path: '/community' },

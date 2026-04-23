@@ -72,7 +72,12 @@ const Footer = () => {
                 <li><Link to="/courses" className="hover:text-brand-600 transition-colors">Courses</Link></li>
                 <li><Link to="/community" className="hover:text-brand-600 transition-colors">Community</Link></li>
                 <li><Link to="/tools" className="hover:text-brand-600 transition-colors">Trading Tools</Link></li>
-                <li><Link to="/finor" className="hover:text-brand-600 transition-colors">Market News</Link></li>
+                <li>
+                  <Link to="/finor" className="hover:text-brand-600 transition-colors flex flex-col group">
+                    <span>Finor</span>
+                    <span className="text-[7px] opacity-60 normal-case tracking-normal group-hover:opacity-100 transition-opacity">by FinFleet Academy</span>
+                  </Link>
+                </li>
               </ul>
             </div>
             <div className="space-y-8">
