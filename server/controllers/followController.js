@@ -73,3 +73,22 @@ export const discoverUsers = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+// Get current user's social data (followers & following)
+export const getMySocial = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    
+    const [followers, following] = await Promise.all([
+      Follow.find({ following: userId }).populate('follower', 'name email profileImage plan').lean(),
+      Follow.find({ follower: userId }).populate('following', 'name email profileImage plan').lean()
+    ]);
+
+    res.json({
+      followers: followers.map(f => f.follower),
+      following: following.map(f => f.following)
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
