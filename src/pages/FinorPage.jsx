@@ -55,7 +55,7 @@ const FinorPage = () => {
     <div className="bg-[#F9FAFB] dark:bg-[#080C10] min-h-screen font-sans selection:bg-brand-500/20 pb-32">
       
       {/* 1. Technical Hero Section */}
-      <section className="pt-20 md:pt-32 pb-16 border-b border-slate-200 dark:border-slate-800/50">
+      <section className="pt-16 md:pt-24 pb-10 border-b border-slate-200 dark:border-slate-800/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-12">
               <div className="max-w-3xl">
@@ -63,10 +63,10 @@ const FinorPage = () => {
                     <span className="w-2 h-2 rounded-full bg-brand-500 animate-pulse" />
                     <span className="text-[9px] font-black uppercase tracking-widest text-brand-700 dark:text-brand-300">Live Market Intelligence Stream</span>
                  </motion.div>
-                 <motion.h1 {...fadeInUp} transition={{ delay: 0.1 }} className="text-5xl md:text-8xl font-black dark:text-white tracking-tighter mb-8 leading-[0.9]">
+                 <motion.h1 {...fadeInUp} transition={{ delay: 0.1 }} className="text-4xl md:text-6xl font-black dark:text-white tracking-tight mb-4 leading-tight">
                     Finor <span className="text-gradient">Intel.</span>
                  </motion.h1>
-                 <motion.p {...fadeInUp} transition={{ delay: 0.2 }} className="text-slate-500 dark:text-slate-400 text-lg font-bold leading-relaxed">
+                 <motion.p {...fadeInUp} transition={{ delay: 0.2 }} className="text-base md:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
                     Real-time geopolitical analysis, macro-economic shifts, and institutional market signals. Stay ahead of the global fleet.
                  </motion.p>
               </div>

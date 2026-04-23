@@ -1,10 +1,11 @@
 import express from 'express';
 import { followUser, unfollowUser, getFollowers, getFollowing, discoverUsers } from '../controllers/followController.js';
-import { protect } from '../middleware/authMiddleware.js';
+import { protect, optionalProtect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.get('/discover', protect, discoverUsers);
+router.get('/discover', optionalProtect, discoverUsers);
+
 router.post('/:userId', protect, followUser);
 router.delete('/:userId', protect, unfollowUser);
 router.get('/:userId/followers', protect, getFollowers);

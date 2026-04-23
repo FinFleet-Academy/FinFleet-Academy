@@ -39,47 +39,47 @@ const HomePage = () => {
     <div className="bg-[#F9FAFB] dark:bg-[#080C10] min-h-screen font-sans selection:bg-brand-500/20 overflow-x-hidden">
       
       {/* 1. INSTITUTIONAL HERO */}
-      <section className="relative pt-32 pb-40 md:pt-56 md:pb-64 px-6 overflow-hidden">
+      <section className="relative pt-20 pb-20 md:pt-32 md:pb-28 px-6 overflow-hidden">
         {/* Background Sophistication */}
         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-500 rounded-full blur-[160px] opacity-10 -mr-64 -mt-64 animate-glow" />
         <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-500 rounded-full blur-[140px] opacity-10 -ml-64 -mb-64 animate-glow" />
         
-        <div className="max-w-7xl mx-auto relative z-10 text-center">
+        <div className="max-w-6xl mx-auto relative z-10 text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center space-x-3 bg-brand-50 dark:bg-brand-900/20 px-5 py-2.5 rounded-full mb-12 border border-brand-100 dark:border-brand-800"
+            className="inline-flex items-center space-x-3 bg-brand-50 dark:bg-brand-900/20 px-5 py-2.5 rounded-full mb-6 border border-brand-100 dark:border-brand-800"
           >
              <div className="flex h-2 w-2">
                 <div className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-brand-400 opacity-75"></div>
                 <div className="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></div>
              </div>
-             <span className="text-[10px] font-black text-brand-700 dark:text-brand-300 uppercase tracking-[0.3em]">Institutional Protocol v2.4</span>
+             <span className="text-[10px] font-black text-brand-700 dark:text-brand-300 uppercase tracking-widest">Institutional Protocol v2.4</span>
           </motion.div>
 
           <motion.h1 
-            {...fadeInUp} transition={{ duration: 0.8 }}
-            className="text-6xl md:text-[9.5rem] font-black text-slate-900 dark:text-white leading-[0.85] tracking-tighter mb-12"
+            {...fadeInUp} transition={{ duration: 0.5 }}
+            className="text-5xl md:text-7xl font-black text-slate-900 dark:text-white leading-tight tracking-tight mb-6"
           >
             Wealth <br /> <span className="text-gradient">Engine.</span>
           </motion.h1>
 
           <motion.p 
-            {...fadeInUp} transition={{ delay: 0.2, duration: 0.8 }}
-            className="text-xl md:text-3xl text-slate-500 dark:text-slate-400 mb-16 max-w-3xl mx-auto font-bold leading-tight"
+            {...fadeInUp} transition={{ delay: 0.15, duration: 0.5 }}
+            className="text-lg md:text-xl text-slate-600 dark:text-slate-300 mb-10 max-w-2xl mx-auto leading-relaxed"
           >
             High-fidelity courses, real-time market intelligence, and a private network for the elite retail mind.
           </motion.p>
           
           <motion.div 
-            {...fadeInUp} transition={{ delay: 0.3, duration: 0.8 }}
-            className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-8"
+            {...fadeInUp} transition={{ delay: 0.25, duration: 0.5 }}
+            className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6"
           >
-            <Link to="/courses" className="btn-brand py-6 px-12 text-[11px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-brand-500/30 flex items-center group">
+            <Link to="/courses" className="btn-brand py-4 px-10 text-[11px] font-black uppercase tracking-wide shadow-xl shadow-brand-500/30 flex items-center group">
               Start Protocol
               <ArrowRight className="w-4 h-4 ml-3 group-hover:translate-x-2 transition-transform" />
             </Link>
-            <Link to="/community" className="btn-secondary py-6 px-12 text-[11px] font-black uppercase tracking-[0.2em] dark:text-white flex items-center group">
+            <Link to="/community" className="btn-secondary py-4 px-10 text-[11px] font-black uppercase tracking-wide dark:text-white flex items-center group">
               Enter Community
               <Globe className="w-4 h-4 ml-3 group-hover:rotate-12 transition-transform" />
             </Link>
@@ -88,9 +88,9 @@ const HomePage = () => {
       </section>
 
       {/* 2. FLEET METRICS (Trust Bar) */}
-      <section className="py-24 border-y border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-slate-900/30 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-6">
-           <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
+      <section className="py-14 border-y border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-slate-900/30 backdrop-blur-md">
+        <div className="max-w-6xl mx-auto px-6">
+           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
               {[
                 { label: 'Active Fleet', value: '12K+', icon: Users, color: 'text-brand-600' },
                 { label: 'Intel Accuracy', value: '98.4%', icon: ShieldCheck, color: 'text-emerald-500' },
@@ -113,15 +113,15 @@ const HomePage = () => {
       </section>
 
       {/* 3. STRATEGIC MODULES (Courses) */}
-      <section className="py-40">
+      <section className="py-20">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-24 gap-10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
             <div className="max-w-2xl">
               <motion.div {...fadeInUp} className="flex items-center space-x-3 mb-6">
                  <BookOpen className="w-6 h-6 text-brand-600" />
                  <h2 className="text-[10px] font-black dark:text-white uppercase tracking-[0.4em]">Academy Infrastructure</h2>
               </motion.div>
-              <h3 className="text-4xl md:text-7xl font-black dark:text-white tracking-tighter leading-[0.9]">
+              <h3 className="text-3xl md:text-5xl font-black dark:text-white tracking-tight leading-tight">
                 Tactical <br /> <span className="text-gradient">Curriculum.</span>
               </h3>
             </div>
@@ -174,16 +174,16 @@ const HomePage = () => {
       </section>
 
       {/* 4. INTEL BROADCASTS (Announcements) */}
-      <section className="py-40 bg-slate-950 relative overflow-hidden">
+      <section className="py-16 bg-slate-950 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-brand-900/10 via-transparent to-transparent opacity-50" />
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="text-center mb-32">
+          <div className="text-center mb-10">
             <motion.div {...fadeInUp} className="inline-flex items-center space-x-3 mb-8 bg-white/5 px-4 py-2 rounded-full border border-white/10">
                <Newspaper className="w-4 h-4 text-brand-400" />
                <span className="text-[10px] font-black text-brand-400 uppercase tracking-widest">Global Heatmap Logs</span>
             </motion.div>
-            <h2 className="text-5xl md:text-8xl font-black text-white mb-10 tracking-tighter leading-none">Fleet <span className="text-brand-500">Commms.</span></h2>
-            <p className="text-slate-400 text-lg md:text-xl font-bold max-w-2xl mx-auto leading-relaxed">Official strategic updates directly from the high-command terminal.</p>
+            <h2 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tight leading-tight">Fleet <span className="text-brand-500">Comms.</span></h2>
+            <p className="text-slate-300 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">Official strategic updates directly from the high-command terminal.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-6xl mx-auto">
@@ -216,7 +216,7 @@ const HomePage = () => {
       </section>
 
       {/* 5. ELITE UPGRADE CTA */}
-      <section className="py-56 relative text-center px-6 overflow-hidden">
+      <section className="py-20 relative text-center px-6 overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-brand-500 rounded-full blur-[200px] opacity-[0.03]" />
         
         <motion.div 
@@ -226,8 +226,8 @@ const HomePage = () => {
           <div className="w-24 h-24 bg-brand-50 dark:bg-brand-900/20 rounded-[2rem] flex items-center justify-center mx-auto mb-12 shadow-inner border border-brand-100 dark:border-brand-800 animate-float">
              <Sparkles className="w-10 h-10 text-brand-600" />
           </div>
-          <h2 className="text-5xl md:text-9xl font-black dark:text-white mb-10 tracking-tighter leading-[0.85]">Join the <br /> <span className="text-gradient">Expansion.</span></h2>
-          <p className="text-xl md:text-3xl text-slate-500 dark:text-slate-400 mb-16 font-bold tracking-tight max-w-2xl mx-auto">
+          <h2 className="text-4xl md:text-6xl font-black dark:text-white mb-6 tracking-tight leading-tight">Join the <br /> <span className="text-gradient">Expansion.</span></h2>
+          <p className="text-base md:text-lg text-slate-500 dark:text-slate-300 mb-10 max-w-2xl mx-auto leading-relaxed">
             The private fleet is scaling. Secure your institutional seat and master the global markets.
           </p>
           <div className="flex flex-col sm:flex-row justify-center items-center gap-6">
@@ -239,7 +239,7 @@ const HomePage = () => {
              </Link>
           </div>
           
-          <div className="mt-24 flex items-center justify-center space-x-12 opacity-30 grayscale hover:grayscale-0 transition-all duration-700">
+          <div className="mt-12 flex items-center justify-center space-x-12 opacity-30 grayscale hover:grayscale-0 transition-all duration-700">
              <Globe className="w-10 h-10" />
              <Activity className="w-10 h-10" />
              <TrendingUp className="w-10 h-10" />
