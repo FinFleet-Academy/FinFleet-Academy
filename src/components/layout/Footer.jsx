@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Rocket, Mail, Instagram, Linkedin, Twitter, ShieldAlert } from 'lucide-react';
+import { Rocket, Mail, Instagram, Linkedin, Twitter, ShieldAlert, ArrowRight, Zap, Globe, Sparkles } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import { motion } from 'framer-motion';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -15,112 +16,131 @@ const Footer = () => {
 
     try {
       setIsSubmitting(true);
-      await axios.post('/api/subscribers', { 
-        email, 
-        source: 'footer' 
-      });
-      toast.success('Successfully subscribed to updates!');
+      await axios.post('/api/subscribers', { email, source: 'footer' });
+      toast.success('Identity Registered. Intelligence Feed Subscribed.');
       setEmail('');
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to subscribe');
+      toast.error(error.response?.data?.message || 'Subscription protocol failure.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <footer className="bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-900 pt-16 pb-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 pb-12 border-b border-slate-100 dark:border-slate-900">
-          {/* Brand Info */}
-          <div className="space-y-6">
-            <Link to="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center">
-                <Rocket className="text-white w-5 h-5" />
+    <footer className="bg-white dark:bg-[#080C10] border-t border-slate-100 dark:border-slate-900 pt-24 pb-12 relative overflow-hidden font-sans selection:bg-brand-500/20">
+      
+      {/* Background Ambience */}
+      <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-brand-500 rounded-full blur-[150px] opacity-[0.03] -mr-64 -mb-64 pointer-events-none" />
+      
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-20 pb-20">
+          
+          {/* Brand Manifesto */}
+          <div className="lg:col-span-4 space-y-10">
+            <Link to="/" className="flex items-center space-x-3 group">
+              <div className="w-12 h-12 bg-slate-950 dark:bg-white rounded-2xl flex items-center justify-center shadow-2xl group-hover:bg-brand-600 group-hover:scale-110 transition-all">
+                <Rocket className="text-white dark:text-slate-950 w-6 h-6 group-hover:text-white" />
               </div>
-              <span className="text-xl font-bold dark:text-white">
-                FinFleet<span className="text-brand-600">Academy</span>
-              </span>
+              <div>
+                 <span className="text-2xl font-black dark:text-white tracking-tighter uppercase leading-none block">FinFleet</span>
+                 <span className="text-[10px] font-black text-brand-600 uppercase tracking-[0.4em] leading-none mt-1 block">Academy Terminal</span>
+              </div>
             </Link>
-            <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
-              Empowering traders and investors with premium education and AI-powered insights. Join the elite fleet today.
+            <p className="text-sm font-bold text-slate-500 dark:text-slate-400 leading-relaxed max-w-sm">
+              The world's most advanced financial education infrastructure. Empowering the elite retail mind with institutional rigor and AI-powered intelligence.
             </p>
             <div className="flex items-center space-x-4">
-              <a href="https://www.instagram.com/finfleetacademy/" target="_blank" rel="noopener noreferrer" className="p-2 bg-slate-100 dark:bg-slate-900 rounded-lg hover:text-brand-600 transition-colors">
-                <Instagram className="w-5 h-5" />
-              </a>
-              <a href="https://www.linkedin.com/company/113126241/" target="_blank" rel="noopener noreferrer" className="p-2 bg-slate-100 dark:bg-slate-900 rounded-lg hover:text-brand-600 transition-colors">
-                <Linkedin className="w-5 h-5" />
-              </a>
-              <a href="https://x.com/finfleetacademy" target="_blank" rel="noopener noreferrer" className="p-2 bg-slate-100 dark:bg-slate-900 rounded-lg hover:text-brand-600 transition-colors">
-                <Twitter className="w-5 h-5" />
-              </a>
+              {[
+                { icon: Instagram, link: "https://www.instagram.com/finfleetacademy/" },
+                { icon: Linkedin, link: "https://www.linkedin.com/company/113126241/" },
+                { icon: Twitter, link: "https://x.com/finfleetacademy" }
+              ].map((social, i) => (
+                <a key={i} href={social.link} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl flex items-center justify-center text-slate-400 hover:text-brand-600 hover:border-brand-500/20 transition-all shadow-sm">
+                  <social.icon className="w-4 h-4" />
+                </a>
+              ))}
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h4 className="text-slate-900 dark:text-white font-bold mb-6">Learning</h4>
-            <ul className="space-y-4 text-sm">
-              <li><Link to="/courses" className="text-slate-500 hover:text-brand-600 transition-colors">All Courses</Link></li>
-              <li><a href="#" className="text-slate-500 hover:text-brand-600 transition-colors">Live Webinars</a></li>
-              <li><a href="#" className="text-slate-500 hover:text-brand-600 transition-colors">Free E-books</a></li>
-              <li><Link to="/finor" className="text-slate-500 hover:text-brand-600 transition-colors">Market News</Link></li>
-            </ul>
+          {/* Navigation Links */}
+          <div className="lg:col-span-5 grid grid-cols-2 gap-10">
+            <div className="space-y-8">
+              <h4 className="text-[11px] font-black dark:text-white uppercase tracking-[0.3em] flex items-center">
+                 <Zap className="w-4 h-4 mr-3 text-brand-600" /> Infrastructure
+              </h4>
+              <ul className="space-y-4 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                <li><Link to="/courses" className="hover:text-brand-600 transition-colors">Academy Modules</Link></li>
+                <li><Link to="/community" className="hover:text-brand-600 transition-colors">Fleet Community</Link></li>
+                <li><Link to="/tools" className="hover:text-brand-600 transition-colors">Execution Tools</Link></li>
+                <li><Link to="/finor" className="hover:text-brand-600 transition-colors">Intelligence Feed</Link></li>
+              </ul>
+            </div>
+            <div className="space-y-8">
+              <h4 className="text-[11px] font-black dark:text-white uppercase tracking-[0.3em] flex items-center">
+                 <Globe className="w-4 h-4 mr-3 text-brand-600" /> Operational
+              </h4>
+              <ul className="space-y-4 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                <li><Link to="/about" className="hover:text-brand-600 transition-colors">Manifesto</Link></li>
+                <li><Link to="/pricing" className="hover:text-brand-600 transition-colors">Onboarding Tiers</Link></li>
+                <li><Link to="/contact" className="hover:text-brand-600 transition-colors">Support Deck</Link></li>
+                <li><Link to="/feedback" className="hover:text-brand-600 transition-colors">User Intel</Link></li>
+              </ul>
+            </div>
           </div>
 
-          {/* Company */}
-          <div>
-            <h4 className="text-slate-900 dark:text-white font-bold mb-6">Company</h4>
-            <ul className="space-y-4 text-sm">
-              <li><Link to="/about" className="text-slate-500 hover:text-brand-600 transition-colors">About Academy</Link></li>
-              <li><Link to="/finor/about" className="text-slate-500 hover:text-brand-600 transition-colors">About Finor</Link></li>
-              <li><Link to="/contact" className="text-slate-500 hover:text-brand-600 transition-colors">Contact Us</Link></li>
-              <li><Link to="/privacy" className="text-slate-500 hover:text-brand-600 transition-colors">Privacy Policy</Link></li>
-              <li><Link to="/terms" className="text-slate-500 hover:text-brand-600 transition-colors">Terms of Service</Link></li>
-            </ul>
-          </div>
-
-          {/* Newsletter */}
-          <div>
-            <h4 className="text-slate-900 dark:text-white font-bold mb-6">Stay Updated</h4>
-            <p className="text-slate-500 dark:text-slate-400 text-sm mb-4">
-              Get the latest market insights and academy updates.
-            </p>
-            <form onSubmit={handleSubscribe} className="flex flex-col space-y-3">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={isSubmitting}
-                className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all disabled:opacity-50"
-              />
-              <button type="submit" disabled={isSubmitting} className="btn-primary py-2.5 text-sm disabled:opacity-50">
-                {isSubmitting ? 'Subscribing...' : 'Subscribe'}
-              </button>
-            </form>
+          {/* Subscription Terminal */}
+          <div className="lg:col-span-3 space-y-10">
+            <div className="bg-slate-50 dark:bg-slate-900/50 p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-inner">
+               <h4 className="text-[11px] font-black dark:text-white uppercase tracking-[0.3em] mb-6 flex items-center">
+                  <Mail className="w-4 h-4 mr-3 text-brand-600" /> Intel Dispatch
+               </h4>
+               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed mb-6">
+                 Commit your identifier to receive real-time strategic updates.
+               </p>
+               <form onSubmit={handleSubscribe} className="space-y-3">
+                 <input
+                   type="email" placeholder="NODE@EMAIL.COM" required 
+                   value={email} onChange={(e) => setEmail(e.target.value)} disabled={isSubmitting}
+                   className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-5 py-4 text-[10px] font-black uppercase tracking-widest dark:text-white outline-none focus:ring-4 focus:ring-brand-500/5 transition-all"
+                 />
+                 <button type="submit" disabled={isSubmitting} className="w-full btn-brand py-4 rounded-xl text-[9px] font-black uppercase tracking-[0.3em] flex items-center justify-center group shadow-xl">
+                   {isSubmitting ? 'Syncing...' : (
+                     <>
+                        Initialize Sync <ArrowRight className="w-3.5 h-3.5 ml-2 group-hover:translate-x-1 transition-transform" />
+                     </>
+                   )}
+                 </button>
+               </form>
+            </div>
           </div>
         </div>
 
-        {/* Risk Disclaimer */}
-        <div className="mt-12 p-6 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-800/50 flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-4">
-          <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg shrink-0">
-            <ShieldAlert className="w-6 h-6 text-amber-600" />
-          </div>
-          <div className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed text-center md:text-left">
-            <span className="font-bold text-slate-900 dark:text-slate-200">Legal Disclaimer:</span> Trading involves risk. Results may vary. No profit guarantee. The content provided is for educational purposes only and should not be considered as financial advice. Past performance is not indicative of future results.
-          </div>
+        {/* Risk Protocol Banner */}
+        <div className="py-8 border-y border-slate-100 dark:border-slate-900 mb-12">
+           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+              <div className="flex items-center space-x-6 max-w-3xl">
+                 <div className="w-12 h-12 bg-amber-500/10 rounded-2xl flex items-center justify-center shrink-0 border border-amber-500/20">
+                    <ShieldAlert className="w-6 h-6 text-amber-500" />
+                 </div>
+                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">
+                   <span className="text-slate-900 dark:text-slate-200 font-black">Risk Protocol:</span> Capital markets involve substantial risk. Content is for educational purposes only. No financial advice provided. Past performance does not guarantee future results.
+                 </p>
+              </div>
+              <div className="flex items-center space-x-8 text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                 <Link to="/privacy" className="hover:text-brand-600 transition-colors">Privacy</Link>
+                 <Link to="/terms" className="hover:text-brand-600 transition-colors">Terms</Link>
+                 <Link to="/security" className="hover:text-brand-600 transition-colors">Security</Link>
+              </div>
+           </div>
         </div>
 
-        {/* Copyright */}
-        <div className="mt-12 flex flex-col md:flex-row justify-between items-center text-xs text-slate-500 dark:text-slate-500 space-y-4 md:space-y-0">
-          <p>© {currentYear} FinFleet Academy. All rights reserved.</p>
-          <div className="flex items-center space-x-6">
-            <a href="#" className="hover:text-brand-600 transition-colors">Security</a>
-            <a href="#" className="hover:text-brand-600 transition-colors">Sitemap</a>
-            <a href="#" className="hover:text-brand-600 transition-colors">Cookies</a>
+        {/* Bottom Bar */}
+        <div className="flex flex-col md:flex-row justify-between items-center text-[9px] font-black text-slate-400 uppercase tracking-[0.5em] gap-6">
+          <p>© {currentYear} FinFleet Infrastructure. All Rights Reserved.</p>
+          <div className="flex items-center space-x-3 text-slate-300 dark:text-slate-800">
+             <Sparkles className="w-4 h-4 fill-current" />
+             <div className="w-12 h-px bg-current" />
+             <Sparkles className="w-4 h-4 fill-current" />
           </div>
         </div>
       </div>

@@ -1,22 +1,22 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Star, Send, CheckCircle, MessageCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Star, Send, CheckCircle, MessageCircle, Heart, ShieldCheck, Sparkles, RefreshCcw } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 
 const StarRating = ({ rating, setRating }) => (
-  <div className="flex space-x-1">
+  <div className="flex space-x-2">
     {[1, 2, 3, 4, 5].map((star) => (
       <button
         key={star}
         type="button"
         onClick={() => setRating(star)}
-        className="transition-transform hover:scale-110"
+        className="transition-all hover:scale-125 active:scale-90 p-1"
       >
         <Star
-          className={`w-8 h-8 transition-colors ${
-            star <= rating ? 'fill-amber-400 text-amber-400' : 'text-slate-300 dark:text-slate-600'
+          className={`w-10 h-10 transition-all ${
+            star <= rating ? 'fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.4)]' : 'text-slate-200 dark:text-slate-800'
           }`}
         />
       </button>
@@ -24,7 +24,7 @@ const StarRating = ({ rating, setRating }) => (
   </div>
 );
 
-const RATING_LABELS = { 1: 'Poor', 2: 'Fair', 3: 'Good', 4: 'Great', 5: 'Excellent!' };
+const RATING_LABELS = { 1: 'Critical', 2: 'Mediocre', 3: 'Functional', 4: 'Impressive', 5: 'Institutional Grade!' };
 
 const FeedbackPage = () => {
   const { user } = useAuth();
@@ -37,16 +37,16 @@ const FeedbackPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (rating === 0) return toast.error('Please select a rating');
-    if (!form.message.trim()) return toast.error('Please write a message');
+    if (rating === 0) return toast.error('Selection required');
+    if (!form.message.trim()) return toast.error('Message missing');
 
     setSubmitting(true);
     try {
       await axios.post('/api/feedback', { ...form, rating });
       setSubmitted(true);
-      toast.success('Thank you for your feedback! 🎉');
+      toast.success('Protocol Complete. Gratitude acknowledged.');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to submit feedback');
+      toast.error('Submission failed');
     } finally {
       setSubmitting(false);
     }
@@ -54,115 +54,116 @@ const FeedbackPage = () => {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#F9FAFB] dark:bg-[#080C10] flex items-center justify-center px-4 font-sans">
         <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
+          initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="card-premium p-12 text-center max-w-md w-full"
+          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[3rem] p-16 text-center max-w-lg w-full shadow-2xl relative overflow-hidden"
         >
-          <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="w-10 h-10 text-emerald-500" />
+          <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500 rounded-full blur-[80px] opacity-10 -mr-16 -mt-16" />
+          <div className="w-24 h-24 bg-emerald-50 dark:bg-emerald-900/20 rounded-[2rem] flex items-center justify-center mx-auto mb-8">
+            <ShieldCheck className="w-12 h-12 text-emerald-500" />
           </div>
-          <h2 className="text-2xl font-bold dark:text-white mb-3">Feedback Submitted!</h2>
-          <p className="text-slate-500 dark:text-slate-400 mb-8">Thank you for helping us improve FinFleet Academy. Your feedback means a lot to us.</p>
-          <button onClick={() => { setSubmitted(false); setRating(0); setForm({ name: user?.name || '', email: user?.email || '', message: '' }); }}
-            className="btn-secondary w-full">
-            Submit Another
+          <h2 className="text-3xl font-black dark:text-white mb-4 uppercase tracking-tighter">Gratitude Logged.</h2>
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-bold leading-relaxed mb-12">Your intelligence packet helps us refine the FinFleet ecosystem. We appreciate your institutional perspective.</p>
+          <button onClick={() => { setSubmitted(false); setRating(0); }}
+            className="w-full py-5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center justify-center space-x-2">
+            <RefreshCcw className="w-4 h-4" />
+            <span>Submit New Packet</span>
           </button>
         </motion.div>
       </div>
     );
   }
 
+  const fadeInUp = { initial: { opacity: 0, y: 15 }, animate: { opacity: 1, y: 0 } };
+
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-16">
+    <div className="min-h-screen bg-[#F9FAFB] dark:bg-[#080C10] py-20 md:py-32 font-sans selection:bg-brand-500/20">
       <div className="max-w-2xl mx-auto px-4 sm:px-6">
 
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-brand-100 dark:bg-brand-900/30 rounded-2xl mb-6">
-            <MessageCircle className="w-8 h-8 text-brand-600" />
+        <motion.div {...fadeInUp} className="text-center mb-16">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-brand-50 dark:bg-brand-900/20 rounded-3xl mb-8 border border-brand-100 dark:border-brand-800">
+            <Sparkles className="w-10 h-10 text-brand-600" />
           </div>
-          <h1 className="text-3xl font-extrabold dark:text-white mb-3">Share Your Feedback</h1>
-          <p className="text-slate-500 dark:text-slate-400">Help us make FinFleet Academy better for everyone.</p>
+          <h1 className="text-4xl md:text-6xl font-black dark:text-white mb-6 tracking-tighter">User <span className="text-gradient">Intelligence.</span></h1>
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-bold leading-relaxed max-w-md mx-auto">Provide critical feedback to help us scale the FinFleet infrastructure.</p>
         </motion.div>
 
         <motion.form
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          {...fadeInUp}
           transition={{ delay: 0.1 }}
           onSubmit={handleSubmit}
-          className="card-premium p-8 space-y-6"
+          className="bg-white dark:bg-slate-900 rounded-[3rem] p-10 border border-slate-200 dark:border-slate-800 shadow-xl space-y-10"
         >
-          {/* Name */}
-          <div className="space-y-1">
-            <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Your Name</label>
-            <input
-              name="name"
-              type="text"
-              value={form.name}
-              onChange={handleChange}
-              required
-              placeholder="Enter your name"
-              className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm dark:text-white focus:ring-2 focus:ring-brand-500 outline-none transition"
-            />
+          {/* Identity Info */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+             <div className="space-y-2">
+               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Identity</label>
+               <input
+                 name="name" type="text" value={form.name} onChange={handleChange} required
+                 placeholder="Full Name"
+                 className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm font-bold dark:text-white outline-none focus:ring-4 focus:ring-brand-500/5 transition-all"
+               />
+             </div>
+             <div className="space-y-2">
+               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Contact Node</label>
+               <input
+                 name="email" type="email" value={form.email} onChange={handleChange} required
+                 placeholder="Email Address"
+                 className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm font-bold dark:text-white outline-none focus:ring-4 focus:ring-brand-500/5 transition-all"
+               />
+             </div>
           </div>
 
-          {/* Email */}
-          <div className="space-y-1">
-            <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Email Address</label>
-            <input
-              name="email"
-              type="email"
-              value={form.email}
-              onChange={handleChange}
-              required
-              placeholder="your@email.com"
-              className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm dark:text-white focus:ring-2 focus:ring-brand-500 outline-none transition"
-            />
+          {/* Rating Engine */}
+          <div className="space-y-4">
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Fleet Rating</label>
+            <div className="bg-slate-50 dark:bg-slate-950 p-6 rounded-2xl border border-slate-100 dark:border-slate-800/50 flex flex-col items-center">
+               <StarRating rating={rating} setRating={setRating} />
+               <AnimatePresence mode="wait">
+                  {rating > 0 && (
+                    <motion.p key={rating} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+                      className="text-xs font-black text-amber-500 uppercase tracking-widest mt-6">
+                      {RATING_LABELS[rating]}
+                    </motion.p>
+                  )}
+               </AnimatePresence>
+            </div>
           </div>
 
-          {/* Star Rating */}
+          {/* Message Terminal */}
           <div className="space-y-2">
-            <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Your Rating</label>
-            <StarRating rating={rating} setRating={setRating} />
-            {rating > 0 && (
-              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                className="text-sm font-bold text-amber-500">
-                {RATING_LABELS[rating]}
-              </motion.p>
-            )}
-          </div>
-
-          {/* Message */}
-          <div className="space-y-1">
-            <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Your Message</label>
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Message Packet</label>
             <textarea
-              name="message"
-              value={form.message}
-              onChange={handleChange}
-              required
-              rows={5}
-              maxLength={1000}
-              placeholder="Tell us what you think about FinFleet Academy..."
-              className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm dark:text-white focus:ring-2 focus:ring-brand-500 outline-none transition resize-none"
+              name="message" value={form.message} onChange={handleChange} required rows={5} maxLength={1000}
+              placeholder="Provide deep-dive feedback..."
+              className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm font-bold dark:text-white outline-none focus:ring-4 focus:ring-brand-500/5 transition-all resize-none"
             />
-            <p className="text-[10px] text-slate-400 text-right">{form.message.length}/1000</p>
+            <p className="text-[9px] font-black text-slate-400 uppercase text-right px-1">{form.message.length}/1000</p>
           </div>
 
           <button
-            type="submit"
-            disabled={submitting}
-            className="w-full flex items-center justify-center space-x-2 py-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold transition-colors shadow-sm disabled:opacity-60"
+            type="submit" disabled={submitting}
+            className="w-full py-5 rounded-2xl bg-brand-600 text-white text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-brand-500/20 hover:bg-brand-700 transition-all disabled:opacity-50 flex items-center justify-center space-x-3"
           >
             {submitting ? (
               <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : (
               <Send className="w-4 h-4" />
             )}
-            <span>{submitting ? 'Submitting...' : 'Submit Feedback'}</span>
+            <span>{submitting ? 'Transmitting Intelligence...' : 'Submit Feedback'}</span>
           </button>
         </motion.form>
+
+        <div className="mt-20 text-center">
+           <div className="flex items-center justify-center space-x-2 text-slate-400 mb-2">
+              <Heart className="w-4 h-4 text-red-500 fill-red-500" />
+              <span className="text-[10px] font-black uppercase tracking-widest">Built for the community</span>
+           </div>
+           <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Your feedback is strictly confidential and used for platform optimization.</p>
+        </div>
       </div>
     </div>
   );

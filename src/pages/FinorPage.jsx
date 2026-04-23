@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { TrendingUp, Activity, BarChart2, Globe, ArrowRight, Calendar, Bookmark } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  TrendingUp, Activity, BarChart2, Globe, ArrowRight, 
+  Calendar, Bookmark, Star, Zap, Share2, Search,
+  BellRing, Filter
+} from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { Link } from 'react-router-dom';
@@ -33,237 +37,238 @@ const FinorPage = () => {
   const handleSubscribe = async (e) => {
     e.preventDefault();
     if (!email) return;
-
     try {
       setIsSubmitting(true);
-      await axios.post('/api/subscribers', { 
-        email, 
-        source: 'finor' 
-      });
-      toast.success('You’ll be notified when Finor launches 🚀');
+      await axios.post('/api/subscribers', { email, source: 'finor' });
+      toast.success('Protocol Initiated. Check your inbox.');
       setEmail('');
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to subscribe');
+      toast.error('Subscription protocol failed.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1 }
-  };
+  const fadeInUp = { initial: { opacity: 0, y: 15 }, animate: { opacity: 1, y: 0 } };
 
   return (
-    <div className="overflow-hidden bg-slate-50 dark:bg-slate-950 min-h-screen pb-20">
-      {/* Hero Header */}
-      <section className="relative pt-12 pb-12">
+    <div className="bg-[#F9FAFB] dark:bg-[#080C10] min-h-screen font-sans selection:bg-brand-500/20 pb-32">
+      
+      {/* 1. Technical Hero Section */}
+      <section className="pt-20 md:pt-32 pb-16 border-b border-slate-200 dark:border-slate-800/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-200 dark:border-slate-800 pb-10">
-            <div className="max-w-2xl">
-              <div className="inline-flex items-center space-x-2 bg-brand-500/10 text-brand-600 dark:text-brand-400 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4">
-                <span className="flex h-2 w-2 rounded-full bg-brand-500 animate-pulse" />
-                <span>Live Market Insights</span>
+           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-12">
+              <div className="max-w-3xl">
+                 <motion.div {...fadeInUp} className="inline-flex items-center space-x-2 bg-brand-50 dark:bg-brand-900/20 px-3 py-1.5 rounded-full mb-8 border border-brand-100 dark:border-brand-800">
+                    <span className="w-2 h-2 rounded-full bg-brand-500 animate-pulse" />
+                    <span className="text-[9px] font-black uppercase tracking-widest text-brand-700 dark:text-brand-300">Live Market Intelligence Stream</span>
+                 </motion.div>
+                 <motion.h1 {...fadeInUp} transition={{ delay: 0.1 }} className="text-5xl md:text-8xl font-black dark:text-white tracking-tighter mb-8 leading-[0.9]">
+                    Finor <span className="text-gradient">Intel.</span>
+                 </motion.h1>
+                 <motion.p {...fadeInUp} transition={{ delay: 0.2 }} className="text-slate-500 dark:text-slate-400 text-lg font-bold leading-relaxed">
+                    Real-time geopolitical analysis, macro-economic shifts, and institutional market signals. Stay ahead of the global fleet.
+                 </motion.p>
               </div>
-              <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-2 leading-tight">
-                Finor News Platform
-              </h1>
-              <p className="text-sm font-bold text-brand-600 dark:text-brand-400 uppercase tracking-widest mb-6">By FinFleet Academy</p>
-              <p className="text-lg text-slate-600 dark:text-slate-400">
-                Your trusted source for real-time market news, crypto insights, and global economic trends. 
-                <span className="text-brand-600 font-bold ml-1">Stay ahead of the curve.</span>
-              </p>
-            </div>
-            
-            <div className="flex-shrink-0">
-               <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-sm">
-                  <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Market Sentiment</div>
-                  <div className="flex items-center space-x-4">
-                     <div className="flex items-center text-accent-success font-bold text-xl">
-                        <TrendingUp className="w-5 h-5 mr-1" />
-                        74.2
-                     </div>
-                     <div className="text-xs text-slate-500 font-medium">Strongly Bullish</div>
-                  </div>
-               </div>
-            </div>
-          </div>
+
+              <motion.div {...fadeInUp} transition={{ delay: 0.3 }} className="flex-shrink-0">
+                 <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500 rounded-full blur-[80px] opacity-10 -mr-16 -mt-16" />
+                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Sentiment Protocol</div>
+                    <div className="flex items-end space-x-6">
+                       <div className="space-y-1">
+                          <div className="flex items-center text-emerald-500 font-black text-4xl tracking-tighter">
+                             <TrendingUp className="w-6 h-6 mr-2" /> 78.4
+                          </div>
+                          <div className="text-[10px] font-black uppercase text-emerald-600 tracking-widest">Ultra Bullish</div>
+                       </div>
+                       <div className="w-20 h-12 flex items-end space-x-1 pb-1">
+                          {[30, 45, 60, 40, 70, 85].map((h, i) => (
+                             <div key={i} className="flex-1 bg-emerald-500/20 rounded-full group-hover:bg-emerald-500 transition-all duration-500" style={{ height: `${h}%` }} />
+                          ))}
+                       </div>
+                    </div>
+                 </div>
+              </motion.div>
+           </div>
         </div>
       </section>
 
-      {/* Trending News Section */}
-      {trendingNews.length > 0 && (
-        <section className="py-8">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center space-x-2 mb-6">
-              <div className="w-2 h-8 bg-brand-600 rounded-full" />
-              <h2 className="text-xl font-extrabold text-slate-900 dark:text-white uppercase tracking-tighter italic">Trending Now</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {trendingNews.map((news, idx) => (
-                <Link key={news._id} to={`/finor/${news.slug}`} className="group relative h-80 rounded-3xl overflow-hidden shadow-xl">
-                  <div className="absolute inset-0 bg-slate-950/40 z-10" />
-                  {/* Decorative background for news without image */}
-                  <div className="absolute inset-0 bg-slate-800 group-hover:scale-105 transition-transform duration-700" />
-                  <div className="absolute top-6 left-6 z-20">
-                    <span className="px-3 py-1 bg-brand-600 text-white text-[10px] font-bold rounded-full uppercase tracking-widest">
-                      {news.category}
-                    </span>
-                  </div>
-                  <div className="absolute bottom-8 left-8 right-8 z-20">
-                    <h3 className="text-2xl font-bold text-white mb-2 leading-tight group-hover:text-brand-400 transition-colors">
-                      {news.title}
-                    </h3>
-                    <div className="flex items-center text-slate-400 text-sm">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      {new Date(news.createdAt).toLocaleDateString()}
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Main Content Grid */}
-      <section className="py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            
-            {/* News Feed */}
-            <div className="lg:col-span-2">
-               <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-8 flex items-center">
-                  <Globe className="w-6 h-6 mr-3 text-brand-600" />
-                  Latest Financial News
-               </h2>
-
-               <div className="space-y-8">
-                  {loading ? (
-                    [1,2,3].map(i => (
-                      <div key={i} className="animate-pulse flex flex-col gap-4">
-                        <div className="h-4 w-20 bg-slate-200 dark:bg-slate-800 rounded"></div>
-                        <div className="h-8 w-full bg-slate-200 dark:bg-slate-800 rounded"></div>
-                        <div className="h-20 w-full bg-slate-200 dark:bg-slate-800 rounded"></div>
-                      </div>
-                    ))
-                  ) : newsList.length === 0 ? (
-                    <div className="text-center py-20 bg-slate-100 dark:bg-slate-900/50 rounded-3xl">
-                      <p className="text-slate-500">No news articles found.</p>
-                    </div>
-                  ) : (
-                    newsList.map((news) => (
-                      <motion.div 
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        key={news._id} 
-                        className="group bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 overflow-hidden hover:shadow-2xl hover:shadow-brand-500/5 transition-all duration-300"
-                      >
-                        <div className="p-6 md:p-8">
-                          <div className="flex items-center justify-between mb-4">
-                            <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] font-bold rounded-lg uppercase tracking-widest">
-                              {news.category}
-                            </span>
-                            <button className="text-slate-400 hover:text-brand-600 transition-colors">
-                              <Bookmark className="w-5 h-5" />
-                            </button>
-                          </div>
-                          
-                          <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors leading-tight">
-                            {news.title}
-                          </h3>
-                          
-                          <p className="text-slate-600 dark:text-slate-400 mb-6 line-clamp-2 text-base leading-relaxed">
-                            {news.summary}
-                          </p>
-                          
-                          <div className="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-slate-800">
-                            <div className="flex items-center text-xs text-slate-500 font-medium">
-                              <Calendar className="w-4 h-4 mr-1.5" />
-                              {new Date(news.createdAt).toLocaleDateString()}
-                            </div>
-                            <Link to={`/finor/${news.slug}`} className="inline-flex items-center font-bold text-brand-600 dark:text-brand-400 hover:text-brand-500 text-sm group/btn">
-                              Read Full Article
-                              <ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
-                            </Link>
-                          </div>
-                        </div>
-                      </motion.div>
-                    ))
-                  )}
+      {/* 2. Trending Pulse */}
+      <section className="py-16 bg-white dark:bg-slate-900/20">
+         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between mb-12">
+               <div className="flex items-center space-x-4">
+                  <Zap className="w-6 h-6 text-amber-500 fill-amber-500" />
+                  <h2 className="text-xs font-black dark:text-white uppercase tracking-[0.3em]">Trending Alpha</h2>
+               </div>
+               <div className="hidden md:flex items-center space-x-1 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                  <div className="w-2 h-2 rounded-full bg-red-500 animate-ping mr-2" /> Global Heatmap
                </div>
             </div>
 
-            {/* Sidebar */}
-            <div className="space-y-8">
-               {/* Categories */}
-               <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-100 dark:border-slate-800">
-                  <h3 className="text-lg font-bold dark:text-white mb-6">Categories</h3>
-                  <div className="grid grid-cols-1 gap-3">
-                     {[
-                        { name: 'Stock Market', icon: TrendingUp },
-                        { name: 'Crypto', icon: Activity },
-                        { name: 'Economy', icon: Globe },
-                        { name: 'Global News', icon: Globe },
-                        { name: 'Opinion', icon: BarChart2 }
-                     ].map((cat, i) => (
-                        <button key={i} className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group">
-                           <div className="flex items-center">
-                              <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg group-hover:bg-brand-500 transition-colors">
-                                 <cat.icon className="w-4 h-4 text-slate-600 dark:text-slate-400 group-hover:text-white" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+               {trendingNews.slice(0, 2).map((news, idx) => (
+                 <Link key={news._id} to={`/finor/${news.slug}`} className="group relative aspect-[16/9] md:aspect-auto md:h-[450px] rounded-[3rem] overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800">
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent z-10" />
+                    {/* Placeholder image background */}
+                    <div className="absolute inset-0 bg-slate-800 group-hover:scale-105 transition-transform duration-1000" style={{ backgroundImage: `url('https://images.unsplash.com/photo-1611974717482-753ee1f66b8b?q=80&w=2070&auto=format&fit=crop')`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+                    
+                    <div className="absolute top-8 left-8 z-20 flex space-x-3">
+                       <span className="px-4 py-2 bg-brand-600 text-white text-[9px] font-black rounded-full uppercase tracking-widest shadow-xl">
+                          {news.category}
+                       </span>
+                       <span className="px-4 py-2 bg-white/10 backdrop-blur-md text-white text-[9px] font-black rounded-full uppercase tracking-widest border border-white/10">
+                          Hot Intel
+                       </span>
+                    </div>
+
+                    <div className="absolute bottom-12 left-12 right-12 z-20">
+                       <h3 className="text-3xl md:text-4xl font-black text-white mb-4 leading-tight group-hover:text-brand-400 transition-colors tracking-tighter">
+                          {news.title}
+                       </h3>
+                       <div className="flex items-center space-x-6 text-slate-400 text-[10px] font-black uppercase tracking-widest">
+                          <div className="flex items-center"><Calendar className="w-3.5 h-3.5 mr-2" /> {new Date(news.createdAt).toLocaleDateString()}</div>
+                          <div className="flex items-center"><Share2 className="w-3.5 h-3.5 mr-2" /> Strategic Share</div>
+                       </div>
+                    </div>
+                 </Link>
+               ))}
+            </div>
+         </div>
+      </section>
+
+      {/* 3. Main Intelligence Grid */}
+      <section className="py-24">
+         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+               
+               {/* Left: Intel Stream */}
+               <div className="lg:col-span-8 space-y-12">
+                  <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-8">
+                     <h2 className="text-xl font-black dark:text-white uppercase tracking-widest flex items-center">
+                        <Globe className="w-6 h-6 mr-3 text-brand-600" />
+                        Intelligence Feed
+                     </h2>
+                     <button className="p-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 text-slate-400 hover:text-brand-600 transition-all">
+                        <Filter className="w-4 h-4" />
+                     </button>
+                  </div>
+
+                  <div className="space-y-10">
+                     {loading ? (
+                        [1,2,3].map(i => (
+                          <div key={i} className="animate-pulse bg-white dark:bg-slate-900 rounded-[2.5rem] p-10 h-64 border border-slate-100 dark:border-slate-800" />
+                        ))
+                     ) : (
+                        newsList.map((news) => (
+                           <motion.div 
+                             key={news._id} 
+                             initial={{ opacity: 0, y: 20 }}
+                             whileInView={{ opacity: 1, y: 0 }}
+                             viewport={{ once: true }}
+                             className="group bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 overflow-hidden hover:shadow-2xl hover:shadow-brand-500/5 transition-all duration-500"
+                           >
+                              <div className="p-8 md:p-12">
+                                 <div className="flex items-center justify-between mb-6">
+                                    <span className="px-4 py-1.5 bg-slate-50 dark:bg-slate-950 text-slate-400 dark:text-slate-500 text-[9px] font-black rounded-lg uppercase tracking-widest border border-slate-100 dark:border-slate-800">
+                                       {news.category}
+                                    </span>
+                                    <button className="text-slate-300 hover:text-brand-600 transition-colors">
+                                       <Bookmark className="w-5 h-5" />
+                                    </button>
+                                 </div>
+                                 
+                                 <h3 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white mb-6 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors leading-tight tracking-tighter">
+                                    {news.title}
+                                 </h3>
+                                 
+                                 <p className="text-slate-500 dark:text-slate-400 mb-10 line-clamp-2 text-sm font-bold leading-relaxed">
+                                    {news.summary}
+                                 </p>
+                                 
+                                 <div className="flex items-center justify-between pt-8 border-t border-slate-50 dark:border-slate-800">
+                                    <div className="flex items-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                       <Activity className="w-3.5 h-3.5 mr-2" /> 4 min read
+                                    </div>
+                                    <Link to={`/finor/${news.slug}`} className="btn-brand py-3 px-8 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-brand-500/10">
+                                       Access Intel <ArrowRight className="w-3.5 h-3.5 ml-2" />
+                                    </Link>
+                                 </div>
                               </div>
-                              <span className="ml-3 text-sm font-bold text-slate-600 dark:text-slate-300">{cat.name}</span>
-                           </div>
-                           <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-brand-600 transition-colors" />
-                        </button>
-                     ))}
+                           </motion.div>
+                        ))
+                     )}
                   </div>
                </div>
 
-               {/* Newsletter Sidebar */}
-               <div className="bg-brand-600 rounded-3xl p-8 text-white relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl" />
-                  <div className="relative z-10">
-                     <h3 className="text-xl font-bold mb-3">Newsletter</h3>
-                     <p className="text-brand-100 text-sm mb-6 leading-relaxed">
-                        Get expert financial insights delivered straight to your inbox daily.
-                     </p>
-                     <form onSubmit={handleSubscribe} className="space-y-3">
-                        <input 
-                           type="email" 
-                           placeholder="your@email.com" 
-                           required
-                           value={email}
-                           onChange={(e) => setEmail(e.target.value)}
-                           disabled={isSubmitting}
-                           className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-sm outline-none focus:bg-white/20 transition-all placeholder:text-white/40"
-                        />
-                        <button type="submit" disabled={isSubmitting} className="w-full bg-white text-brand-700 font-bold py-3 rounded-xl hover:bg-brand-50 transition-all text-sm disabled:opacity-50">
-                           {isSubmitting ? '...' : 'Notify Me'}
-                        </button>
-                     </form>
-                     <p className="text-[10px] text-brand-200 mt-4 text-center">Join 5,000+ financial enthusiasts.</p>
+               {/* Right: Technical Sidebar */}
+               <div className="lg:col-span-4 space-y-12">
+                  
+                  {/* Category Protocol */}
+                  <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] p-10 border border-slate-100 dark:border-slate-800 shadow-sm">
+                     <h3 className="text-xs font-black dark:text-white uppercase tracking-[0.3em] mb-10">Sector Filtering</h3>
+                     <div className="space-y-4">
+                        {[
+                           { name: 'Stock Market', icon: TrendingUp, color: 'text-brand-600' },
+                           { name: 'Crypto Pulse', icon: Activity, color: 'text-amber-500' },
+                           { name: 'Macro Economy', icon: Globe, color: 'text-indigo-500' },
+                           { name: 'Policy & Law', icon: ShieldCheck, color: 'text-emerald-500' }
+                        ].map((cat, i) => (
+                           <button key={i} className="w-full flex items-center justify-between p-4 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all group">
+                              <div className="flex items-center">
+                                 <div className={`p-2.5 bg-slate-50 dark:bg-slate-950 rounded-xl group-hover:scale-110 transition-transform`}>
+                                    <cat.icon className={`w-4 h-4 ${cat.color}`} />
+                                 </div>
+                                 <span className="ml-4 text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">{cat.name}</span>
+                              </div>
+                              <ArrowRight className="w-4 h-4 text-slate-200 group-hover:text-brand-600 transition-colors" />
+                           </button>
+                        ))}
+                     </div>
                   </div>
+
+                  {/* Newsletter Terminal */}
+                  <div className="bg-slate-950 rounded-[3.5rem] p-10 text-white relative overflow-hidden shadow-2xl">
+                     <div className="absolute top-0 right-0 w-64 h-64 bg-brand-600 rounded-full blur-[100px] opacity-20 -mr-32 -mt-32" />
+                     <div className="relative z-10 text-center">
+                        <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-8 backdrop-blur-xl border border-white/10">
+                           <BellRing className="w-8 h-8 text-white" />
+                        </div>
+                        <h3 className="text-xl font-black mb-4 uppercase tracking-tighter">Elite Intel Brief.</h3>
+                        <p className="text-slate-400 text-[10px] font-bold mb-10 leading-relaxed uppercase tracking-widest">
+                           Join 12,000+ institutional traders receiving daily macro reports.
+                        </p>
+                        <form onSubmit={handleSubscribe} className="space-y-4">
+                           <input 
+                              type="email" placeholder="SECURE EMAIL NODE" required value={email}
+                              onChange={(e) => setEmail(e.target.value)} disabled={isSubmitting}
+                              className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-5 text-xs font-black uppercase tracking-widest outline-none focus:bg-white/10 focus:ring-4 focus:ring-brand-500/20 transition-all placeholder:text-white/20"
+                           />
+                           <button type="submit" disabled={isSubmitting} className="w-full bg-white text-slate-950 font-black py-5 rounded-2xl hover:scale-[1.02] active:scale-95 transition-all text-[10px] uppercase tracking-widest shadow-xl">
+                              {isSubmitting ? 'Syncing...' : 'Initiate Briefing'}
+                           </button>
+                        </form>
+                     </div>
+                  </div>
+
+                  {/* Search Console */}
+                  <div className="relative group">
+                     <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-brand-600 transition-colors" />
+                     <input 
+                        type="text" placeholder="QUERY NEWS DATABASE"
+                        className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl pl-16 pr-6 py-5 text-[10px] font-black uppercase tracking-[0.2em] dark:text-white outline-none focus:ring-4 focus:ring-brand-500/5 transition-all"
+                     />
+                  </div>
+
                </div>
             </div>
-
-          </div>
-        </div>
+         </div>
       </section>
 
-      {/* Footer Branding Overlay */}
-      <div className="pt-20 text-center opacity-30 select-none">
-        <div className="inline-flex flex-col items-center">
-          <span className="text-6xl font-black text-slate-200 dark:text-slate-900 tracking-tighter">FINOR</span>
-          <span className="text-xs font-bold text-brand-600 uppercase tracking-[0.5em] -mt-4">Premium Intelligence</span>
-        </div>
+      {/* Footer Decoration */}
+      <div className="mt-32 text-center opacity-10 select-none pointer-events-none">
+        <h2 className="text-[12vw] font-black text-slate-300 dark:text-slate-800 tracking-[0.2em] leading-none">FINOR</h2>
       </div>
     </div>
   );

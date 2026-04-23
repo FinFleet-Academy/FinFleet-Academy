@@ -1,33 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   UserPlus, UserCheck, Users, BookOpen, Award, Lock, Mail, Phone,
-  Calendar, Sparkles, ChevronRight, Shield
+  Calendar, Sparkles, ChevronRight, Shield, MessageCircle, Star, ExternalLink, ShieldCheck
 } from 'lucide-react';
-
-const badgeColors = {
-  beginner:     'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300',
-  intermediate: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-  advanced:     'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400',
-  expert:       'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-};
-
-const PrivacyLock = ({ label }) => (
-  <div className="flex items-center space-x-2 text-slate-400 text-sm">
-    <Lock className="w-4 h-4" />
-    <span>{label} is private</span>
-  </div>
-);
 
 const PublicProfilePage = () => {
   const { userId } = useParams();
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [followLoading, setFollowLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('achievements'); // achievements, followers, following
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -44,187 +33,292 @@ const PublicProfilePage = () => {
   }, [userId]);
 
   const handleFollow = async () => {
+    if (!isAuthenticated) return navigate('/login');
     if (!profile) return;
     setFollowLoading(true);
     try {
       if (profile.isFollowing) {
         await axios.delete(`/api/follow/${userId}`);
-        setProfile(p => ({ ...p, isFollowing: false, followerCount: p.followerCount - 1 }));
+        setProfile(p => ({ ...p, isFollowing: false, followerCount: Math.max(0, p.followerCount - 1) }));
       } else {
         await axios.post(`/api/follow/${userId}`);
         setProfile(p => ({ ...p, isFollowing: true, followerCount: p.followerCount + 1 }));
+        toast.success(`Following ${profile.name}`);
       }
     } catch { toast.error('Action failed'); }
     finally { setFollowLoading(false); }
   };
 
+  const handleMessage = () => {
+    if (!isAuthenticated) return navigate('/login');
+    navigate('/chatbot', { state: { initialMode: 'private', initialPartner: profile } });
+  };
+
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
-      <div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-[#080C10]">
+      <div className="w-12 h-12 border-4 border-brand-500 border-t-transparent rounded-full animate-spin" />
     </div>
   );
 
   if (!profile) return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-[#080C10]">
       <div className="text-center">
-        <h2 className="text-2xl font-bold dark:text-white mb-2">Profile Not Found</h2>
-        <Link to="/community" className="text-brand-600 hover:underline text-sm">← Back to Community</Link>
+        <h2 className="text-3xl font-black dark:text-white mb-4 uppercase tracking-tighter">Profile Not Found</h2>
+        <Link to="/community" className="text-brand-600 font-black uppercase tracking-widest text-xs hover:underline">← Back to Community</Link>
       </div>
     </div>
   );
 
   const initials = profile.name?.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 
+  const containerVars = {
+    show: { transition: { staggerChildren: 0.1 } }
+  };
+  const itemVars = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
+  };
+
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-10 font-sans">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 space-y-6">
+    <motion.div 
+      initial="hidden" 
+      animate="show" 
+      variants={containerVars}
+      className="min-h-screen bg-[#F9FAFB] dark:bg-[#080C10] py-12 md:py-24 font-sans selection:bg-brand-500/20"
+    >
+      <div className="max-w-4xl mx-auto px-4 sm:px-6">
 
-        {/* Profile Card */}
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-          {/* Cover */}
-          <div className="h-24 bg-gradient-to-r from-violet-900 via-brand-900 to-slate-900" />
-          <div className="px-6 pb-6">
-            <div className="flex items-end justify-between -mt-12 mb-4">
-              <div className="w-20 h-20 rounded-2xl border-4 border-white dark:border-slate-900 bg-brand-100 dark:bg-brand-900/30 text-brand-600 font-extrabold text-2xl flex items-center justify-center shadow-md overflow-hidden">
-                {profile.profileImage ? (
-                  <img src={profile.profileImage} alt="" className="w-full h-full object-cover" />
-                ) : initials}
-              </div>
-              {!profile.isSelf && (
-                <button
-                  onClick={handleFollow}
-                  disabled={followLoading}
-                  className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                    profile.isFollowing
-                      ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-red-50 hover:text-red-600'
-                      : 'bg-brand-600 hover:bg-brand-700 text-white'
-                  }`}
-                >
-                  {profile.isFollowing ? <UserCheck className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}
-                  <span>{profile.isFollowing ? 'Following' : 'Follow'}</span>
-                </button>
-              )}
-              {profile.isSelf && (
-                <Link to="/profile" className="px-5 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-semibold transition-colors">
-                  Edit Profile
-                </Link>
-              )}
-            </div>
-
-            <h1 className="text-2xl font-bold dark:text-white">{profile.name}</h1>
-            <div className="flex items-center space-x-2 mt-1">
-              <span className="text-xs px-2 py-0.5 bg-brand-50 dark:bg-brand-900/20 text-brand-600 font-semibold rounded-full capitalize">
-                {profile.plan?.toLowerCase()} member
-              </span>
-              <span className="text-xs text-slate-400">
-                Joined {new Date(profile.createdAt).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}
-              </span>
-            </div>
-
-            {/* Stats row */}
-            <div className="flex items-center space-x-6 mt-5 py-4 border-y border-slate-100 dark:border-slate-800">
-              <div className="text-center">
-                <div className="text-xl font-bold dark:text-white">{profile.followerCount}</div>
-                <div className="text-xs text-slate-500">Followers</div>
-              </div>
-              <div className="text-center">
-                <div className="text-xl font-bold dark:text-white">{profile.followingCount}</div>
-                <div className="text-xs text-slate-500">Following</div>
-              </div>
-              {profile.certificates && (
-                <div className="text-center">
-                  <div className="text-xl font-bold dark:text-white">{profile.certificates.length}</div>
-                  <div className="text-xs text-slate-500">Certificates</div>
-                </div>
-              )}
-            </div>
-
-            {/* Bio */}
-            <div className="mt-4 space-y-2">
-              {profile.bio !== null ? (
-                profile.bio ? (
-                  <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">{profile.bio}</p>
-                ) : null
-              ) : (
-                <PrivacyLock label="Bio" />
-              )}
-              {profile.email !== null ? (
-                <div className="flex items-center space-x-2 text-sm text-slate-500">
-                  <Mail className="w-4 h-4" />
-                  <span>{profile.email}</span>
-                </div>
-              ) : null}
-              {profile.mobile !== null ? (
-                <div className="flex items-center space-x-2 text-sm text-slate-500">
-                  <Phone className="w-4 h-4" />
-                  <span>{profile.mobile}</span>
-                </div>
-              ) : null}
-            </div>
+        {/* 1. PROFILE HEADER CARD */}
+        <motion.div variants={itemVars} className="bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-none overflow-hidden mb-8">
+          <div className="h-40 bg-gradient-to-r from-brand-900 via-indigo-900 to-slate-900 relative">
+             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10" />
           </div>
-        </div>
-
-        {/* Certificates */}
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6">
-          <h2 className="font-bold text-lg dark:text-white flex items-center mb-5">
-            <Award className="w-5 h-5 mr-2 text-brand-600" />
-            Certificates
-          </h2>
-          {profile.certificatesHidden ? (
-            <div className="flex items-center space-x-2 text-slate-400 text-sm py-4">
-              <Shield className="w-5 h-5" />
-              <span>This user's certificates are private.</span>
-            </div>
-          ) : profile.certificates?.length === 0 ? (
-            <p className="text-slate-400 text-sm py-4">No certificates earned yet.</p>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {profile.certificates.map((cert, i) => (
-                <div key={i} className="flex items-start space-x-3 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
-                  <div className="w-10 h-10 rounded-lg bg-brand-100 dark:bg-brand-900/30 text-brand-600 flex items-center justify-center shrink-0">
-                    <Award className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold dark:text-white">{cert.courseName}</p>
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      {new Date(cert.completedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                    </p>
-                    <span className={`mt-1.5 inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${badgeColors[cert.badge] || badgeColors.beginner}`}>
-                      {cert.badge}
-                    </span>
-                  </div>
+          
+          <div className="px-8 pb-10">
+            <div className="flex flex-col md:flex-row md:items-end justify-between -mt-16 mb-8 gap-6">
+              <div className="relative">
+                <div className="w-32 h-32 rounded-[2.5rem] border-8 border-white dark:border-slate-900 bg-white dark:bg-slate-800 shadow-2xl overflow-hidden flex items-center justify-center">
+                  {profile.profileImage ? (
+                    <img src={profile.profileImage} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-4xl font-black text-slate-900 dark:text-white">{initials}</span>
+                  )}
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
+                <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-emerald-500 border-4 border-white dark:border-slate-900 rounded-full" title="Verified Trader" />
+              </div>
 
-        {/* Followers / Following */}
-        {profile.followers && (
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6">
-            <h2 className="font-bold text-lg dark:text-white flex items-center mb-5">
-              <Users className="w-5 h-5 mr-2 text-brand-600" />
-              Followers
-            </h2>
-            {profile.followers.length === 0 ? (
-              <p className="text-slate-400 text-sm">No followers yet.</p>
-            ) : (
-              <div className="flex flex-wrap gap-3">
-                {profile.followers.slice(0, 12).map(f => (
-                  <Link key={f._id} to={`/user/${f._id}`} className="flex items-center space-x-2 px-3 py-2 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 hover:border-brand-500/50 transition-colors">
-                    <div className="w-7 h-7 rounded-full bg-brand-100 dark:bg-brand-900/30 text-brand-600 font-bold text-xs flex items-center justify-center">
-                      {f.name?.[0]?.toUpperCase()}
-                    </div>
-                    <span className="text-xs font-medium dark:text-white">{f.name}</span>
+              <div className="flex space-x-3">
+                {!profile.isSelf ? (
+                  <>
+                    <button
+                      onClick={handleFollow}
+                      disabled={followLoading}
+                      className={`flex items-center space-x-2 px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest transition-all ${
+                        profile.isFollowing
+                          ? 'bg-slate-100 dark:bg-slate-800 text-slate-500'
+                          : 'bg-brand-600 hover:bg-brand-700 text-white shadow-lg shadow-brand-500/20'
+                      }`}
+                    >
+                      {profile.isFollowing ? <UserCheck className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}
+                      <span>{profile.isFollowing ? 'Following' : 'Follow'}</span>
+                    </button>
+                    {profile.isFollowing && (
+                       <button onClick={handleMessage} className="p-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl shadow-xl hover:scale-[1.05] transition-all">
+                          <MessageCircle className="w-5 h-5" />
+                       </button>
+                    )}
+                  </>
+                ) : (
+                  <Link to="/profile" className="px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl">
+                    Configure Profile
                   </Link>
-                ))}
+                )}
               </div>
-            )}
+            </div>
+
+            <div className="max-w-2xl">
+              <div className="flex items-center space-x-3 mb-2">
+                 <h1 className="text-3xl font-black dark:text-white tracking-tighter">{profile.name}</h1>
+                 <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
+              </div>
+              
+              <div className="flex flex-wrap gap-2 mb-6">
+                 <span className="text-[10px] font-black px-3 py-1 bg-brand-50 dark:bg-brand-900/30 text-brand-600 rounded-full uppercase tracking-widest border border-brand-100 dark:border-brand-800">
+                    {profile.plan || 'MEMBER'}
+                 </span>
+                 <span className="text-[10px] font-black px-3 py-1 bg-slate-50 dark:bg-slate-800 text-slate-500 rounded-full uppercase tracking-widest">
+                    Joined {new Date(profile.createdAt).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
+                 </span>
+              </div>
+
+              {profile.bio !== null ? (
+                <p className="text-slate-500 dark:text-slate-400 font-medium leading-relaxed mb-8">
+                  {profile.bio || "This user hasn't added a biography yet. They are likely busy mastering the markets."}
+                </p>
+              ) : (
+                <div className="flex items-center space-x-2 text-slate-400 text-xs font-bold mb-8 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl w-fit">
+                   <Lock className="w-3.5 h-3.5" />
+                   <span>Bio is restricted by privacy settings</span>
+                </div>
+              )}
+
+              <div className="flex items-center space-x-12 py-6 border-t border-slate-100 dark:border-slate-800">
+                 <div className="flex flex-col">
+                    <span className="text-2xl font-black dark:text-white">{profile.followerCount}</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Followers</span>
+                 </div>
+                 <div className="flex flex-col">
+                    <span className="text-2xl font-black dark:text-white">{profile.followingCount}</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Following</span>
+                 </div>
+                 <div className="flex flex-col">
+                    <span className="text-2xl font-black dark:text-white">{profile.certificates?.length || 0}</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Certificates</span>
+                 </div>
+              </div>
+            </div>
           </div>
-        )}
+        </motion.div>
+
+        {/* PROFILE TABS */}
+        <div className="flex space-x-4 mb-8 border-b border-slate-200 dark:border-slate-800 pb-px">
+          {['achievements', 'followers', 'following'].map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`pb-4 text-[10px] font-black uppercase tracking-widest transition-all border-b-2 ${
+                activeTab === tab 
+                  ? 'border-brand-500 text-brand-600 dark:text-brand-500' 
+                  : 'border-transparent text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        {/* 2. TAB CONTENT */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+           
+           {/* Left: Contact & Social */}
+           <motion.div variants={itemVars} className="space-y-8">
+              <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 p-8 shadow-sm">
+                 <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-6">Verified Info</h3>
+                 <div className="space-y-4">
+                    {profile.email ? (
+                       <div className="flex items-center space-x-3 text-sm font-bold dark:text-white">
+                          <div className="p-2 bg-slate-50 dark:bg-slate-800 rounded-lg"><Mail className="w-4 h-4 text-slate-400" /></div>
+                          <span className="truncate">{profile.email}</span>
+                       </div>
+                    ) : (
+                       <div className="flex items-center space-x-3 text-[10px] font-bold text-slate-400">
+                          <Lock className="w-3.5 h-3.5" /> <span>Email Restricted</span>
+                       </div>
+                    )}
+                    {profile.mobile ? (
+                       <div className="flex items-center space-x-3 text-sm font-bold dark:text-white">
+                          <div className="p-2 bg-slate-50 dark:bg-slate-800 rounded-lg"><Phone className="w-4 h-4 text-slate-400" /></div>
+                          <span>{profile.mobile}</span>
+                       </div>
+                    ) : (
+                       <div className="flex items-center space-x-3 text-[10px] font-bold text-slate-400">
+                          <Lock className="w-3.5 h-3.5" /> <span>Mobile Restricted</span>
+                       </div>
+                    )}
+                 </div>
+              </div>
+
+              <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-xl">
+                 <div className="absolute top-0 right-0 w-24 h-24 bg-brand-500 rounded-full blur-3xl opacity-20 -mr-8 -mt-8" />
+                 <h3 className="text-[10px] font-black uppercase tracking-widest text-brand-400 mb-6 flex items-center">
+                    <ShieldCheck className="w-4 h-4 mr-2" />
+                    Trust Rating
+                 </h3>
+                 <div className="text-2xl font-black mb-1">Top 5%</div>
+                 <p className="text-slate-400 text-[10px] font-bold leading-relaxed">This learner consistently engages with community insights and completes modules.</p>
+              </div>
+           </motion.div>
+
+           {/* Right: Tab Content */}
+           <motion.div variants={itemVars} className="md:col-span-2 space-y-8">
+              
+              {activeTab === 'achievements' && (
+                <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 p-8 md:p-10 shadow-sm">
+                   <div className="flex justify-between items-center mb-10">
+                      <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Platform Achievements</h3>
+                      <Award className="w-5 h-5 text-brand-600" />
+                   </div>
+
+                   {profile.certificatesHidden ? (
+                      <div className="py-12 text-center bg-slate-50 dark:bg-slate-950 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800">
+                         <Lock className="w-10 h-10 text-slate-200 mx-auto mb-4" />
+                         <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Achievements are set to private</p>
+                      </div>
+                   ) : profile.certificates?.length === 0 ? (
+                      <div className="py-12 text-center opacity-40">
+                         <p className="text-xs font-black uppercase tracking-widest">No certifications yet</p>
+                      </div>
+                   ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                         {profile.certificates.map((cert, i) => (
+                            <div key={i} className="p-5 bg-slate-50 dark:bg-slate-800/40 rounded-3xl border border-slate-100 dark:border-slate-800 group hover:border-brand-500/50 transition-all">
+                               <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                                  <Award className="w-5 h-5 text-brand-600" />
+                               </div>
+                               <h4 className="text-xs font-black dark:text-white uppercase tracking-tight line-clamp-1">{cert.courseName}</h4>
+                               <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Verified · {new Date(cert.completedAt).toLocaleDateString()}</p>
+                            </div>
+                         ))}
+                      </div>
+                   )}
+                </div>
+              )}
+
+              {(activeTab === 'followers' || activeTab === 'following') && (
+                <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 p-8 shadow-sm">
+                   <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-8">
+                     {activeTab === 'followers' ? 'Network Followers' : 'Network Following'}
+                   </h3>
+                   
+                   {!profile[activeTab] ? (
+                     <div className="py-12 text-center bg-slate-50 dark:bg-slate-950 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800">
+                        <Lock className="w-10 h-10 text-slate-200 mx-auto mb-4" />
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Network list is set to private</p>
+                     </div>
+                   ) : profile[activeTab].length === 0 ? (
+                     <div className="py-12 text-center opacity-40">
+                        <p className="text-xs font-black uppercase tracking-widest">No users found</p>
+                     </div>
+                   ) : (
+                     <div className="space-y-4">
+                        {profile[activeTab].map(u => (
+                          <div key={u._id} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 hover:border-brand-500/30 transition-all">
+                             <Link to={`/user/${u._id}`} className="flex items-center space-x-4">
+                                <div className="w-10 h-10 rounded-xl bg-brand-100 dark:bg-slate-700 flex items-center justify-center font-black text-xs text-brand-600 dark:text-white overflow-hidden">
+                                  {u.profileImage ? <img src={u.profileImage} alt="" className="w-full h-full object-cover" /> : u.name[0]}
+                                </div>
+                                <div>
+                                   <p className="text-xs font-black dark:text-white uppercase tracking-tight">{u.name}</p>
+                                   <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{u.plan || 'MEMBER'}</p>
+                                </div>
+                             </Link>
+                             <button onClick={() => navigate('/chatbot', { state: { initialMode: 'private', initialPartner: u } })} className="p-2.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-brand-600 transition-colors">
+                                <MessageCircle className="w-4 h-4" />
+                             </button>
+                          </div>
+                        ))}
+                     </div>
+                   )}
+                </div>
+              )}
+
+           </motion.div>
+
+
+        </div>
 
       </div>
-    </div>
+    </motion.div>
   );
 };
 

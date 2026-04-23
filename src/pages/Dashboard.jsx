@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, Trophy, TrendingUp, Award, Star, Bell, CheckCircle2, Wallet, Users, MessageSquare, Zap, Calculator, ChevronRight, FileText, Send, Sparkles, ShieldCheck, Link2, Copy } from 'lucide-react';
+import { 
+  BookOpen, Trophy, TrendingUp, Star, Zap, Calculator, 
+  ChevronRight, FileText, Send, Sparkles, ShieldCheck, 
+  Link2, Copy, Users, MessageSquare, Clock
+} from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useAuth, PLANS } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const Dashboard = () => {
-  const { user, plan, notifications, markNotificationRead } = useAuth();
+  const { user, plan, notifications } = useAuth();
   const [courses, setCourses] = useState([]);
   const [bookmarks, setBookmarks] = useState([]);
   const [dailyInsight, setDailyInsight] = useState(null);
@@ -25,6 +29,7 @@ const Dashboard = () => {
         ]);
         
         const mappedCourses = courseRes.data.map(p => ({
+          id: p.courseId._id || p.courseId,
           title: p.courseId.title,
           progress: p.completed ? 100 : 50,
         }));
@@ -40,14 +45,10 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  const userNotifs = notifications.filter(n => n.userEmail === 'ALL' || n.userEmail === user?.email);
-  const unreadCount = userNotifs.filter(n => !n.read).length;
-
   const handleQuickChat = (e) => {
     e.preventDefault();
     if (chatInput.trim()) {
-      // In a real app, we might pass this via state to the ChatPage
-      navigate('/chatbot');
+      navigate('/chatbot', { state: { initialMessage: chatInput } });
     }
   };
 
@@ -57,308 +58,232 @@ const Dashboard = () => {
     toast.success('Referral link copied!');
   };
 
-  return (
-    <div className="bg-slate-50 dark:bg-slate-950 min-h-[calc(100vh-64px)] pb-24 font-sans text-slate-900 dark:text-slate-100">
-      
-      {/* Header */}
-      <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 py-8 px-4 sm:px-6 lg:px-8 mb-8 transition-colors">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold">Overview</h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Welcome back, {user?.name?.split(' ')[0] || 'Student'}. Here's what's happening today.</p>
-          </div>
-          <div className="flex items-center space-x-3">
-            <Link to="/courses" className="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-sm font-medium transition-colors">
-              Browse Courses
-            </Link>
-            <Link to="/chatbot" className="px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 rounded-lg text-sm font-medium transition-colors flex items-center">
-              <Sparkles className="w-4 h-4 mr-2" />
-              Open AI Assistant
-            </Link>
-          </div>
+  // Animation Variants
+  const containerVars = {
+    show: { transition: { staggerChildren: 0.05 } }
+  };
+
+  const itemVars = {
+    hidden: { opacity: 0, y: 15 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100 } }
+  };
+
+  if (loading) {
+    return (
+      <div className="p-8 max-w-7xl mx-auto space-y-8 animate-pulse">
+        <div className="h-20 bg-slate-200 dark:bg-slate-800 rounded-2xl w-1/3" />
+        <div className="grid grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => <div key={i} className="h-28 bg-slate-200 dark:bg-slate-800 rounded-2xl" />)}
         </div>
-      </header>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        
-        {/* 1. TOP KPI ROW */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Active Community</span>
-              <Users className="w-4 h-4 text-slate-400" />
-            </div>
-            <div>
-              <div className="text-2xl font-bold">15,234</div>
-              <div className="text-xs text-emerald-500 mt-1 font-medium">+12% this month</div>
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-sm font-medium text-slate-500 dark:text-slate-400">AI Usage</span>
-              <Zap className="w-4 h-4 text-slate-400" />
-            </div>
-            <div>
-              <div className="text-2xl font-bold">{user?.chatCount || 0} <span className="text-sm text-slate-400 font-normal">msgs</span></div>
-              <div className="text-xs text-slate-500 mt-1">Resets daily at midnight</div>
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Subscription</span>
-              <Star className="w-4 h-4 text-brand-500" />
-            </div>
-            <div>
-              <div className="text-2xl font-bold capitalize">{plan === 'ELITE PRIME' ? 'Prime' : plan.toLowerCase()}</div>
-              <div className="text-xs text-brand-600 dark:text-brand-400 mt-1 font-medium">
-                {plan === PLANS.FREE ? <Link to="/pricing" className="hover:underline">Upgrade available</Link> : 'Active plan'}
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Revenue / Usage</span>
-              <Wallet className="w-4 h-4 text-slate-400" />
-            </div>
-            <div>
-              <div className="text-2xl font-bold">₹{plan === PLANS.PRIME ? '1999' : plan === PLANS.ELITE ? '699' : plan === PLANS.PRO ? '199' : '0'}</div>
-              <div className="text-xs text-slate-500 mt-1">Current monthly value</div>
-            </div>
-          </div>
-        </div>
-
-        {/* 2. MAIN ACTION ZONE */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
-          {/* AI Chat Panel (Primary) */}
-          <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
-            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50">
-              <h2 className="font-semibold flex items-center">
-                <MessageSquare className="w-4 h-4 mr-2 text-brand-600" />
-                Quick AI Assistant
-              </h2>
-              <Link to="/chatbot" className="text-xs text-brand-600 hover:text-brand-700 font-medium flex items-center">
-                Full interface <ChevronRight className="w-3 h-3 ml-1" />
-              </Link>
-            </div>
-            <div className="p-6 flex-grow flex flex-col justify-end bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-50 to-white dark:from-slate-900 dark:to-slate-900">
-              <div className="space-y-4 mb-6">
-                <div className="flex items-start max-w-[85%]">
-                  <div className="w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-900/30 flex items-center justify-center mr-3 shrink-0">
-                    <Sparkles className="w-4 h-4 text-brand-600" />
-                  </div>
-                  <div className="bg-slate-100 dark:bg-slate-800 p-3 rounded-2xl rounded-tl-sm text-sm text-slate-700 dark:text-slate-300">
-                    Hello! I'm FinFleet AI. What financial topic would you like to explore right now?
-                  </div>
-                </div>
-              </div>
-              <form onSubmit={handleQuickChat} className="relative">
-                <input 
-                  type="text" 
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                  placeholder="Ask about SIPs, market trends, or stock analysis..."
-                  className="w-full pl-4 pr-12 py-3 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/50 transition-shadow dark:text-white"
-                />
-                <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg transition-colors">
-                  <Send className="w-4 h-4" />
-                </button>
-              </form>
-            </div>
-          </div>
-
-          {/* Quick Tools */}
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
-              <h2 className="font-semibold flex items-center">
-                <Calculator className="w-4 h-4 mr-2 text-brand-600" />
-                Smart Tools
-              </h2>
-            </div>
-            <div className="p-4 space-y-2">
-              <Link to="/tools" className="group flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 flex items-center justify-center mr-4">
-                    <TrendingUp className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-semibold dark:text-white">SIP Calculator</h3>
-                    <p className="text-xs text-slate-500">Plan your investments</p>
-                  </div>
-                </div>
-                <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors" />
-              </Link>
-
-              <Link to="/tools" className="group flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 flex items-center justify-center mr-4">
-                    <ShieldCheck className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-semibold dark:text-white">Risk Profiler</h3>
-                    <p className="text-xs text-slate-500">Know your tolerance</p>
-                  </div>
-                </div>
-                <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors" />
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* 3. SECONDARY SECTION & DATA TABLES */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
-          {/* Saved Items / Bookmarks */}
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50">
-              <h2 className="font-semibold flex items-center text-sm">
-                <BookOpen className="w-4 h-4 mr-2 text-slate-500" />
-                Saved Content
-              </h2>
-            </div>
-            <div className="p-0">
-              {bookmarks.length > 0 ? (
-                <ul className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {bookmarks.map((b, i) => (
-                    <li key={i} className="px-6 py-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                      <Link to={`/finor/${b.itemId}`} className="flex items-start">
-                        <FileText className="w-4 h-4 text-slate-400 mr-3 mt-0.5 shrink-0" />
-                        <div>
-                          <p className="text-sm font-medium dark:text-white line-clamp-1">{b.title || 'Saved Article'}</p>
-                          <p className="text-xs text-slate-500 mt-1 capitalize">{b.itemType}</p>
-                        </div>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="p-8 text-center text-sm text-slate-500">
-                  No saved items yet. Explore the News hub to bookmark articles.
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Learning Progress Table */}
-          <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50">
-              <h2 className="font-semibold flex items-center text-sm">
-                <Trophy className="w-4 h-4 mr-2 text-brand-600" />
-                Learning Progress
-              </h2>
-              <Link to="/courses" className="text-xs font-medium text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors">View All</Link>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm whitespace-nowrap">
-                <thead className="bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800">
-                  <tr>
-                    <th className="px-6 py-3 font-medium text-slate-500 dark:text-slate-400">Course Name</th>
-                    <th className="px-6 py-3 font-medium text-slate-500 dark:text-slate-400">Status</th>
-                    <th className="px-6 py-3 font-medium text-slate-500 dark:text-slate-400 w-1/3">Progress</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {courses.length > 0 ? courses.map((course, i) => (
-                    <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
-                      <td className="px-6 py-4 font-medium dark:text-white">{course.title}</td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${course.progress === 100 ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-400'}`}>
-                          {course.progress === 100 ? 'Completed' : 'In Progress'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center space-x-3">
-                          <div className="flex-grow h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                            <div className={`h-full rounded-full ${course.progress === 100 ? 'bg-emerald-500' : 'bg-brand-500'}`} style={{ width: `${course.progress}%` }} />
-                          </div>
-                          <span className="text-xs text-slate-500 font-medium w-8">{course.progress}%</span>
-                        </div>
-                      </td>
-                    </tr>
-                  )) : (
-                    <tr>
-                      <td colSpan="3" className="px-6 py-8 text-center text-slate-500">
-                        You haven't started any courses yet.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-        </div>
-
-        {/* 4. ENGAGEMENT ZONE (Insights, Referrals, Community) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          
-          {/* Daily Insight */}
-          <div className="bg-brand-900 rounded-xl border border-brand-800 shadow-sm text-white overflow-hidden flex flex-col relative">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500 rounded-full blur-3xl opacity-20 -mr-10 -mt-10 pointer-events-none"></div>
-            <div className="px-6 py-4 border-b border-brand-800/50 flex justify-between items-center z-10">
-              <h2 className="font-semibold flex items-center text-sm">
-                <TrendingUp className="w-4 h-4 mr-2 text-brand-300" />
-                Today's Insight
-              </h2>
-            </div>
-            <div className="p-6 flex-grow z-10">
-              {dailyInsight ? (
-                <>
-                  <h3 className="font-bold text-lg mb-2">{dailyInsight.title}</h3>
-                  <p className="text-sm text-brand-100/80 mb-4 line-clamp-3">{dailyInsight.content}</p>
-                </>
-              ) : (
-                <p className="text-sm text-brand-100/80">Check back later for today's market insight.</p>
-              )}
-            </div>
-          </div>
-
-          {/* Referral Dashboard */}
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col">
-            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50">
-              <h2 className="font-semibold flex items-center text-sm">
-                <Link2 className="w-4 h-4 mr-2 text-brand-600" />
-                Invite & Earn
-              </h2>
-            </div>
-            <div className="p-6 flex-grow flex flex-col justify-center text-center">
-              <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
-                Invite friends and get <strong className="text-slate-900 dark:text-white">+10 AI Messages</strong> for each successful signup!
-              </p>
-              <div className="flex items-center bg-slate-100 dark:bg-slate-950 rounded-lg p-2 border border-slate-200 dark:border-slate-800">
-                <code className="flex-grow text-xs font-bold text-slate-700 dark:text-slate-300">
-                  {user?.referralCode || 'GENERATING...'}
-                </code>
-                <button onClick={copyReferral} className="p-2 bg-white dark:bg-slate-800 rounded-md shadow-sm border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
-                  <Copy className="w-4 h-4 text-slate-500" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Community Chat Shortcut */}
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col group cursor-pointer hover:border-brand-500/50 transition-colors" onClick={() => navigate('/community')}>
-            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50 transition-colors group-hover:bg-brand-50/50 dark:group-hover:bg-brand-900/10">
-              <h2 className="font-semibold flex items-center text-sm">
-                <Users className="w-4 h-4 mr-2 text-brand-600" />
-                Community Space
-              </h2>
-            </div>
-            <div className="p-6 flex-grow flex flex-col items-center justify-center text-center">
-              <div className="w-12 h-12 rounded-full bg-brand-100 dark:bg-brand-900/30 text-brand-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <MessageSquare className="w-6 h-6" />
-              </div>
-              <h3 className="font-bold text-sm mb-1 dark:text-white">Join the Conversation</h3>
-              <p className="text-xs text-slate-500">Connect with other traders in real-time.</p>
-            </div>
-          </div>
-
+        <div className="grid grid-cols-3 gap-6">
+          <div className="col-span-2 h-96 bg-slate-200 dark:bg-slate-800 rounded-2xl" />
+          <div className="h-96 bg-slate-200 dark:bg-slate-800 rounded-2xl" />
         </div>
       </div>
-    </div>
+    );
+  }
+
+  return (
+    <motion.div 
+      initial="hidden"
+      animate="show"
+      variants={containerVars}
+      className="bg-[#F9FAFB] dark:bg-[#080C10] min-h-[calc(100vh-64px)] pb-24 font-sans selection:bg-brand-500/20"
+    >
+      {/* 1. TOP KPI ROW */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
+        <motion.div variants={itemVars} className="mb-10">
+          <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Dashboard</h1>
+          <p className="text-slate-500 dark:text-slate-400 font-medium mt-1">Ready for today's market analysis, {user?.name?.split(' ')[0]}?</p>
+        </motion.div>
+
+        <motion.div variants={containerVars} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+          {[
+            { label: 'Followers', value: user?.followersCount || 0, sub: '+2 new today', icon: Users, color: 'text-brand-600', bg: 'bg-brand-50 dark:bg-brand-900/10' },
+            { label: 'AI Usage', value: user?.chatCount || 0, sub: 'Daily quota: 20', icon: Zap, color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/10' },
+            { label: 'Membership', value: plan === 'ELITE PRIME' ? 'Prime' : plan, sub: 'Active Plan', icon: Star, color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-900/10' },
+            { label: 'Usage Value', value: `₹${plan === PLANS.PRIME ? '1999' : plan === PLANS.ELITE ? '699' : '0'}`, sub: 'Current Value', icon: ShieldCheck, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/10' }
+          ].map((kpi, i) => (
+            <motion.div key={i} variants={itemVars} className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all">
+              <div className="flex justify-between items-start mb-4">
+                <div className={`p-2.5 rounded-xl ${kpi.bg}`}>
+                  <kpi.icon className={`w-5 h-5 ${kpi.color}`} />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Stats</span>
+              </div>
+              <div className="text-2xl font-black text-slate-900 dark:text-white mb-1">{kpi.value}</div>
+              <p className="text-xs font-bold text-slate-500 dark:text-slate-500">{kpi.label} · <span className="text-emerald-500">{kpi.sub}</span></p>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* 2. MAIN ACTION ZONE (Dominant AI Chat) */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+          <motion.div variants={itemVars} className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col min-h-[450px]">
+            <div className="px-8 py-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/30 dark:bg-slate-900/50">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-2xl bg-brand-600 flex items-center justify-center shadow-lg shadow-brand-500/20">
+                  <Bot className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">AI Insight Hub</h2>
+                  <div className="flex items-center text-[10px] text-emerald-500 font-bold">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse mr-1.5" />
+                    Online & Calibrated
+                  </div>
+                </div>
+              </div>
+              <Link to="/chatbot" className="p-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-brand-50 dark:hover:bg-brand-900/20 transition-colors">
+                <ChevronRight className="w-5 h-5 text-slate-400 hover:text-brand-600" />
+              </Link>
+            </div>
+            
+            <div className="p-8 flex-grow flex flex-col justify-between relative">
+              <div className="space-y-6">
+                <div className="flex items-start max-w-[80%]">
+                  <div className="bg-slate-100 dark:bg-slate-800 p-5 rounded-[1.5rem] rounded-tl-none text-sm font-medium text-slate-700 dark:text-slate-300 leading-relaxed shadow-sm">
+                    Welcome back! Markets are showing interesting trends in the energy sector today. What would you like to analyze together?
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-md">
+                  {['"Analyze Nifty 50 trends"', '"SIP vs Lumpsum guide"', '"Explain Inflation"', '"Risk profiles"'].map((q, i) => (
+                    <button key={i} onClick={() => setChatInput(q.replace(/"/g, ''))} className="text-left p-3 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-500 hover:border-brand-500/50 hover:text-brand-600 transition-all bg-slate-50/50 dark:bg-slate-900/50">
+                      {q}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <form onSubmit={handleQuickChat} className="mt-8 relative group">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-brand-500 to-indigo-500 rounded-2xl blur opacity-20 group-focus-within:opacity-40 transition-opacity" />
+                <div className="relative">
+                  <input 
+                    type="text" 
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    placeholder="Ask anything about finance..."
+                    className="w-full pl-6 pr-16 py-5 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-sm font-medium focus:outline-none focus:ring-4 focus:ring-brand-500/5 transition-all dark:text-white"
+                  />
+                  <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-brand-600 hover:bg-brand-700 text-white rounded-xl shadow-lg shadow-brand-500/20 transition-all flex items-center justify-center">
+                    <Send className="w-4 h-4" />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </motion.div>
+
+          <motion.div variants={itemVars} className="flex flex-col space-y-6">
+             <div className="bg-slate-900 rounded-[2rem] p-8 text-white relative overflow-hidden flex-grow group shadow-xl">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500 rounded-full blur-[80px] opacity-40 -mr-10 -mt-10" />
+                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-brand-400 mb-6 flex items-center">
+                  <TrendingUp className="w-4 h-4 mr-2" />
+                  Daily Insight
+                </h3>
+                {dailyInsight ? (
+                  <>
+                    <h4 className="text-xl font-bold mb-4 group-hover:text-brand-400 transition-colors leading-tight">{dailyInsight.title}</h4>
+                    <p className="text-slate-400 text-sm leading-relaxed mb-6 line-clamp-4">{dailyInsight.content}</p>
+                    <Link to="/finor" className="text-xs font-black uppercase tracking-widest text-white border-b border-brand-500 pb-1 hover:text-brand-400 transition-colors">Read Full Article</Link>
+                  </>
+                ) : (
+                  <p className="text-slate-500 italic">Connecting to intelligence feed...</p>
+                )}
+             </div>
+
+             <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 p-8 shadow-sm">
+                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-6 flex items-center">
+                  <Link2 className="w-4 h-4 mr-2" />
+                  Quick Invite
+                </h3>
+                <p className="text-xs font-bold text-slate-500 mb-6 leading-relaxed">Refer a friend and unlock <span className="text-indigo-500">+10 AI Messages</span> instantly.</p>
+                <div className="flex items-center bg-slate-50 dark:bg-slate-950 rounded-xl p-1.5 border border-slate-200 dark:border-slate-800">
+                  <code className="flex-grow text-[10px] font-black text-slate-700 dark:text-slate-300 px-3 uppercase tracking-tighter truncate">
+                    {user?.referralCode || 'FN-PRO-721'}
+                  </code>
+                  <button onClick={copyReferral} className="p-2.5 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700 hover:bg-slate-50 transition-colors active:scale-90">
+                    <Copy className="w-3.5 h-3.5 text-slate-500" />
+                  </button>
+                </div>
+             </div>
+          </motion.div>
+        </div>
+
+        {/* 3. SECONDARY SECTION (Progress & Bookmarks) */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+           <motion.div variants={itemVars} className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+              <div className="px-8 py-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center">
+                  <Clock className="w-4 h-4 mr-2 text-indigo-500" />
+                  Learning Progress
+                </h3>
+                <Link to="/courses" className="text-xs font-black text-brand-600 hover:underline">Continue All</Link>
+              </div>
+              <div className="p-0">
+                {courses.length > 0 ? (
+                  <div className="divide-y divide-slate-50 dark:divide-slate-800/50">
+                    {courses.map((c, i) => (
+                      <div key={i} className="px-8 py-6 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="flex items-center space-x-4">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm ${c.progress === 100 ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20' : 'bg-brand-50 text-brand-600 dark:bg-brand-900/20'}`}>
+                             {c.progress === 100 ? <Award className="w-5 h-5" /> : <BookOpen className="w-5 h-5" />}
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-bold text-slate-900 dark:text-white">{c.title}</h4>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-0.5">{c.progress === 100 ? 'Completed' : 'Action Required'}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-6">
+                           <div className="w-32 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden hidden sm:block">
+                              <motion.div 
+                                initial={{ width: 0 }} 
+                                animate={{ width: `${c.progress}%` }} 
+                                className={`h-full rounded-full ${c.progress === 100 ? 'bg-emerald-500' : 'bg-brand-500'}`} 
+                              />
+                           </div>
+                           <Link to={`/courses/${c.id}`} className="p-2 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-brand-600 hover:text-white transition-all">
+                              <ChevronRight className="w-4 h-4" />
+                           </Link>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-12 text-center">
+                    <p className="text-sm font-bold text-slate-400 mb-4">You haven't started any learning modules yet.</p>
+                    <Link to="/courses" className="btn-primary py-2.5 px-6 text-xs">Explore Academy</Link>
+                  </div>
+                )}
+              </div>
+           </motion.div>
+
+           <motion.div variants={itemVars} className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+              <div className="px-8 py-6 border-b border-slate-100 dark:border-slate-800">
+                <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center">
+                  <Star className="w-4 h-4 mr-2 text-amber-500" />
+                  Bookmarks
+                </h3>
+              </div>
+              <div className="p-0 divide-y divide-slate-50 dark:divide-slate-800/50">
+                 {bookmarks.length > 0 ? bookmarks.map((b, i) => (
+                   <Link key={i} to={`/finor/${b.itemId}`} className="flex items-center p-6 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+                      <div className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center mr-4 group-hover:bg-white dark:group-hover:bg-slate-700 transition-colors">
+                        <FileText className="w-5 h-5 text-slate-400 group-hover:text-brand-600 transition-colors" />
+                      </div>
+                      <div className="flex-grow truncate">
+                        <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate">{b.title}</h4>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-0.5">{b.itemType}</p>
+                      </div>
+                   </Link>
+                 )) : (
+                   <div className="p-12 text-center text-slate-400">
+                      <p className="text-xs font-bold">No bookmarks saved.</p>
+                   </div>
+                 )}
+              </div>
+           </motion.div>
+        </div>
+      </div>
+    </motion.div>
   );
 };
 

@@ -27,6 +27,8 @@ import ToolsPage from './pages/ToolsPage';
 import CommunityPage from './pages/CommunityPage';
 import PublicProfilePage from './pages/PublicProfilePage';
 import CourseDetailPage from './pages/CourseDetailPage';
+import TradingDashboard from './pages/TradingDashboard';
+import NotFoundPage from './pages/NotFoundPage';
 
 // Show splash only once per browser session
 const shouldShowSplash = !sessionStorage.getItem('finfleet_intro_seen');
@@ -88,8 +90,10 @@ function App() {
                 <Route path="/feedback" element={<FeedbackPage />} />
                 <Route path="/help" element={<HelpPage />} />
                 <Route path="/tools" element={<ToolsPage />} />
+                <Route path="/trading" element={<TradingDashboard />} />
                 <Route path="/community" element={<CommunityPage />} />
                 <Route path="/user/:userId" element={<PublicProfilePage />} />
+                <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </motion.main>
 

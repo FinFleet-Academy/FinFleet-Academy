@@ -1,17 +1,26 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Target, Lightbulb, TrendingUp, Compass, GraduationCap, BarChart3, Layers, BrainCircuit, ArrowRight } from 'lucide-react';
+import { 
+  Target, Lightbulb, TrendingUp, Compass, GraduationCap, 
+  BarChart3, Layers, BrainCircuit, ArrowRight, Star,
+  ShieldCheck, Zap, Globe, Heart
+} from 'lucide-react';
+import { Link } from 'react-router-dom';
 
-const FeatureCard = ({ icon: Icon, title, description }) => (
+const FeatureCard = ({ icon: Icon, title, description, delay }) => (
   <motion.div 
-    whileHover={{ y: -5 }}
-    className="p-6 bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-3xl hover:border-brand-500/50 transition-all group"
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay }}
+    whileHover={{ y: -10 }}
+    className="p-10 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[3rem] shadow-sm hover:shadow-2xl transition-all group"
   >
-    <div className="w-12 h-12 bg-brand-600/20 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-      <Icon className="w-6 h-6 text-brand-500" />
+    <div className="w-14 h-14 bg-brand-50 dark:bg-brand-900/20 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+      <Icon className="w-7 h-7 text-brand-600" />
     </div>
-    <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
-    <p className="text-slate-400 text-sm leading-relaxed">{description}</p>
+    <h3 className="text-xl font-black dark:text-white mb-4 uppercase tracking-tighter">{title}</h3>
+    <p className="text-slate-500 dark:text-slate-400 text-sm font-bold leading-relaxed">{description}</p>
   </motion.div>
 );
 
@@ -19,98 +28,107 @@ const AboutPage = () => {
   const features = [
     {
       icon: GraduationCap,
-      title: "Beginner Friendly",
-      description: "Learn from scratch with simple explanations. No prior financial knowledge required."
+      title: "Zero to Alpha",
+      description: "Comprehensive paths designed for the retail mind. No prior experience required to reach mastery."
     },
     {
       icon: BarChart3,
-      title: "Practical Learning",
-      description: "Focus on real-world financial understanding. We move beyond theory to actual application."
+      title: "Real Execution",
+      description: "We focus on actual market mechanics. Moving beyond paper theory to institutional execution."
     },
     {
       icon: Layers,
-      title: "Structured Content",
-      description: "A step-by-step learning approach designed to build your knowledge logically and effectively."
+      title: "Modular Logic",
+      description: "A structured, recursive learning approach designed to stack knowledge with precision."
     },
     {
       icon: BrainCircuit,
-      title: "Growth Mindset",
-      description: "Build long-term thinking, not quick profits. We focus on sustainable wealth creation."
+      title: "Strategic Mind",
+      description: "Building resilient psychology. We prioritize risk management over high-leverage gambles."
     }
   ];
 
-  return (
-    <div className="bg-slate-950 min-h-screen text-slate-300">
-      {/* Hero Section */}
-      <section className="relative py-24 overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full">
-          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-600/20 blur-[120px] rounded-full"></div>
-          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600/20 blur-[120px] rounded-full"></div>
-        </div>
+  const fadeInUp = { initial: { opacity: 0, y: 15 }, animate: { opacity: 1, y: 0 } };
 
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
-                About <span className="text-brand-600">FinFleet Academy</span>
-              </h1>
-              <p className="text-xl md:text-2xl text-slate-400 mb-8 font-medium">
-                Learn Finance. Build Confidence. Create Wealth.
-              </p>
-            </motion.div>
+  return (
+    <div className="bg-[#F9FAFB] dark:bg-[#080C10] min-h-screen font-sans selection:bg-brand-500/20">
+      
+      {/* 1. Hero Section */}
+      <section className="relative pt-32 pb-40 overflow-hidden border-b border-slate-200 dark:border-slate-800/50">
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-brand-500 rounded-full blur-[150px] opacity-10 -mr-64 -mt-64" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500 rounded-full blur-[150px] opacity-10 -ml-32 -mb-32" />
+
+        <div className="max-w-7xl mx-auto px-6 relative z-10 text-center md:text-left">
+          <motion.div {...fadeInUp} className="inline-flex items-center space-x-2 bg-brand-50 dark:bg-brand-900/20 px-3 py-1.5 rounded-full mb-8 border border-brand-100 dark:border-brand-800">
+             <Star className="w-3 h-3 text-brand-600 fill-brand-600" />
+             <span className="text-[9px] font-black uppercase tracking-widest text-brand-700 dark:text-brand-300">The FinFleet Manifesto</span>
+          </motion.div>
+          <div className="max-w-4xl">
+             <motion.h1 
+               {...fadeInUp} transition={{ delay: 0.1 }}
+               className="text-6xl md:text-9xl font-black dark:text-white mb-10 leading-[0.9] tracking-tighter"
+             >
+               We are the <span className="text-gradient">Fleet.</span>
+             </motion.h1>
+             <motion.p 
+               {...fadeInUp} transition={{ delay: 0.2 }}
+               className="text-xl md:text-3xl text-slate-500 dark:text-slate-400 font-bold leading-tight"
+             >
+               Democratizing institutional financial intelligence. <br className="hidden md:block" />
+               One trader at a time.
+             </motion.p>
           </div>
         </div>
       </section>
 
-      {/* Content Section */}
-      <section className="py-20 bg-slate-900/30">
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      {/* 2. Mission Section */}
+      <section className="py-32 bg-white dark:bg-slate-900/20">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
+              initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
+              className="space-y-10"
             >
-              <h2 className="text-3xl font-bold text-white mb-6">Our Story & Mission</h2>
-              <div className="space-y-6 text-lg leading-relaxed">
+              <h2 className="text-xs font-black dark:text-white uppercase tracking-[0.4em] text-slate-400">Our Strategic Intent</h2>
+              <div className="space-y-8 text-lg font-bold leading-relaxed text-slate-600 dark:text-slate-400">
                 <p>
-                  FinFleet Academy is a modern financial education platform designed to help students, beginners, and aspiring investors understand money, markets, and wealth creation in a simple and practical way.
+                  FinFleet Academy emerged from a single realization: the gap between retail hope and institutional execution is wider than ever.
                 </p>
                 <p>
-                  In today’s world, many people start investing without proper knowledge—often relying on random tips, trends, or incomplete information. FinFleet Academy was built to solve this problem by providing structured, easy-to-understand financial learning.
+                  We are not another "get rich" scheme. We are a high-performance educational engine designed for those who view finance as a serious craft.
                 </p>
-                <div className="bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
-                  <h4 className="text-brand-500 font-bold mb-3 uppercase tracking-wider text-sm">Our Mission</h4>
-                  <p className="text-white italic">"To make financial literacy accessible and actionable for everyone."</p>
+                <div className="p-8 bg-slate-950 rounded-[2.5rem] border border-white/5 relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-125 transition-transform"><Target className="w-16 h-16 text-white" /></div>
+                  <h4 className="text-[10px] font-black text-brand-500 uppercase tracking-widest mb-4">Core Protocol</h4>
+                  <p className="text-white text-2xl font-black italic tracking-tight">"To transform raw market interest into calibrated strategic intelligence."</p>
                 </div>
               </div>
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, x: 30 }}
+              initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="grid grid-cols-1 gap-6"
+              className="grid grid-cols-1 gap-8"
             >
-              <div className="p-8 bg-slate-900 rounded-3xl border border-slate-700">
-                <Target className="w-10 h-10 text-brand-500 mb-4" />
-                <h3 className="text-2xl font-bold text-white mb-3">Our Vision</h3>
-                <p className="text-slate-400">
-                  To empower individuals to make smarter financial decisions with confidence. We believe that the right knowledge, at the right time, can completely change a person’s financial future.
+              <div className="p-10 bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-xl">
+                <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl flex items-center justify-center mb-6">
+                   <Globe className="w-6 h-6 text-indigo-600" />
+                </div>
+                <h3 className="text-2xl font-black dark:text-white mb-4 uppercase tracking-tighter">Global Vision</h3>
+                <p className="text-slate-500 dark:text-slate-400 text-sm font-bold leading-relaxed">
+                  To become the primary infrastructure for the next generation of global investors. We believe financial literacy is a fundamental right.
                 </p>
               </div>
-              <div className="p-8 bg-brand-900/20 rounded-3xl border border-brand-500/20">
-                <h3 className="text-2xl font-bold text-white mb-4">What We Focus On</h3>
-                <ul className="space-y-3">
-                  {['Stock market fundamentals', 'Personal finance education', 'Investment mindset', 'Practical learning over theory'].map((item, idx) => (
-                    <li key={idx} className="flex items-center space-x-3">
-                      <TrendingUp className="w-5 h-5 text-brand-500" />
+              <div className="p-10 bg-brand-600 rounded-[3rem] text-white shadow-2xl shadow-brand-500/20 relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-6 opacity-20"><Zap className="w-16 h-16" /></div>
+                <h3 className="text-2xl font-black mb-6 uppercase tracking-tighter">Strategic Focus</h3>
+                <ul className="space-y-4">
+                  {['Institutional Market Mechanics', 'Deep Behavioral Psychology', 'Capital Allocation Protocols', 'Recursive Knowledge Stacking'].map((item, idx) => (
+                    <li key={idx} className="flex items-center space-x-3 text-xs font-black uppercase tracking-widest">
+                      <div className="w-1.5 h-1.5 rounded-full bg-white" />
                       <span>{item}</span>
                     </li>
                   ))}
@@ -121,37 +139,50 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* Features Grid */}
-      <section className="py-24">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">Why Choose Us?</h2>
-            <p className="text-slate-400">We provide the tools you need to master your finances.</p>
+      {/* 3. Features Grid */}
+      <section className="py-32">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center md:text-left mb-20">
+            <h2 className="text-4xl font-black dark:text-white mb-4 uppercase tracking-tighter">The Fleet Advantage.</h2>
+            <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">High-Fidelity Training Infrastructure</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, idx) => (
-              <FeatureCard key={idx} {...feature} />
+              <FeatureCard key={idx} {...feature} delay={idx * 0.1} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-24 relative">
-        <div className="container mx-auto px-6">
-          <div className="max-w-5xl mx-auto bg-brand-600 rounded-[3rem] p-12 text-center relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
-            <div className="relative z-10">
-              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Ready to Master Your Money?</h2>
-              <p className="text-white/80 text-xl mb-10 max-w-2xl mx-auto">
-                Start your financial learning journey today with FinFleet Academy and build the future you deserve.
-              </p>
-              <button 
-                onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })}
-                className="bg-white text-brand-600 px-10 py-4 rounded-full font-bold text-lg hover:bg-slate-100 transition-all flex items-center mx-auto"
+      {/* 4. CTA Section */}
+      <section className="py-32 relative">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="bg-slate-950 rounded-[4rem] p-12 md:p-24 text-center relative overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.4)]">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-brand-600 rounded-full blur-[150px] opacity-20 -mr-48 -mt-48" />
+            
+            <div className="relative z-10 max-w-3xl mx-auto">
+              <motion.h2 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                className="text-4xl md:text-7xl font-black text-white mb-8 leading-[0.95] tracking-tighter"
               >
-                Join Now <ArrowRight className="ml-2 w-5 h-5" />
-              </button>
+                Initiate your <br /> <span className="text-brand-500">Learning Protocol.</span>
+              </motion.h2>
+              <p className="text-slate-400 text-lg md:text-xl font-bold mb-12 leading-relaxed">
+                Join 50,000+ members in the world's most advanced financial education ecosystem.
+              </p>
+              <Link 
+                to="/signup"
+                className="inline-flex items-center space-x-3 px-12 py-5 bg-white text-slate-950 rounded-[2rem] font-black text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl"
+              >
+                <span>Access Dashboard</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+            
+            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex items-center space-x-2 text-slate-700">
+               <Heart className="w-3 h-3 fill-red-500/20" />
+               <span className="text-[9px] font-black uppercase tracking-[0.3em]">FinFleet Strategic Command</span>
             </div>
           </div>
         </div>

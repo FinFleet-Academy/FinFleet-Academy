@@ -151,6 +151,15 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const markAllNotificationsAsRead = async () => {
+    try {
+      await axios.put('/api/notifications/read-all');
+      setNotifications(notifications.map(n => ({ ...n, read: true })));
+    } catch (error) {
+      console.error("Failed to mark all as read", error);
+    }
+  };
+
   const adminSendNotification = async (userEmail, message) => {
     const { data } = await axios.post('/api/admin/notify', { userEmail, message });
     return data;
@@ -216,6 +225,7 @@ export const AuthProvider = ({ children }) => {
       validateAndApplyCoupon,
       removeCoupon,
       markNotificationRead,
+      markAllNotificationsAsRead,
       adminSendNotification,
       updateChatCount,
       setChatCount,

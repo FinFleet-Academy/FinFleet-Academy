@@ -12,6 +12,8 @@ const userSchema = new mongoose.Schema({
   chatCount: { type: Number, default: 0 },
   lastChatReset: { type: Date, default: Date.now },
   lastMessageAt: { type: Date, default: 0 },
+  virtualBalance: { type: Number, default: 100000 },
+  points: { type: Number, default: 0 },
   referralCode: { type: String, unique: true, sparse: true },
   referredBy: { type: String, default: null },
   referredUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],

@@ -1,18 +1,26 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Lightbulb, Globe, Activity, TrendingUp, ArrowRight, Newspaper, Zap, ShieldCheck, Target } from 'lucide-react';
+import { 
+  Lightbulb, Globe, Activity, TrendingUp, ArrowRight, 
+  Newspaper, Zap, ShieldCheck, Target, Star,
+  Compass, Radio
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const FeatureCard = ({ icon: Icon, title, description }) => (
+const FeatureCard = ({ icon: Icon, title, description, delay }) => (
   <motion.div 
-    whileHover={{ y: -5 }}
-    className="p-8 bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-3xl hover:border-brand-500/50 transition-all group"
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay }}
+    whileHover={{ y: -10 }}
+    className="p-10 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[3rem] shadow-sm hover:shadow-2xl transition-all group"
   >
-    <div className="w-14 h-14 bg-brand-600/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-      <Icon className="w-7 h-7 text-brand-500" />
+    <div className="w-14 h-14 bg-brand-50 dark:bg-brand-900/20 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
+      <Icon className="w-7 h-7 text-brand-600" />
     </div>
-    <h3 className="text-xl font-bold text-white mb-3">{title}</h3>
-    <p className="text-slate-400 leading-relaxed text-sm">{description}</p>
+    <h3 className="text-xl font-black dark:text-white mb-4 uppercase tracking-tighter">{title}</h3>
+    <p className="text-slate-500 dark:text-slate-400 text-sm font-bold leading-relaxed">{description}</p>
   </motion.div>
 );
 
@@ -20,145 +28,157 @@ const AboutFinorPage = () => {
   const features = [
     {
       icon: Lightbulb,
-      title: "Simplified News",
-      description: "We break down complex financial jargon into clear, easy-to-understand stories for everyone."
+      title: "Crystal Clarity",
+      description: "We translate complex institutional jargon into high-fidelity actionable intelligence for every trader."
     },
     {
       icon: Globe,
-      title: "Market Coverage",
-      description: "Comprehensive insights across Stock Markets, Crypto, and Global Economic shifts."
+      title: "Fleet Coverage",
+      description: "Deep-dive analysis across equity markets, digital assets, and critical global economic shifts."
     },
     {
       icon: Activity,
-      title: "Actionable Insights",
-      description: "We don't just report news; we help you understand the 'why' and how it affects your portfolio."
+      title: "Market Alpha",
+      description: "We don't just report events; we decode the strategic 'why' and its impact on your capital allocation."
     },
     {
       icon: Zap,
-      title: "Modern Approach",
-      description: "Designed specifically for today's fast-paced learners, traders, and long-term investors."
+      title: "Pulse Engine",
+      description: "Built for the high-velocity learner. Real-time updates delivered with precision and structural depth."
     }
   ];
 
+  const fadeInUp = { initial: { opacity: 0, y: 15 }, animate: { opacity: 1, y: 0 } };
+
   return (
-    <div className="bg-slate-950 min-h-screen text-slate-300">
-      {/* Hero Section */}
-      <section className="relative py-24 overflow-hidden border-b border-slate-900">
-        <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-brand-600/10 blur-[150px] rounded-full"></div>
-        <div className="container mx-auto px-6 relative z-10 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="inline-flex items-center space-x-2 bg-brand-500/10 text-brand-500 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest mb-6 border border-brand-500/20">
-              <Newspaper className="w-4 h-4" />
-              <span>Finor by FinFleet Academy</span>
-            </div>
-            <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 tracking-tight">
-              About <span className="text-brand-600">Finor</span>
-            </h1>
-            <p className="text-xl md:text-2xl text-slate-400 mb-10 max-w-3xl mx-auto font-medium leading-relaxed">
-              Financial News, Simplified. We cut through the noise to bring you the insights that truly matter.
-            </p>
+    <div className="bg-[#F9FAFB] dark:bg-[#080C10] min-h-screen font-sans selection:bg-brand-500/20">
+      
+      {/* 1. Hero Section */}
+      <section className="relative pt-32 pb-40 overflow-hidden border-b border-slate-200 dark:border-slate-800/50">
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-brand-500 rounded-full blur-[150px] opacity-10 -mr-64 -mt-64" />
+        <div className="max-w-7xl mx-auto px-6 relative z-10 text-center md:text-left">
+          <motion.div {...fadeInUp} className="inline-flex items-center space-x-2 bg-brand-50 dark:bg-brand-900/20 px-3 py-1.5 rounded-full mb-8 border border-brand-100 dark:border-brand-800">
+             <Radio className="w-3 h-3 text-brand-600" />
+             <span className="text-[9px] font-black uppercase tracking-widest text-brand-700 dark:text-brand-300">The News Infrastructure</span>
           </motion.div>
+          <div className="max-w-4xl">
+             <motion.h1 
+               {...fadeInUp} transition={{ delay: 0.1 }}
+               className="text-6xl md:text-9xl font-black dark:text-white mb-10 leading-[0.9] tracking-tighter"
+             >
+               The Signal <br /> in the <span className="text-gradient">Noise.</span>
+             </motion.h1>
+             <motion.p 
+               {...fadeInUp} transition={{ delay: 0.2 }}
+               className="text-xl md:text-3xl text-slate-500 dark:text-slate-400 font-bold leading-tight"
+             >
+               Finor is the intelligence arm of FinFleet Academy. <br className="hidden md:block" />
+               Raw data, transformed into strategy.
+             </motion.p>
+          </div>
         </div>
       </section>
 
-      {/* Philosophy Section */}
-      <section className="py-24 bg-slate-900/20">
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+      {/* 2. Philosophy Section */}
+      <section className="py-32 bg-white dark:bg-slate-900/20">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
+              initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="relative"
+              className="space-y-10"
             >
-              <div className="absolute -top-10 -left-10 w-32 h-32 bg-brand-600/20 blur-3xl rounded-full"></div>
-              <h2 className="text-4xl font-bold text-white mb-8 leading-tight">
-                Why we created <span className="text-brand-500">Finor</span>
-              </h2>
-              <div className="space-y-6 text-lg text-slate-400">
+              <h2 className="text-xs font-black dark:text-white uppercase tracking-[0.4em] text-slate-400">Institutional Protocol</h2>
+              <div className="space-y-8 text-lg font-bold leading-relaxed text-slate-600 dark:text-slate-400">
                 <p>
-                  Finor is a financial news platform by FinFleet Academy, built to deliver clear, reliable, and simplified insights from the world of finance.
+                  Finor was built to solve a specific market failure: the overwhelming volume of non-actionable information.
                 </p>
                 <p>
-                  In a market full of noise, complex jargon, and overwhelming information, Finor focuses on what truly matters—helping you understand the news, not just read it.
+                  We prioritize signal over story. Our newsroom operates on a zero-noise protocol, delivering only the intelligence that shifts market structure.
                 </p>
-                <p>
-                  Whether you're a beginner starting your first investment or an active market follower, Finor keeps you updated without the confusion.
-                </p>
+                <div className="p-8 bg-slate-950 rounded-[2.5rem] border border-white/5 relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-125 transition-transform"><Compass className="w-16 h-16 text-white" /></div>
+                  <h4 className="text-[10px] font-black text-brand-500 uppercase tracking-widest mb-4">Intel Strategy</h4>
+                  <p className="text-white text-2xl font-black italic tracking-tight">"To provide the fundamental compass for modern capital navigators."</p>
+                </div>
               </div>
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="grid grid-cols-1 gap-6"
+              className="grid grid-cols-1 gap-8"
             >
-              <div className="p-8 bg-slate-900/80 rounded-[2.5rem] border border-slate-800 shadow-2xl">
-                 <div className="flex items-center space-x-4 mb-6">
-                    <div className="p-3 bg-brand-600/20 rounded-2xl">
-                       <ShieldCheck className="w-6 h-6 text-brand-500" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-white">Trust & Clarity</h3>
-                 </div>
-                 <p className="text-slate-400 mb-6">
-                    Our editors work around the clock to verify data and present it in a way that is actionable and honest.
-                 </p>
-                 <div className="h-1 w-full bg-brand-600 rounded-full opacity-30"></div>
+              <div className="p-10 bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-xl">
+                <div className="flex items-center space-x-4 mb-8">
+                   <div className="p-3 bg-brand-50 dark:bg-brand-900/20 rounded-2xl">
+                      <ShieldCheck className="w-6 h-6 text-brand-600" />
+                   </div>
+                   <h3 className="text-2xl font-black dark:text-white uppercase tracking-tighter">Verified Intel</h3>
+                </div>
+                <p className="text-slate-500 dark:text-slate-400 text-sm font-bold leading-relaxed mb-6">
+                  Every data point in the Finor stream is cross-verified against primary institutional sources. We don't trade on rumors.
+                </p>
+                <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                   <motion.div 
+                     initial={{ width: 0 }} whileInView={{ width: '100%' }} viewport={{ once: true }} transition={{ duration: 1.5 }}
+                     className="h-full bg-brand-600" 
+                   />
+                </div>
               </div>
-              <div className="p-8 bg-brand-600/10 rounded-[2.5rem] border border-brand-500/20">
-                 <div className="flex items-center space-x-4 mb-6">
-                    <div className="p-3 bg-brand-600/20 rounded-2xl">
-                       <Target className="w-6 h-6 text-brand-500" />
+              <div className="p-10 bg-brand-600 rounded-[3rem] text-white shadow-2xl shadow-brand-500/20 relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-6 opacity-20"><Target className="w-16 h-16" /></div>
+                <h3 className="text-2xl font-black mb-6 uppercase tracking-tighter">Sector Intelligence</h3>
+                <div className="grid grid-cols-2 gap-6">
+                  {['Institutional Equity', 'Digital Assets', 'Macro Frameworks', 'Strategic Policy'].map((item, i) => (
+                    <div key={i} className="flex items-center space-x-3 text-[10px] font-black uppercase tracking-widest">
+                      <TrendingUp className="w-3.5 h-3.5 text-white/50" />
+                      <span>{item}</span>
                     </div>
-                    <h3 className="text-2xl font-bold text-white">Our Focus</h3>
-                 </div>
-                 <div className="grid grid-cols-2 gap-4">
-                    {['Stock Market', 'Crypto Assets', 'Economic Trends', 'Expert Opinion'].map((item, i) => (
-                      <div key={i} className="flex items-center space-x-2 text-slate-300 font-bold text-sm">
-                        <TrendingUp className="w-4 h-4 text-brand-500" />
-                        <span>{item}</span>
-                      </div>
-                    ))}
-                 </div>
+                  ))}
+                </div>
               </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Feature Cards Grid */}
-      <section className="py-24">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl font-bold text-white mb-6">Built for Modern Investors</h2>
-            <div className="w-20 h-1.5 bg-brand-600 mx-auto rounded-full"></div>
+      {/* 3. Features Grid */}
+      <section className="py-32">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center md:text-left mb-20">
+             <h2 className="text-4xl font-black dark:text-white mb-4 uppercase tracking-tighter">Intel Specifications.</h2>
+             <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">High-Fidelity News Infrastructure</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, idx) => (
-              <FeatureCard key={idx} {...feature} />
+              <FeatureCard key={idx} {...feature} delay={idx * 0.1} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="py-24">
-        <div className="container mx-auto px-6 text-center">
-          <div className="max-w-4xl mx-auto p-12 bg-slate-900 rounded-[3rem] border border-slate-800 shadow-xl relative overflow-hidden">
-             <div className="relative z-10">
-                <h2 className="text-4xl font-bold text-white mb-6">Stay Ahead with Smarter News</h2>
-                <p className="text-slate-400 text-xl mb-10">
-                   Join thousands of modern investors who rely on Finor for clear financial insights.
-                </p>
-                <Link to="/finor" className="btn-primary inline-flex items-center px-10 py-4 text-lg">
-                   Explore Latest News <ArrowRight className="ml-2 w-5 h-5" />
-                </Link>
-             </div>
+      {/* 4. Final CTA */}
+      <section className="py-32">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="bg-slate-950 rounded-[4rem] p-12 md:p-24 text-center relative overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.4)]">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-brand-600 rounded-full blur-[150px] opacity-20 -mr-48 -mt-48" />
+            
+            <div className="relative z-10">
+              <h2 className="text-4xl md:text-7xl font-black text-white mb-8 leading-[0.95] tracking-tighter">Connect to the <br /> <span className="text-brand-500">Live Stream.</span></h2>
+              <p className="text-slate-400 text-lg md:text-xl font-bold mb-12 leading-relaxed">
+                Unlock the full power of Finor intelligence with a premium institutional seat.
+              </p>
+              <Link 
+                to="/finor" 
+                className="inline-flex items-center space-x-3 px-12 py-5 bg-white text-slate-950 rounded-[2rem] font-black text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl"
+              >
+                <span>Enter Intel Console</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
           </div>
         </div>
       </section>
