@@ -4,7 +4,7 @@ import {
   ArrowRight, Bot, BookOpen, Newspaper, Calculator, 
   CheckCircle2, Star, Users, ShieldCheck, Heart, 
   MessageSquare, Zap, TrendingUp, Globe, Sparkles,
-  ShieldAlert, PlayCircle
+  ShieldAlert, PlayCircle, Activity
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';

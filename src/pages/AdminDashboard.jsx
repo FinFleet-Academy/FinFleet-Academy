@@ -5,7 +5,7 @@ import {
   BellRing, Send, Newspaper, BookOpen, PlusCircle, LayoutDashboard,
   ExternalLink, Video, CheckCircle, MessageSquare, Mail, Clock,
   Star, LifeBuoy, AlertCircle, CheckCircle2, Zap, BarChart3, TrendingUp,
-  ShieldCheck, ArrowRight, Filter, MoreVertical
+  ShieldCheck, ArrowRight, Filter, MoreVertical, Activity
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-hot-toast';
