@@ -71,6 +71,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Explicitly handle pre-flight for all routes
 app.use(express.json({ limit: '10kb' }));
 
 // Health Check

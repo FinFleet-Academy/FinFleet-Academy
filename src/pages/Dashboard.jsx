@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   BookOpen, Trophy, TrendingUp, Star, Zap, Calculator, 
   ChevronRight, FileText, Send, Sparkles, ShieldCheck, 
-  Link2, Copy, Users, MessageSquare, Clock, Bot
+  Link2, Copy, Users, MessageSquare, Clock, Bot, Award
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useAuth, PLANS } from '../context/AuthContext';
