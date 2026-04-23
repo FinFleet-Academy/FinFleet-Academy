@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { createChart, ColorType } from 'lightweight-charts';
+import { createChart, ColorType, SeriesType } from 'lightweight-charts';
 
 const StockChart = ({ data, symbol, colors = {} }) => {
   const chartContainerRef = useRef();
@@ -7,39 +7,39 @@ const StockChart = ({ data, symbol, colors = {} }) => {
   useEffect(() => {
     if (!data || data.length === 0) return;
 
-    const handleResize = () => {
-      chart.applyOptions({ width: chartContainerRef.current.clientWidth });
-    };
+    let chart;
+    let handleResize;
 
-    if (!chartContainerRef.current) return;
+    const initChart = () => {
+      if (!chartContainerRef.current) return;
 
-    const chart = createChart(chartContainerRef.current, {
-      layout: {
-        background: { type: ColorType.Solid, color: colors.backgroundColor || 'transparent' },
-        textColor: colors.textColor || '#d1d5db',
-      },
-      grid: {
-        vertLines: { color: colors.gridColor || 'rgba(255, 255, 255, 0.05)' },
-        horzLines: { color: colors.gridColor || 'rgba(255, 255, 255, 0.05)' },
-      },
-      width: chartContainerRef.current.clientWidth || 500,
-      height: 400,
-      timeScale: {
-        borderColor: 'rgba(255, 255, 255, 0.1)',
-        timeVisible: true,
-        secondsVisible: false,
-      },
-      rightPriceScale: {
-        borderColor: 'rgba(255, 255, 255, 0.1)',
-      },
-    });
+      chart = createChart(chartContainerRef.current, {
+        layout: {
+          background: { type: ColorType.Solid, color: colors.backgroundColor || 'transparent' },
+          textColor: colors.textColor || '#d1d5db',
+        },
+        grid: {
+          vertLines: { color: colors.gridColor || 'rgba(255, 255, 255, 0.05)' },
+          horzLines: { color: colors.gridColor || 'rgba(255, 255, 255, 0.05)' },
+        },
+        width: chartContainerRef.current.clientWidth || 500,
+        height: 400,
+        timeScale: {
+          borderColor: 'rgba(255, 255, 255, 0.1)',
+          timeVisible: true,
+          secondsVisible: false,
+        },
+        rightPriceScale: {
+          borderColor: 'rgba(255, 255, 255, 0.1)',
+        },
+      });
 
-    const series = chart.addAreaSeries({
-      lineColor: colors.lineColor || '#22c55e',
-      topColor: colors.topColor || 'rgba(34, 197, 94, 0.2)',
-      bottomColor: colors.bottomColor || 'rgba(34, 197, 94, 0)',
-      lineWidth: 2,
-    });
+      const series = chart.addSeries(SeriesType.Area, {
+        lineColor: colors.lineColor || '#22c55e',
+        topColor: colors.topColor || 'rgba(34, 197, 94, 0.2)',
+        bottomColor: colors.bottomColor || 'rgba(34, 197, 94, 0)',
+        lineWidth: 2,
+      });
 
     // Format data for lightweight-charts (needs time as unix timestamp and value)
     const formattedData = data.map(item => ({
