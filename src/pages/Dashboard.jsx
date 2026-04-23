@@ -1,36 +1,32 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, Trophy, Clock, TrendingUp, Award, PlayCircle, Star, ShieldCheck, Bell, CheckCircle2, LayoutDashboard, Wallet, MessageSquare } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import BudgetTracker from '../components/dashboard/BudgetTracker';
+import { BookOpen, Trophy, TrendingUp, Award, Star, Bell, CheckCircle2, Wallet, Users, MessageSquare, Zap, Calculator, ChevronRight, FileText, Send, Sparkles, ShieldCheck } from 'lucide-react';
+import { useAuth, PLANS } from '../context/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const Dashboard = () => {
   const { user, plan, notifications, markNotificationRead } = useAuth();
-  const [courses, setCourses] = React.useState([]);
-  const [bookmarks, setBookmarks] = React.useState([]);
-  const [dailyInsight, setDailyInsight] = React.useState(null);
-  const [loading, setLoading] = React.useState(true);
+  const [courses, setCourses] = useState([]);
+  const [bookmarks, setBookmarks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [chatInput, setChatInput] = useState('');
+  const navigate = useNavigate();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       try {
-        const [courseRes, bookmarkRes, insightRes] = await Promise.all([
+        const [courseRes, bookmarkRes] = await Promise.all([
           axios.get('/api/courses/progress').catch(() => ({ data: [] })),
-          axios.get('/api/bookmarks').catch(() => ({ data: [] })),
-          axios.get('/api/insights/today').catch(() => ({ data: null }))
+          axios.get('/api/bookmarks').catch(() => ({ data: [] }))
         ]);
         
         const mappedCourses = courseRes.data.map(p => ({
           title: p.courseId.title,
           progress: p.completed ? 100 : 50,
-          icon: BookOpen,
-          color: p.courseId.color || 'text-brand-600',
-          bg: p.courseId.bg || 'bg-brand-100'
         }));
         setCourses(mappedCourses);
-        setBookmarks(bookmarkRes.data.slice(0, 3)); // Show top 3 bookmarks
-        setDailyInsight(insightRes.data);
+        setBookmarks(bookmarkRes.data.slice(0, 4));
       } catch (err) {
         console.error("Failed to fetch dashboard data", err);
       } finally {
@@ -40,190 +36,247 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  // Filter notifications for this user or 'ALL' broadcast
   const userNotifs = notifications.filter(n => n.userEmail === 'ALL' || n.userEmail === user?.email);
   const unreadCount = userNotifs.filter(n => !n.read).length;
 
+  const handleQuickChat = (e) => {
+    e.preventDefault();
+    if (chatInput.trim()) {
+      // In a real app, we might pass this via state to the ChatPage
+      navigate('/chatbot');
+    }
+  };
+
   return (
-    <div className="py-12 bg-slate-50 dark:bg-slate-950 min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Welcome Header */}
-        <div className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-center">
+    <div className="bg-slate-50 dark:bg-slate-950 min-h-[calc(100vh-64px)] pb-24 font-sans text-slate-900 dark:text-slate-100">
+      
+      {/* Header */}
+      <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 py-8 px-4 sm:px-6 lg:px-8 mb-8 transition-colors">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold dark:text-white">Welcome back, {user?.name || 'Student'}!</h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-1">Check your progress and continue your learning journey.</p>
+            <h1 className="text-2xl font-bold">Overview</h1>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Welcome back, {user?.name?.split(' ')[0] || 'Student'}. Here's what's happening today.</p>
           </div>
-          <div className="mt-4 md:mt-0 flex items-center space-x-2 bg-brand-600 text-white px-4 py-2 rounded-xl shadow-sm hover:bg-brand-700 transition-colors cursor-pointer">
-            <Star className="w-4 h-4 fill-current" />
-            <span className="text-sm font-bold">{plan} Member</span>
+          <div className="flex items-center space-x-3">
+            <Link to="/courses" className="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-sm font-medium transition-colors">
+              Browse Courses
+            </Link>
+            <Link to="/chatbot" className="px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 rounded-lg text-sm font-medium transition-colors flex items-center">
+              <Sparkles className="w-4 h-4 mr-2" />
+              Open AI Assistant
+            </Link>
           </div>
         </div>
+      </header>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-          {[
-            { label: 'Plan Status', value: plan || 'Free', icon: Star, detail: 'Active Subscription' },
-            { label: 'Messages Used', value: user?.chatCount || '0', icon: MessageSquare, detail: 'Daily AI Usage' },
-            { label: 'Saved Items', value: bookmarks.length || '0', icon: Award, detail: 'Bookmarks' },
-            { label: 'Learning Progress', value: courses.length || '0', icon: BookOpen, detail: 'Active Courses' },
-          ].map((stat, i) => (
-            <div key={i} className="card-premium p-6">
-              <div className="flex justify-between items-start mb-4">
-                <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
-                  <stat.icon className="w-5 h-5 text-brand-600" />
-                </div>
-                <span className="text-[10px] font-bold text-accent-success uppercase tracking-wider">{stat.detail}</span>
-              </div>
-              <div className="text-2xl font-bold dark:text-white capitalize">{stat.value}</div>
-              <div className="text-xs text-slate-500 uppercase tracking-widest mt-1">{stat.label}</div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        
+        {/* 1. TOP KPI ROW */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Active Community</span>
+              <Users className="w-4 h-4 text-slate-400" />
             </div>
-          ))}
+            <div>
+              <div className="text-2xl font-bold">15,234</div>
+              <div className="text-xs text-emerald-500 mt-1 font-medium">+12% this month</div>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-sm font-medium text-slate-500 dark:text-slate-400">AI Usage</span>
+              <Zap className="w-4 h-4 text-slate-400" />
+            </div>
+            <div>
+              <div className="text-2xl font-bold">{user?.chatCount || 0} <span className="text-sm text-slate-400 font-normal">msgs</span></div>
+              <div className="text-xs text-slate-500 mt-1">Resets daily at midnight</div>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Subscription</span>
+              <Star className="w-4 h-4 text-brand-500" />
+            </div>
+            <div>
+              <div className="text-2xl font-bold capitalize">{plan === 'ELITE PRIME' ? 'Prime' : plan.toLowerCase()}</div>
+              <div className="text-xs text-brand-600 dark:text-brand-400 mt-1 font-medium">
+                {plan === PLANS.FREE ? <Link to="/pricing" className="hover:underline">Upgrade available</Link> : 'Active plan'}
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Revenue / Usage</span>
+              <Wallet className="w-4 h-4 text-slate-400" />
+            </div>
+            <div>
+              <div className="text-2xl font-bold">₹{plan === PLANS.PRIME ? '1999' : plan === PLANS.ELITE ? '699' : plan === PLANS.PRO ? '199' : '0'}</div>
+              <div className="text-xs text-slate-500 mt-1">Current monthly value</div>
+            </div>
+          </div>
         </div>
 
-        {/* Budget Tracker Section */}
-        <div className="mb-12">
-          <h3 className="text-xl font-bold dark:text-white flex items-center mb-6">
-            <Wallet className="w-5 h-5 mr-2 text-brand-600" />
-            Financial Overview
-          </h3>
-          <BudgetTracker />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* 2. MAIN ACTION ZONE */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
-          {/* Active Courses */}
-          <div className="lg:col-span-2 space-y-6">
-            <h3 className="text-xl font-bold dark:text-white flex items-center">
-              <PlayCircle className="w-5 h-5 mr-2 text-brand-600" />
-              Continue Learning
-            </h3>
-            <div className="space-y-4">
-              {courses.map((course, i) => (
-                <div key={i} className="card-premium p-6 flex flex-col md:flex-row md:items-center gap-6">
-                  <div className={`w-14 h-14 ${course.bg} rounded-2xl flex items-center justify-center shrink-0`}>
-                    <course.icon className={`w-7 h-7 ${course.color}`} />
+          {/* AI Chat Panel (Primary) */}
+          <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50">
+              <h2 className="font-semibold flex items-center">
+                <MessageSquare className="w-4 h-4 mr-2 text-brand-600" />
+                Quick AI Assistant
+              </h2>
+              <Link to="/chatbot" className="text-xs text-brand-600 hover:text-brand-700 font-medium flex items-center">
+                Full interface <ChevronRight className="w-3 h-3 ml-1" />
+              </Link>
+            </div>
+            <div className="p-6 flex-grow flex flex-col justify-end bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-50 to-white dark:from-slate-900 dark:to-slate-900">
+              <div className="space-y-4 mb-6">
+                <div className="flex items-start max-w-[85%]">
+                  <div className="w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-900/30 flex items-center justify-center mr-3 shrink-0">
+                    <Sparkles className="w-4 h-4 text-brand-600" />
                   </div>
-                  <div className="flex-grow">
-                    <h4 className="font-bold dark:text-white mb-2">{course.title}</h4>
-                    <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${course.progress}%` }}
-                        className="h-full bg-brand-600"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex justify-between md:flex-col md:items-end gap-2">
-                    <span className="text-sm font-bold text-brand-600">{course.progress}%</span>
-                    <button className="text-xs font-bold text-slate-400 hover:text-brand-600 transition-colors">Resume Lesson</button>
+                  <div className="bg-slate-100 dark:bg-slate-800 p-3 rounded-2xl rounded-tl-sm text-sm text-slate-700 dark:text-slate-300">
+                    Hello! I'm FinFleet AI. What financial topic would you like to explore right now?
                   </div>
                 </div>
-              ))}
-            </div>
-            
-            {/* Notifications Panel */}
-            <div className="mt-8">
-              <h3 className="text-xl font-bold dark:text-white flex items-center mb-6">
-                <Bell className="w-5 h-5 mr-2 text-brand-600" />
-                Notifications
-                {unreadCount > 0 && (
-                   <span className="ml-3 bg-brand-600 text-white text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full">
-                     {unreadCount} New
-                   </span>
-                )}
-              </h3>
-              <div className="card-premium p-0 overflow-hidden">
-                {userNotifs.length === 0 ? (
-                  <div className="p-6 text-center text-slate-500">
-                    No notifications at this time.
-                  </div>
-                ) : (
-                  <div className="divide-y divide-slate-100 dark:divide-slate-800">
-                    <AnimatePresence>
-                      {userNotifs.map((notif) => (
-                        <motion.div 
-                          key={notif._id}
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          exit={{ opacity: 0, height: 0 }}
-                          className={`p-4 transition-colors ${notif.read ? 'bg-white dark:bg-slate-900' : 'bg-brand-50 dark:bg-brand-900/10'}`}
-                        >
-                          <div className="flex justify-between items-start gap-4">
-                            <div>
-                               <p className={`text-sm ${notif.read ? 'text-slate-600 dark:text-slate-400' : 'text-slate-900 dark:text-white font-bold'}`}>
-                                 {notif.message}
-                               </p>
-                               <span className="text-xs text-slate-400 mt-1 block">
-                                 {new Date(notif.date).toLocaleDateString()} at {new Date(notif.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                               </span>
-                            </div>
-                            {!notif.read && (
-                              <button 
-                                onClick={() => markNotificationRead(notif.id)}
-                                className="text-brand-600 hover:text-brand-700 p-1"
-                                title="Mark as read"
-                              >
-                                <CheckCircle2 className="w-5 h-5" />
-                              </button>
-                            )}
-                          </div>
-                        </motion.div>
-                      ))}
-                    </AnimatePresence>
-                  </div>
-                )}
               </div>
+              <form onSubmit={handleQuickChat} className="relative">
+                <input 
+                  type="text" 
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  placeholder="Ask about SIPs, market trends, or stock analysis..."
+                  className="w-full pl-4 pr-12 py-3 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/50 transition-shadow dark:text-white"
+                />
+                <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg transition-colors">
+                  <Send className="w-4 h-4" />
+                </button>
+              </form>
             </div>
           </div>
 
-          {/* Side Column (Certifications & Badges) */}
-          <div className="space-y-6">
-            <h3 className="text-xl font-bold dark:text-white flex items-center">
-              <Award className="w-5 h-5 mr-2 text-brand-600" />
-              Achievements
-            </h3>
-            <div className="card-premium p-6 space-y-6">
-              <div className="flex items-center space-x-4 p-3 bg-brand-50 dark:bg-brand-900/10 rounded-xl border border-brand-100 dark:border-brand-800/50">
-                <div className="p-2 bg-brand-100 dark:bg-brand-900/30 rounded-lg">
-                  <Award className="w-6 h-6 text-brand-600" />
-                </div>
-                <div>
-                  <div className="text-sm font-bold dark:text-white">Trading Basics</div>
-                  <div className="text-[10px] text-slate-500">Verified April 2024</div>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-4 p-3 grayscale opacity-50 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
-                <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
-                  <Trophy className="w-6 h-6 text-slate-400" />
-                </div>
-                <div>
-                  <div className="text-sm font-bold dark:text-white">Pro Analyst</div>
-                  <div className="text-[10px] text-slate-500">In Progress (60%)</div>
-                </div>
-              </div>
-
-              <button className="w-full py-3 text-xs font-bold text-slate-500 hover:text-brand-600 border border-slate-200 dark:border-slate-800 rounded-xl transition-all">
-                View All Certificates
-              </button>
+          {/* Quick Tools */}
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+              <h2 className="font-semibold flex items-center">
+                <Calculator className="w-4 h-4 mr-2 text-brand-600" />
+                Smart Tools
+              </h2>
             </div>
+            <div className="p-4 space-y-2">
+              <Link to="/tools" className="group flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 flex items-center justify-center mr-4">
+                    <TrendingUp className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold dark:text-white">SIP Calculator</h3>
+                    <p className="text-xs text-slate-500">Plan your investments</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors" />
+              </Link>
 
-            {/* Newsletter/Insights Card */}
-            <div className="card-premium p-6 border border-slate-200 dark:border-slate-800">
-              <h4 className="font-bold mb-2 dark:text-white flex items-center">
-                <TrendingUp className="w-4 h-4 mr-2 text-brand-600" />
-                Daily Insight
-              </h4>
-              {dailyInsight ? (
-                <>
-                  <h5 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-1">{dailyInsight.title}</h5>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 line-clamp-3">{dailyInsight.content}</p>
-                </>
+              <Link to="/tools" className="group flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 flex items-center justify-center mr-4">
+                    <ShieldCheck className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold dark:text-white">Risk Profiler</h3>
+                    <p className="text-xs text-slate-500">Know your tolerance</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors" />
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* 3. SECONDARY SECTION & DATA TABLES */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          {/* Saved Items / Bookmarks */}
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50">
+              <h2 className="font-semibold flex items-center text-sm">
+                <BookOpen className="w-4 h-4 mr-2 text-slate-500" />
+                Saved Content
+              </h2>
+            </div>
+            <div className="p-0">
+              {bookmarks.length > 0 ? (
+                <ul className="divide-y divide-slate-100 dark:divide-slate-800">
+                  {bookmarks.map((b, i) => (
+                    <li key={i} className="px-6 py-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                      <Link to={`/finor/${b.itemId}`} className="flex items-start">
+                        <FileText className="w-4 h-4 text-slate-400 mr-3 mt-0.5 shrink-0" />
+                        <div>
+                          <p className="text-sm font-medium dark:text-white line-clamp-1">{b.title || 'Saved Article'}</p>
+                          <p className="text-xs text-slate-500 mt-1 capitalize">{b.itemType}</p>
+                        </div>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               ) : (
-                <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">Stay tuned for today's market insight.</p>
+                <div className="p-8 text-center text-sm text-slate-500">
+                  No saved items yet. Explore the News hub to bookmark articles.
+                </div>
               )}
-              <button className="w-full py-2 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-200 rounded-lg text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">Read Full Brief</button>
+            </div>
+          </div>
+
+          {/* Learning Progress Table */}
+          <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50">
+              <h2 className="font-semibold flex items-center text-sm">
+                <Trophy className="w-4 h-4 mr-2 text-brand-600" />
+                Learning Progress
+              </h2>
+              <Link to="/courses" className="text-xs font-medium text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors">View All</Link>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm whitespace-nowrap">
+                <thead className="bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800">
+                  <tr>
+                    <th className="px-6 py-3 font-medium text-slate-500 dark:text-slate-400">Course Name</th>
+                    <th className="px-6 py-3 font-medium text-slate-500 dark:text-slate-400">Status</th>
+                    <th className="px-6 py-3 font-medium text-slate-500 dark:text-slate-400 w-1/3">Progress</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                  {courses.length > 0 ? courses.map((course, i) => (
+                    <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
+                      <td className="px-6 py-4 font-medium dark:text-white">{course.title}</td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${course.progress === 100 ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-400'}`}>
+                          {course.progress === 100 ? 'Completed' : 'In Progress'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center space-x-3">
+                          <div className="flex-grow h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                            <div className={`h-full rounded-full ${course.progress === 100 ? 'bg-emerald-500' : 'bg-brand-500'}`} style={{ width: `${course.progress}%` }} />
+                          </div>
+                          <span className="text-xs text-slate-500 font-medium w-8">{course.progress}%</span>
+                        </div>
+                      </td>
+                    </tr>
+                  )) : (
+                    <tr>
+                      <td colSpan="3" className="px-6 py-8 text-center text-slate-500">
+                        You haven't started any courses yet.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
 
