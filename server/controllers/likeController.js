@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Like from '../models/Like.js';
 
 // Toggle like — returns new count and whether user now likes it
@@ -47,9 +48,12 @@ export const getBulkLikeStatus = async (req, res) => {
     const { targetIds, targetType } = req.body;
     if (!Array.isArray(targetIds)) return res.status(400).json({ message: 'targetIds must be array' });
 
+    // Convert string IDs to ObjectIds for the aggregation match
+    const objectIds = targetIds.map(id => new mongoose.Types.ObjectId(id));
+
     const [counts, userLikes] = await Promise.all([
       Like.aggregate([
-        { $match: { targetId: { $in: targetIds.map(id => new (await import('mongoose')).default.Types.ObjectId(id)) }, targetType } },
+        { $match: { targetId: { $in: objectIds }, targetType } },
         { $group: { _id: '$targetId', count: { $sum: 1 } } }
       ]),
       Like.find({ user: req.user.id, targetId: { $in: targetIds }, targetType }).select('targetId'),
@@ -65,6 +69,7 @@ export const getBulkLikeStatus = async (req, res) => {
 
     res.json(result);
   } catch (error) {
+    console.error('Bulk Like Error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
