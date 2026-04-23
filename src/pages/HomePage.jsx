@@ -15,16 +15,16 @@ const HomePage = () => {
             <span className="text-brand-600">Use AI.</span> Make Better Decisions.
           </h1>
           <p className="text-lg md:text-xl text-slate-500 dark:text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-            FinFleet is your all-in-one financial operating system. Master the markets through structured learning, stay updated with simplified news, and use our AI assistant to analyze investments.
+            FinFleet is an AI-powered platform for financial learning, insights, and smart tools for beginners.
           </p>
           
           <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
-            <Link to="/signup" className="w-full sm:w-auto px-8 py-4 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl transition-all flex items-center justify-center">
-              Start Learning
+            <Link to="/chatbot" className="w-full sm:w-auto px-8 py-4 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl transition-all flex items-center justify-center">
+              Try AI Assistant
               <ArrowRight className="w-5 h-5 ml-2" />
             </Link>
-            <Link to="/chatbot" className="w-full sm:w-auto px-8 py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl transition-all">
-              Try AI Assistant
+            <Link to="/courses" className="w-full sm:w-auto px-8 py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl transition-all">
+              Start Learning
             </Link>
           </div>
         </motion.div>
@@ -128,10 +128,10 @@ const HomePage = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {/* Free Plan */}
+          {/* Basic Plan */}
           <div className="p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Free</h3>
-            <div className="text-4xl font-extrabold text-slate-900 dark:text-white mb-6">₹0<span className="text-base font-medium text-slate-500">/mo</span></div>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Basic</h3>
+            <div className="text-4xl font-extrabold text-slate-900 dark:text-white mb-6">₹199<span className="text-base font-medium text-slate-500">/mo</span></div>
             <ul className="space-y-4 mb-8">
               {['3 AI Prompts per day', 'Basic Learning Hub', 'Daily Finor News'].map((f, i) => (
                 <li key={i} className="flex items-center text-sm text-slate-600 dark:text-slate-300">
@@ -146,7 +146,7 @@ const HomePage = () => {
           <div className="p-8 rounded-3xl bg-slate-900 dark:bg-slate-950 border-2 border-brand-500 relative transform md:-translate-y-4 shadow-xl">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-brand-500 text-white text-xs font-bold uppercase tracking-widest py-1 px-3 rounded-full">Most Popular</div>
             <h3 className="text-xl font-bold text-white mb-2">Pro</h3>
-            <div className="text-4xl font-extrabold text-white mb-6">₹499<span className="text-base font-medium text-slate-400">/mo</span></div>
+            <div className="text-4xl font-extrabold text-white mb-6">₹699<span className="text-base font-medium text-slate-400">/mo</span></div>
             <ul className="space-y-4 mb-8">
               {['20 AI Prompts per day', 'All Premium Courses', 'Unlimited Bookmarks', 'Community Comments'].map((f, i) => (
                 <li key={i} className="flex items-center text-sm text-slate-300">
@@ -160,7 +160,7 @@ const HomePage = () => {
           {/* Elite Plan */}
           <div className="p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Elite</h3>
-            <div className="text-4xl font-extrabold text-slate-900 dark:text-white mb-6">₹999<span className="text-base font-medium text-slate-500">/mo</span></div>
+            <div className="text-4xl font-extrabold text-slate-900 dark:text-white mb-6">₹1999<span className="text-base font-medium text-slate-500">/mo</span></div>
             <ul className="space-y-4 mb-8">
               {['100 AI Prompts per day', 'Advanced Calculators', 'Priority Support'].map((f, i) => (
                 <li key={i} className="flex items-center text-sm text-slate-600 dark:text-slate-300">
