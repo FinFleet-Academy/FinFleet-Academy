@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowRight, Bot, BookOpen, Newspaper, Calculator, 
@@ -8,6 +8,8 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+
+const LiveChartHero = lazy(() => import('../components/shared/LiveChartHero'));
 
 const HomePage = () => {
   const [courses, setCourses] = useState([]);
@@ -38,54 +40,10 @@ const HomePage = () => {
   return (
     <div className="bg-[#F9FAFB] dark:bg-[#080C10] min-h-screen font-sans selection:bg-brand-500/20 overflow-x-hidden">
       
-      {/* 1. HERO SECTION */}
-      <section className="relative pt-20 pb-20 md:pt-32 md:pb-28 px-6 overflow-hidden">
-        {/* Background Elements */}
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-500 rounded-full blur-[160px] opacity-10 -mr-64 -mt-64" />
-        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-500 rounded-full blur-[140px] opacity-10 -ml-64 -mb-64" />
-        
-        <div className="max-w-6xl mx-auto relative z-10 text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center space-x-3 bg-brand-50 dark:bg-brand-900/20 px-5 py-2.5 rounded-full mb-6 border border-brand-100 dark:border-brand-800"
-          >
-             <div className="flex h-2 w-2">
-                <div className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-brand-400 opacity-75"></div>
-                <div className="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></div>
-             </div>
-             <span className="text-[10px] font-black text-brand-700 dark:text-brand-300 uppercase tracking-widest">Master Your Finances</span>
-          </motion.div>
-
-          <motion.h1 
-            {...fadeInUp} transition={{ duration: 0.5 }}
-            className="text-5xl md:text-7xl font-black text-slate-900 dark:text-white leading-tight tracking-tight mb-6"
-          >
-            FinFleet <br /> <span className="text-gradient">Academy.</span>
-          </motion.h1>
-
-          <motion.p 
-            {...fadeInUp} transition={{ delay: 0.15, duration: 0.5 }}
-            className="text-lg md:text-xl text-slate-600 dark:text-slate-300 mb-10 max-w-2xl mx-auto leading-relaxed"
-          >
-            Learn finance the right way with practical tools, structured courses, and a strong community of learners.
-          </motion.p>
-          
-          <motion.div 
-            {...fadeInUp} transition={{ delay: 0.25, duration: 0.5 }}
-            className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6"
-          >
-            <Link to="/courses" className="btn-brand py-4 px-10 text-[11px] font-black uppercase tracking-wide shadow-xl shadow-brand-500/30 flex items-center group">
-              Get Started
-              <ArrowRight className="w-4 h-4 ml-3 group-hover:translate-x-2 transition-transform" />
-            </Link>
-            <Link to="/community" className="btn-secondary py-4 px-10 text-[11px] font-black uppercase tracking-wide dark:text-white flex items-center group">
-              Join Community
-              <Globe className="w-4 h-4 ml-3 group-hover:rotate-12 transition-transform" />
-            </Link>
-          </motion.div>
-        </div>
-      </section>
+      {/* 1. PREMIUM HERO SECTION */}
+      <Suspense fallback={<div className="h-[700px] flex items-center justify-center bg-slate-950"><div className="w-12 h-12 border-4 border-brand-500 border-t-transparent rounded-full animate-spin" /></div>}>
+        <LiveChartHero />
+      </Suspense>
 
       {/* 2. METRICS SECTION */}
       <section className="py-14 border-y border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-slate-900/30 backdrop-blur-md">
