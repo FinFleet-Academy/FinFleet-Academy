@@ -1,6 +1,6 @@
 import express from 'express';
 import LiveClass from '../models/LiveClass.js';
-import { verifyToken, isAdmin } from '../middleware/authMiddleware.js';
+import { protect, admin } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
 });
 
 // Admin: Create a class
-router.post('/', verifyToken, isAdmin, async (req, res) => {
+router.post('/', protect, admin, async (req, res) => {
   try {
     const newClass = new LiveClass(req.body);
     await newClass.save();
@@ -26,7 +26,7 @@ router.post('/', verifyToken, isAdmin, async (req, res) => {
 });
 
 // Admin: Update a class
-router.put('/:id', verifyToken, isAdmin, async (req, res) => {
+router.put('/:id', protect, admin, async (req, res) => {
   try {
     const updatedClass = await LiveClass.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json(updatedClass);
@@ -36,7 +36,7 @@ router.put('/:id', verifyToken, isAdmin, async (req, res) => {
 });
 
 // Admin: Delete a class
-router.delete('/:id', verifyToken, isAdmin, async (req, res) => {
+router.delete('/:id', protect, admin, async (req, res) => {
   try {
     await LiveClass.findByIdAndDelete(req.params.id);
     res.json({ message: 'Class deleted' });
@@ -46,7 +46,7 @@ router.delete('/:id', verifyToken, isAdmin, async (req, res) => {
 });
 
 // User: Express interest (Remind me)
-router.post('/:id/interest', verifyToken, async (req, res) => {
+router.post('/:id/interest', protect, async (req, res) => {
   try {
     const liveClass = await LiveClass.findById(req.params.id);
     if (!liveClass.interestedUsers.includes(req.user.id)) {
