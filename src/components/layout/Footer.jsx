@@ -17,10 +17,10 @@ const Footer = () => {
     try {
       setIsSubmitting(true);
       await axios.post('/api/subscribers', { email, source: 'footer' });
-      toast.success('Identity Registered. Intelligence Feed Subscribed.');
+      toast.success('Success! You have subscribed to our newsletter.');
       setEmail('');
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Subscription protocol failure.');
+      toast.error(error.response?.data?.message || 'Subscription failed. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -43,11 +43,11 @@ const Footer = () => {
               </div>
               <div>
                  <span className="text-2xl font-black dark:text-white tracking-tighter uppercase leading-none block">FinFleet</span>
-                 <span className="text-[10px] font-black text-brand-600 uppercase tracking-[0.4em] leading-none mt-1 block">Academy Terminal</span>
+                 <span className="text-[10px] font-black text-brand-600 uppercase tracking-[0.4em] leading-none mt-1 block">Academy</span>
               </div>
             </Link>
             <p className="text-sm font-bold text-slate-500 dark:text-slate-400 leading-relaxed max-w-sm">
-              The world's most advanced financial education infrastructure. Empowering the elite retail mind with institutional rigor and AI-powered intelligence.
+              The world's most advanced financial education platform. Empowering retail traders with institutional-grade knowledge and AI-powered insights.
             </p>
             <div className="flex items-center space-x-4">
               {[
@@ -66,47 +66,47 @@ const Footer = () => {
           <div className="lg:col-span-5 grid grid-cols-2 gap-10">
             <div className="space-y-8">
               <h4 className="text-[11px] font-black dark:text-white uppercase tracking-[0.3em] flex items-center">
-                 <Zap className="w-4 h-4 mr-3 text-brand-600" /> Infrastructure
+                 <Zap className="w-4 h-4 mr-3 text-brand-600" /> Resources
               </h4>
               <ul className="space-y-4 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                <li><Link to="/courses" className="hover:text-brand-600 transition-colors">Academy Modules</Link></li>
-                <li><Link to="/community" className="hover:text-brand-600 transition-colors">Fleet Community</Link></li>
-                <li><Link to="/tools" className="hover:text-brand-600 transition-colors">Execution Tools</Link></li>
-                <li><Link to="/finor" className="hover:text-brand-600 transition-colors">Intelligence Feed</Link></li>
+                <li><Link to="/courses" className="hover:text-brand-600 transition-colors">Courses</Link></li>
+                <li><Link to="/community" className="hover:text-brand-600 transition-colors">Community</Link></li>
+                <li><Link to="/tools" className="hover:text-brand-600 transition-colors">Trading Tools</Link></li>
+                <li><Link to="/finor" className="hover:text-brand-600 transition-colors">Market News</Link></li>
               </ul>
             </div>
             <div className="space-y-8">
               <h4 className="text-[11px] font-black dark:text-white uppercase tracking-[0.3em] flex items-center">
-                 <Globe className="w-4 h-4 mr-3 text-brand-600" /> Operational
+                 <Globe className="w-4 h-4 mr-3 text-brand-600" /> Company
               </h4>
               <ul className="space-y-4 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                <li><Link to="/about" className="hover:text-brand-600 transition-colors">Manifesto</Link></li>
-                <li><Link to="/pricing" className="hover:text-brand-600 transition-colors">Onboarding Tiers</Link></li>
-                <li><Link to="/contact" className="hover:text-brand-600 transition-colors">Support Deck</Link></li>
-                <li><Link to="/feedback" className="hover:text-brand-600 transition-colors">User Intel</Link></li>
+                <li><Link to="/about" className="hover:text-brand-600 transition-colors">About Us</Link></li>
+                <li><Link to="/pricing" className="hover:text-brand-600 transition-colors">Pricing</Link></li>
+                <li><Link to="/contact" className="hover:text-brand-600 transition-colors">Help Center</Link></li>
+                <li><Link to="/feedback" className="hover:text-brand-600 transition-colors">Feedback</Link></li>
               </ul>
             </div>
           </div>
 
-          {/* Subscription Terminal */}
+          {/* Newsletter Section */}
           <div className="lg:col-span-3 space-y-10">
             <div className="bg-slate-50 dark:bg-slate-900/50 p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-inner">
                <h4 className="text-[11px] font-black dark:text-white uppercase tracking-[0.3em] mb-6 flex items-center">
-                  <Mail className="w-4 h-4 mr-3 text-brand-600" /> Intel Dispatch
+                  <Mail className="w-4 h-4 mr-3 text-brand-600" /> Newsletter
                </h4>
                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed mb-6">
-                 Commit your identifier to receive real-time strategic updates.
+                 Subscribe to receive the latest market updates and course news.
                </p>
                <form onSubmit={handleSubscribe} className="space-y-3">
                  <input
-                   type="email" placeholder="NODE@EMAIL.COM" required 
+                   type="email" placeholder="YOUR@EMAIL.COM" required 
                    value={email} onChange={(e) => setEmail(e.target.value)} disabled={isSubmitting}
                    className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-5 py-4 text-[10px] font-black uppercase tracking-widest dark:text-white outline-none focus:ring-4 focus:ring-brand-500/5 transition-all"
                  />
                  <button type="submit" disabled={isSubmitting} className="w-full btn-brand py-4 rounded-xl text-[9px] font-black uppercase tracking-[0.3em] flex items-center justify-center group shadow-xl">
-                   {isSubmitting ? 'Syncing...' : (
+                   {isSubmitting ? 'Subscribing...' : (
                      <>
-                        Initialize Sync <ArrowRight className="w-3.5 h-3.5 ml-2 group-hover:translate-x-1 transition-transform" />
+                        Subscribe Now <ArrowRight className="w-3.5 h-3.5 ml-2 group-hover:translate-x-1 transition-transform" />
                      </>
                    )}
                  </button>
@@ -115,7 +115,7 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Risk Protocol Banner */}
+        {/* Disclaimer Section */}
         <div className="py-8 border-y border-slate-100 dark:border-slate-900 mb-12">
            <div className="flex flex-col md:flex-row items-center justify-between gap-8">
               <div className="flex items-center space-x-6 max-w-3xl">
@@ -123,7 +123,7 @@ const Footer = () => {
                     <ShieldAlert className="w-6 h-6 text-amber-500" />
                  </div>
                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">
-                   <span className="text-slate-900 dark:text-slate-200 font-black">Risk Protocol:</span> Capital markets involve substantial risk. Content is for educational purposes only. No financial advice provided. Past performance does not guarantee future results.
+                   <span className="text-slate-900 dark:text-slate-200 font-black">Disclaimer:</span> Capital markets involve substantial risk. Content is for educational purposes only. No financial advice provided. Past performance does not guarantee future results.
                  </p>
               </div>
               <div className="flex items-center space-x-8 text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">
@@ -136,7 +136,7 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="flex flex-col md:flex-row justify-between items-center text-[9px] font-black text-slate-400 uppercase tracking-[0.5em] gap-6">
-          <p>© {currentYear} FinFleet Infrastructure. All Rights Reserved.</p>
+          <p>© {currentYear} FinFleet Academy. All Rights Reserved.</p>
           <div className="flex items-center space-x-3 text-slate-300 dark:text-slate-800">
              <Sparkles className="w-4 h-4 fill-current" />
              <div className="w-12 h-px bg-current" />

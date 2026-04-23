@@ -144,7 +144,7 @@ const PrivateChat = ({ currentUser }) => {
             <div className="w-20 h-20 bg-white dark:bg-slate-900 rounded-[2rem] flex items-center justify-center mx-auto shadow-sm border border-slate-100 dark:border-slate-800">
               <Sparkles className="w-10 h-10 text-brand-600" />
             </div>
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Select a Secure Conversation</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Select a conversation to start chatting</p>
           </div>
         </div>
       )}
@@ -189,7 +189,7 @@ const AIChat = ({ user, plan, chatCount, setChatCount }) => {
       setMessages(prev => [...prev, { role: 'assistant', content: data.message }]);
       if (setChatCount) setChatCount(data.chatCount);
     } catch {
-      toast.error("AI is recalibrating. Please wait.");
+      toast.error("AI is thinking. Please wait.");
       setMessages(prev => prev.slice(0, -1));
     } finally { setIsTyping(false); }
   };
@@ -202,7 +202,7 @@ const AIChat = ({ user, plan, chatCount, setChatCount }) => {
            <div className="w-12 h-12 bg-brand-600 rounded-2xl flex items-center justify-center shadow-lg shadow-brand-500/20 mb-6">
               <Zap className="w-6 h-6 text-white" />
            </div>
-           <h2 className="text-sm font-black uppercase tracking-widest dark:text-white mb-2">Platform Intel</h2>
+           <h2 className="text-sm font-black uppercase tracking-widest dark:text-white mb-2">Platform Insights</h2>
            <p className="text-[10px] font-bold text-slate-400 leading-relaxed mb-10">Access real-time stock analysis, SIP projections, and risk modeling.</p>
            
            <div className="space-y-4">
@@ -228,7 +228,7 @@ const AIChat = ({ user, plan, chatCount, setChatCount }) => {
            </div>
            <div className="flex items-center space-x-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              <span className="text-[9px] font-black uppercase text-emerald-500 tracking-tighter">Live Engine</span>
+              <span className="text-[9px] font-black uppercase text-emerald-500 tracking-tighter">Active</span>
            </div>
         </div>
 
@@ -289,8 +289,8 @@ const ChatPage = () => {
             <Lock className="w-10 h-10 text-brand-600" />
           </div>
           <h2 className="text-2xl font-black dark:text-white mb-4 uppercase tracking-tighter">Access Restricted</h2>
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-bold mb-10 leading-relaxed">Please sign in to access FinFleet Intelligence and your private messaging hub.</p>
-          <Link to="/login" className="btn-primary block w-full py-4 text-sm uppercase tracking-widest">Identify Yourself</Link>
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-bold mb-10 leading-relaxed">Please sign in to access the AI assistant and your private messages.</p>
+          <Link to="/login" className="btn-primary block w-full py-4 text-sm uppercase tracking-widest">Sign In</Link>
         </motion.div>
       </div>
     );

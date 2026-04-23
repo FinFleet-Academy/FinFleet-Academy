@@ -29,22 +29,22 @@ const AboutFinorPage = () => {
     {
       icon: Lightbulb,
       title: "Crystal Clarity",
-      description: "We translate complex institutional jargon into high-fidelity actionable intelligence for every trader."
+      description: "We translate complex financial jargon into clear actionable insights for every trader."
     },
     {
       icon: Globe,
-      title: "Fleet Coverage",
-      description: "Deep-dive analysis across equity markets, digital assets, and critical global economic shifts."
+      title: "Broad Coverage",
+      description: "Deep-dive analysis across stock markets, digital assets, and critical global economic shifts."
     },
     {
       icon: Activity,
-      title: "Market Alpha",
-      description: "We don't just report events; we decode the strategic 'why' and its impact on your capital allocation."
+      title: "Market Insights",
+      description: "We don't just report events; we explain the 'why' and how it impacts your investments."
     },
     {
       icon: Zap,
-      title: "Pulse Engine",
-      description: "Built for the high-velocity learner. Real-time updates delivered with precision and structural depth."
+      title: "Fast Updates",
+      description: "Built for the modern learner. Real-time updates delivered with precision and depth."
     }
   ];
 
@@ -59,7 +59,7 @@ const AboutFinorPage = () => {
         <div className="max-w-7xl mx-auto px-6 relative z-10 text-center md:text-left">
           <motion.div {...fadeInUp} className="inline-flex items-center space-x-2 bg-brand-50 dark:bg-brand-900/20 px-3 py-1.5 rounded-full mb-8 border border-brand-100 dark:border-brand-800">
              <Radio className="w-3 h-3 text-brand-600" />
-             <span className="text-[9px] font-black uppercase tracking-widest text-brand-700 dark:text-brand-300">The News Infrastructure</span>
+             <span className="text-[9px] font-black uppercase tracking-widest text-brand-700 dark:text-brand-300">Our News Standards</span>
           </motion.div>
           <div className="max-w-4xl">
              <motion.h1 
@@ -72,8 +72,8 @@ const AboutFinorPage = () => {
                {...fadeInUp} transition={{ delay: 0.2 }}
                className="text-xl md:text-3xl text-slate-500 dark:text-slate-400 font-bold leading-tight"
              >
-               Finor is the intelligence arm of FinFleet Academy. <br className="hidden md:block" />
-               Raw data, transformed into strategy.
+               Finor is the news division of FinFleet Academy. <br className="hidden md:block" />
+               Transforming raw data into clear strategies.
              </motion.p>
           </div>
         </div>
@@ -89,18 +89,18 @@ const AboutFinorPage = () => {
               viewport={{ once: true }}
               className="space-y-10"
             >
-              <h2 className="text-xs font-black dark:text-white uppercase tracking-[0.4em] text-slate-400">Institutional Protocol</h2>
+              <h2 className="text-xs font-black dark:text-white uppercase tracking-[0.4em] text-slate-400">Our Philosophy</h2>
               <div className="space-y-8 text-lg font-bold leading-relaxed text-slate-600 dark:text-slate-400">
                 <p>
-                  Finor was built to solve a specific market failure: the overwhelming volume of non-actionable information.
+                  Finor was built to solve a specific market problem: the overwhelming volume of irrelevant information.
                 </p>
                 <p>
-                  We prioritize signal over story. Our newsroom operates on a zero-noise protocol, delivering only the intelligence that shifts market structure.
+                  We prioritize signal over story. Our newsroom operates on a zero-clutter approach, delivering only the insights that truly matter.
                 </p>
                 <div className="p-8 bg-slate-950 rounded-[2.5rem] border border-white/5 relative overflow-hidden group">
                   <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-125 transition-transform"><Compass className="w-16 h-16 text-white" /></div>
-                  <h4 className="text-[10px] font-black text-brand-500 uppercase tracking-widest mb-4">Intel Strategy</h4>
-                  <p className="text-white text-2xl font-black italic tracking-tight">"To provide the fundamental compass for modern capital navigators."</p>
+                  <h4 className="text-[10px] font-black text-brand-500 uppercase tracking-widest mb-4">Our Goal</h4>
+                  <p className="text-white text-2xl font-black italic tracking-tight">"To be the reliable guide for every modern investor."</p>
                 </div>
               </div>
             </motion.div>
@@ -116,10 +116,10 @@ const AboutFinorPage = () => {
                    <div className="p-3 bg-brand-50 dark:bg-brand-900/20 rounded-2xl">
                       <ShieldCheck className="w-6 h-6 text-brand-600" />
                    </div>
-                   <h3 className="text-2xl font-black dark:text-white uppercase tracking-tighter">Verified Intel</h3>
+                   <h3 className="text-2xl font-black dark:text-white uppercase tracking-tighter">Verified News</h3>
                 </div>
                 <p className="text-slate-500 dark:text-slate-400 text-sm font-bold leading-relaxed mb-6">
-                  Every data point in the Finor stream is cross-verified against primary institutional sources. We don't trade on rumors.
+                  Every news update in the Finor stream is cross-verified against trusted sources. We don't trade on rumors.
                 </p>
                 <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                    <motion.div 
@@ -130,9 +130,9 @@ const AboutFinorPage = () => {
               </div>
               <div className="p-10 bg-brand-600 rounded-[3rem] text-white shadow-2xl shadow-brand-500/20 relative overflow-hidden group">
                 <div className="absolute top-0 right-0 p-6 opacity-20"><Target className="w-16 h-16" /></div>
-                <h3 className="text-2xl font-black mb-6 uppercase tracking-tighter">Sector Intelligence</h3>
+                <h3 className="text-2xl font-black mb-6 uppercase tracking-tighter">Market Sectors</h3>
                 <div className="grid grid-cols-2 gap-6">
-                  {['Institutional Equity', 'Digital Assets', 'Macro Frameworks', 'Strategic Policy'].map((item, i) => (
+                  {['Stock Market', 'Digital Assets', 'Global Economy', 'Economic Policy'].map((item, i) => (
                     <div key={i} className="flex items-center space-x-3 text-[10px] font-black uppercase tracking-widest">
                       <TrendingUp className="w-3.5 h-3.5 text-white/50" />
                       <span>{item}</span>
@@ -149,8 +149,8 @@ const AboutFinorPage = () => {
       <section className="py-32">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center md:text-left mb-20">
-             <h2 className="text-4xl font-black dark:text-white mb-4 uppercase tracking-tighter">Intel Specifications.</h2>
-             <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">High-Fidelity News Infrastructure</p>
+             <h2 className="text-4xl font-black dark:text-white mb-4 uppercase tracking-tighter">What We Offer.</h2>
+             <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Reliable News Platform</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, idx) => (
@@ -167,15 +167,15 @@ const AboutFinorPage = () => {
             <div className="absolute top-0 right-0 w-96 h-96 bg-brand-600 rounded-full blur-[150px] opacity-20 -mr-48 -mt-48" />
             
             <div className="relative z-10">
-              <h2 className="text-4xl md:text-7xl font-black text-white mb-8 leading-[0.95] tracking-tighter">Connect to the <br /> <span className="text-brand-500">Live Stream.</span></h2>
+              <h2 className="text-4xl md:text-7xl font-black text-white mb-8 leading-[0.95] tracking-tighter">Connect to the <br /> <span className="text-brand-500">Live News.</span></h2>
               <p className="text-slate-400 text-lg md:text-xl font-bold mb-12 leading-relaxed">
-                Unlock the full power of Finor intelligence with a premium institutional seat.
+                Unlock the full power of Finor news with a premium membership.
               </p>
               <Link 
                 to="/finor" 
                 className="inline-flex items-center space-x-3 px-12 py-5 bg-white text-slate-950 rounded-[2rem] font-black text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl"
               >
-                <span>Enter Intel Console</span>
+                <span>Read Latest News</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>

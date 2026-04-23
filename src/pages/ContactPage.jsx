@@ -17,10 +17,10 @@ const ContactPage = () => {
     setLoading(true);
     try {
       await axios.post('/api/contacts', formData);
-      toast.success("Intelligence received. Our team will contact you.");
+      toast.success("Message received. Our team will contact you.");
       setFormData({ name: '', email: '', subject: '', message: '' });
     } catch (error) {
-      toast.error("Transmission failed. Please retry.");
+      toast.error("Submission failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -36,21 +36,21 @@ const ContactPage = () => {
         <div className="text-center max-w-3xl mx-auto mb-20 md:mb-32">
           <motion.div {...fadeInUp} className="inline-flex items-center space-x-2 bg-brand-50 dark:bg-brand-900/20 px-3 py-1.5 rounded-full mb-6 border border-brand-100 dark:border-brand-800">
              <Star className="w-3 h-3 text-brand-600 fill-brand-600" />
-             <span className="text-[9px] font-black uppercase tracking-widest text-brand-700 dark:text-brand-300">Global Communication Hub</span>
+             <span className="text-[9px] font-black uppercase tracking-widest text-brand-700 dark:text-brand-300">Get in Touch</span>
           </motion.div>
           <motion.h1 
             {...fadeInUp}
             transition={{ delay: 0.1 }}
             className="text-5xl md:text-7xl font-black mb-8 dark:text-white tracking-tighter"
           >
-            Get in <span className="text-gradient">Touch.</span>
+            Contact <span className="text-gradient">Us.</span>
           </motion.h1>
           <motion.p 
             {...fadeInUp}
             transition={{ delay: 0.2 }}
             className="text-slate-500 dark:text-slate-400 text-lg font-bold leading-relaxed"
           >
-            Direct communication channel for institutional inquiries, platform technicals, and community outreach.
+            Reach out to us for any inquiries, technical support, or partnership opportunities.
           </motion.p>
         </div>
 
@@ -71,7 +71,7 @@ const ContactPage = () => {
                            <Mail className="w-5 h-5 text-brand-600" />
                         </div>
                         <div>
-                           <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Email Terminal</p>
+                           <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Email Us</p>
                            <p className="text-sm font-black dark:text-white">support@finfleet.academy</p>
                         </div>
                      </div>
@@ -91,7 +91,7 @@ const ContactPage = () => {
                            <ShieldCheck className="w-5 h-5 text-emerald-500" />
                         </div>
                         <div>
-                           <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Technical Line</p>
+                           <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Technical Support</p>
                            <p className="text-sm font-black dark:text-white">+1 (888) FIN-FLEET</p>
                         </div>
                      </div>
@@ -99,7 +99,7 @@ const ContactPage = () => {
                </div>
 
                <div>
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-6">Social Nodes</h3>
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-6">Follow Us</h3>
                   <div className="flex space-x-3">
                     {[Instagram, Linkedin, Twitter].map((Icon, i) => (
                       <a key={i} href="#" className="w-12 h-12 bg-slate-900 dark:bg-white rounded-2xl flex items-center justify-center text-white dark:text-slate-900 hover:scale-110 transition-all shadow-xl">
@@ -113,16 +113,16 @@ const ContactPage = () => {
             <div className="bg-slate-50 dark:bg-slate-900/50 p-10 rounded-[2.5rem] border border-slate-200/50 dark:border-slate-800/50">
                <h4 className="text-xs font-black dark:text-white uppercase tracking-widest mb-4 flex items-center">
                   <Star className="w-4 h-4 mr-2 text-amber-500 fill-amber-500" />
-                  Fleet Partnership
+                  Partnerships
                </h4>
-               <p className="text-slate-500 dark:text-slate-400 text-[10px] font-bold leading-relaxed mb-6">Interested in integrating FinFleet Intelligence into your institutional workflow?</p>
+               <p className="text-slate-500 dark:text-slate-400 text-[10px] font-bold leading-relaxed mb-6">Interested in partnering with FinFleet or integrating our tools into your institutional workflow?</p>
                <button className="text-[10px] font-black uppercase tracking-widest text-brand-600 flex items-center hover:translate-x-1 transition-transform">
                   Partner Portal <ArrowRight className="w-4 h-4 ml-2" />
                </button>
             </div>
           </motion.div>
 
-          {/* Right: Message Terminal */}
+          {/* Right: Contact Form */}
           <motion.div 
             initial={{ opacity: 0, x: 20 }} 
             animate={{ opacity: 1, x: 0 }} 
@@ -134,17 +134,17 @@ const ContactPage = () => {
                <form onSubmit={handleSubmit} className="space-y-10 relative">
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                    <div className="space-y-2">
-                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Identity</label>
+                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
                      <input
-                       required type="text" placeholder="Full Name"
+                       required type="text" placeholder="Enter your name"
                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-6 py-4 text-sm font-bold dark:text-white outline-none focus:ring-4 focus:ring-brand-500/5 transition-all"
                        value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})}
                      />
                    </div>
                    <div className="space-y-2">
-                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Contact Node</label>
+                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
                      <input
-                       required type="email" placeholder="Email Address"
+                       required type="email" placeholder="Enter your email"
                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-6 py-4 text-sm font-bold dark:text-white outline-none focus:ring-4 focus:ring-brand-500/5 transition-all"
                        value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})}
                      />
@@ -152,18 +152,18 @@ const ContactPage = () => {
                  </div>
 
                  <div className="space-y-2">
-                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Protocol Subject</label>
+                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Subject</label>
                    <input
-                     required type="text" placeholder="Reason for Contact"
+                     required type="text" placeholder="Reason for contacting"
                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-6 py-4 text-sm font-bold dark:text-white outline-none focus:ring-4 focus:ring-brand-500/5 transition-all"
                      value={formData.subject} onChange={(e) => setFormData({...formData, subject: e.target.value})}
                    />
                  </div>
 
                  <div className="space-y-2">
-                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Intelligence Packet</label>
+                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Your Message</label>
                    <textarea
-                     required rows="6" placeholder="Your message..."
+                     required rows="6" placeholder="How can we help you?"
                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-6 py-4 text-sm font-bold dark:text-white outline-none focus:ring-4 focus:ring-brand-500/5 transition-all resize-none"
                      value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})}
                    ></textarea>
@@ -175,12 +175,12 @@ const ContactPage = () => {
                  >
                    {loading ? (
                      <>
-                       <span>Transmitting...</span>
+                       <span>Sending...</span>
                        <Loader2 className="w-4 h-4 animate-spin" />
                      </>
                    ) : (
                      <>
-                       <span>Initiate Transmission</span>
+                       <span>Send Message</span>
                        <Send className="w-4 h-4" />
                      </>
                    )}

@@ -25,15 +25,16 @@ const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { name: 'Academy', path: '/courses' },
-    { name: 'Intel', path: '/finor' },
+    { name: 'Courses', path: '/courses' },
+    { name: 'Market News', path: '/finor' },
+    { name: 'Live Classes', path: '/live-classes' },
     { name: 'Tools', path: '/tools' },
-    { name: 'Network', path: '/community' },
+    { name: 'Community', path: '/community' },
     { name: 'Learn & Trade', path: '/trading' },
-    { name: 'Access', path: '/pricing' }
+    { name: 'Pricing', path: '/pricing' }
   ];
 
-  if (isAuthenticated) navLinks.unshift({ name: 'Hub', path: '/dashboard' });
+  if (isAuthenticated) navLinks.unshift({ name: 'Dashboard', path: '/dashboard' });
 
   const isActive = (path) => location.pathname === path;
   const initials = (user?.name || 'U').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
@@ -44,7 +45,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
         <div className="flex justify-between items-center h-full">
           
-          {/* 1. BRAND LOGO */}
+          {/* BRAND LOGO */}
           <Link to="/" className="flex items-center space-x-3 group relative">
             <div className="w-10 h-10 bg-slate-900 dark:bg-white rounded-[1.25rem] flex items-center justify-center shadow-2xl transition-all group-hover:scale-110 group-hover:rotate-3">
               <Rocket className="text-white dark:text-slate-900 w-5 h-5" />
@@ -55,7 +56,7 @@ const Navbar = () => {
             </div>
           </Link>
 
-          {/* 2. CENTER NAV (Desktop) */}
+          {/* CENTER NAV (Desktop) */}
           <div className="hidden lg:flex items-center bg-slate-50 dark:bg-slate-900/50 p-1.5 rounded-2xl border border-slate-200/50 dark:border-slate-800/50">
             {navLinks.map((link) => (
               <Link 
@@ -72,7 +73,7 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* 3. RIGHT ACTIONS (Desktop) */}
+          {/* RIGHT ACTIONS (Desktop) */}
           <div className="hidden lg:flex items-center space-x-4">
              <button onClick={toggleTheme} className="p-3 bg-slate-100 dark:bg-slate-900 rounded-2xl hover:scale-105 transition-all text-slate-500 hover:text-brand-600">
                 {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4" />}
@@ -101,16 +102,16 @@ const Navbar = () => {
                          className="absolute right-0 mt-4 w-80 bg-white dark:bg-slate-900 rounded-[2rem] shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden"
                        >
                          <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                            <span className="text-[10px] font-black uppercase tracking-widest dark:text-white">Broadcasts</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest dark:text-white">Notifications</span>
                             {unreadCount > 0 && (
-                              <button onClick={markAllAsRead} className="text-[9px] font-black uppercase tracking-widest text-brand-600 hover:underline">Mark all read</button>
+                              <button onClick={markAllNotificationsAsRead} className="text-[9px] font-black uppercase tracking-widest text-brand-600 hover:underline">Mark all as read</button>
                             )}
                          </div>
                          <div className="max-h-[350px] overflow-y-auto">
                             {notifications.length === 0 ? (
                               <div className="p-10 text-center">
                                  <Bell className="w-8 h-8 text-slate-200 mx-auto mb-3" />
-                                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">No active intel</p>
+                                 <p className="text-[10px] font-bold text-slate-400">No new notifications</p>
                               </div>
                             ) : (
                               notifications.map((n) => (
@@ -133,7 +134,7 @@ const Navbar = () => {
                             )}
                          </div>
                          <Link to="/dashboard" onClick={() => setNotifOpen(false)} className="block w-full p-4 text-center text-[9px] font-black uppercase tracking-widest text-slate-400 bg-slate-50 dark:bg-slate-950/50 hover:text-brand-600 transition-colors">
-                            View Console Hub
+                            View All Notifications
                          </Link>
                        </motion.div>
                      )}
@@ -166,14 +167,14 @@ const Navbar = () => {
                            <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20">
                               <p className="text-xs font-black dark:text-white uppercase tracking-widest mb-1 truncate">{user?.name}</p>
                               <div className="flex items-center text-[10px] font-bold text-brand-600">
-                                 <ShieldCheck className="w-3 h-3 mr-1.5" /> Verified User
+                                 <ShieldCheck className="w-3 h-3 mr-1.5" /> Verified Account
                               </div>
                            </div>
                            <div className="p-2">
                               {[
-                                { label: 'Profile Settings', icon: User, path: '/profile' },
-                                { label: 'AI Intelligence', icon: Sparkles, path: '/chatbot' },
-                                { label: 'Network Support', icon: LifeBuoy, path: '/help' },
+                                { label: 'My Profile', icon: User, path: '/profile' },
+                                { label: 'AI Assistant', icon: Sparkles, path: '/chatbot' },
+                                { label: 'Help & Support', icon: LifeBuoy, path: '/help' },
                               ].map((item, i) => (
                                 <Link key={i} to={item.path} onClick={() => setDropdownOpen(false)} className="flex items-center space-x-3 px-5 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
                                    <item.icon className="w-4 h-4" />
@@ -183,7 +184,7 @@ const Navbar = () => {
                            </div>
                            <button onClick={() => { logout(); setDropdownOpen(false); }} className="w-full flex items-center space-x-3 px-7 py-5 bg-red-50/50 dark:bg-red-950/10 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all">
                               <LogOut className="w-4 h-4" />
-                              <span className="text-[10px] font-black uppercase tracking-widest">Terminate Session</span>
+                              <span className="text-[10px] font-black uppercase tracking-widest">Log Out</span>
                            </button>
                         </motion.div>
                       )}
@@ -193,7 +194,7 @@ const Navbar = () => {
              ) : (
                <div className="flex items-center space-x-4">
                   <Link to="/login" className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-900 dark:hover:text-white">Login</Link>
-                  <Link to="/signup" className="px-8 py-3.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl hover:scale-105 transition-all">Join Platform</Link>
+                  <Link to="/signup" className="px-8 py-3.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl hover:scale-105 transition-all">Join Now</Link>
                </div>
              )}
           </div>

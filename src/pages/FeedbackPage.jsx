@@ -24,7 +24,7 @@ const StarRating = ({ rating, setRating }) => (
   </div>
 );
 
-const RATING_LABELS = { 1: 'Critical', 2: 'Mediocre', 3: 'Functional', 4: 'Impressive', 5: 'Institutional Grade!' };
+const RATING_LABELS = { 1: 'Poor', 2: 'Fair', 3: 'Good', 4: 'Very Good', 5: 'Excellent!' };
 
 const FeedbackPage = () => {
   const { user } = useAuth();
@@ -37,14 +37,14 @@ const FeedbackPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (rating === 0) return toast.error('Selection required');
-    if (!form.message.trim()) return toast.error('Message missing');
+    if (rating === 0) return toast.error('Rating is required');
+    if (!form.message.trim()) return toast.error('Message is required');
 
     setSubmitting(true);
     try {
       await axios.post('/api/feedback', { ...form, rating });
       setSubmitted(true);
-      toast.success('Protocol Complete. Gratitude acknowledged.');
+      toast.success('Feedback submitted successfully. Thank you!');
     } catch (err) {
       toast.error('Submission failed');
     } finally {
@@ -64,12 +64,12 @@ const FeedbackPage = () => {
           <div className="w-24 h-24 bg-emerald-50 dark:bg-emerald-900/20 rounded-[2rem] flex items-center justify-center mx-auto mb-8">
             <ShieldCheck className="w-12 h-12 text-emerald-500" />
           </div>
-          <h2 className="text-3xl font-black dark:text-white mb-4 uppercase tracking-tighter">Gratitude Logged.</h2>
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-bold leading-relaxed mb-12">Your intelligence packet helps us refine the FinFleet ecosystem. We appreciate your institutional perspective.</p>
+          <h2 className="text-3xl font-black dark:text-white mb-4 uppercase tracking-tighter">Thank You!</h2>
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-bold leading-relaxed mb-12">Your feedback helps us improve FinFleet for everyone. We appreciate your time!</p>
           <button onClick={() => { setSubmitted(false); setRating(0); }}
             className="w-full py-5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center justify-center space-x-2">
             <RefreshCcw className="w-4 h-4" />
-            <span>Submit New Packet</span>
+            <span>Submit More Feedback</span>
           </button>
         </motion.div>
       </div>
@@ -87,8 +87,8 @@ const FeedbackPage = () => {
           <div className="inline-flex items-center justify-center w-20 h-20 bg-brand-50 dark:bg-brand-900/20 rounded-3xl mb-8 border border-brand-100 dark:border-brand-800">
             <Sparkles className="w-10 h-10 text-brand-600" />
           </div>
-          <h1 className="text-4xl md:text-6xl font-black dark:text-white mb-6 tracking-tighter">User <span className="text-gradient">Intelligence.</span></h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-bold leading-relaxed max-w-md mx-auto">Provide critical feedback to help us scale the FinFleet infrastructure.</p>
+          <h1 className="text-4xl md:text-6xl font-black dark:text-white mb-6 tracking-tighter">Share <span className="text-gradient">Feedback.</span></h1>
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-bold leading-relaxed max-w-md mx-auto">Help us improve FinFleet by sharing your thoughts and experiences.</p>
         </motion.div>
 
         <motion.form
@@ -100,7 +100,7 @@ const FeedbackPage = () => {
           {/* Identity Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
              <div className="space-y-2">
-               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Identity</label>
+               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Name</label>
                <input
                  name="name" type="text" value={form.name} onChange={handleChange} required
                  placeholder="Full Name"
@@ -108,7 +108,7 @@ const FeedbackPage = () => {
                />
              </div>
              <div className="space-y-2">
-               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Contact Node</label>
+               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email</label>
                <input
                  name="email" type="email" value={form.email} onChange={handleChange} required
                  placeholder="Email Address"
@@ -119,7 +119,7 @@ const FeedbackPage = () => {
 
           {/* Rating Engine */}
           <div className="space-y-4">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Fleet Rating</label>
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Your Rating</label>
             <div className="bg-slate-50 dark:bg-slate-950 p-6 rounded-2xl border border-slate-100 dark:border-slate-800/50 flex flex-col items-center">
                <StarRating rating={rating} setRating={setRating} />
                <AnimatePresence mode="wait">
@@ -133,12 +133,12 @@ const FeedbackPage = () => {
             </div>
           </div>
 
-          {/* Message Terminal */}
+          {/* Message */}
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Message Packet</label>
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Message</label>
             <textarea
               name="message" value={form.message} onChange={handleChange} required rows={5} maxLength={1000}
-              placeholder="Provide deep-dive feedback..."
+              placeholder="Tell us what you think..."
               className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm font-bold dark:text-white outline-none focus:ring-4 focus:ring-brand-500/5 transition-all resize-none"
             />
             <p className="text-[9px] font-black text-slate-400 uppercase text-right px-1">{form.message.length}/1000</p>
@@ -153,7 +153,7 @@ const FeedbackPage = () => {
             ) : (
               <Send className="w-4 h-4" />
             )}
-            <span>{submitting ? 'Transmitting Intelligence...' : 'Submit Feedback'}</span>
+            <span>{submitting ? 'Sending...' : 'Submit Feedback'}</span>
           </button>
         </motion.form>
 
@@ -162,7 +162,7 @@ const FeedbackPage = () => {
               <Heart className="w-4 h-4 text-red-500 fill-red-500" />
               <span className="text-[10px] font-black uppercase tracking-widest">Built for the community</span>
            </div>
-           <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Your feedback is strictly confidential and used for platform optimization.</p>
+           <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Your feedback is strictly confidential and used for platform improvement.</p>
         </div>
       </div>
     </div>

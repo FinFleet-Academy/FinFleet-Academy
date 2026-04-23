@@ -28,22 +28,22 @@ const AboutPage = () => {
   const features = [
     {
       icon: GraduationCap,
-      title: "Zero to Alpha",
+      title: "Zero to Master",
       description: "Comprehensive paths designed for the retail mind. No prior experience required to reach mastery."
     },
     {
       icon: BarChart3,
-      title: "Real Execution",
-      description: "We focus on actual market mechanics. Moving beyond paper theory to institutional execution."
+      title: "Practical Learning",
+      description: "We focus on actual market mechanics. Moving beyond paper theory to real-world execution."
     },
     {
       icon: Layers,
-      title: "Modular Logic",
-      description: "A structured, recursive learning approach designed to stack knowledge with precision."
+      title: "Step-by-Step",
+      description: "A structured approach designed to build your knowledge piece by piece with precision."
     },
     {
       icon: BrainCircuit,
-      title: "Strategic Mind",
+      title: "Mindset & Discipline",
       description: "Building resilient psychology. We prioritize risk management over high-leverage gambles."
     }
   ];
@@ -61,21 +61,21 @@ const AboutPage = () => {
         <div className="max-w-7xl mx-auto px-6 relative z-10 text-center md:text-left">
           <motion.div {...fadeInUp} className="inline-flex items-center space-x-2 bg-brand-50 dark:bg-brand-900/20 px-3 py-1.5 rounded-full mb-8 border border-brand-100 dark:border-brand-800">
              <Star className="w-3 h-3 text-brand-600 fill-brand-600" />
-             <span className="text-[9px] font-black uppercase tracking-widest text-brand-700 dark:text-brand-300">The FinFleet Manifesto</span>
+             <span className="text-[9px] font-black uppercase tracking-widest text-brand-700 dark:text-brand-300">Our Mission</span>
           </motion.div>
           <div className="max-w-4xl">
              <motion.h1 
                {...fadeInUp} transition={{ delay: 0.1 }}
                className="text-6xl md:text-9xl font-black dark:text-white mb-10 leading-[0.9] tracking-tighter"
              >
-               We are the <span className="text-gradient">Fleet.</span>
+               We are the <span className="text-gradient">Community.</span>
              </motion.h1>
              <motion.p 
                {...fadeInUp} transition={{ delay: 0.2 }}
                className="text-xl md:text-3xl text-slate-500 dark:text-slate-400 font-bold leading-tight"
              >
-               Democratizing institutional financial intelligence. <br className="hidden md:block" />
-               One trader at a time.
+               Making professional trading education accessible to everyone. <br className="hidden md:block" />
+               Empowering one learner at a time.
              </motion.p>
           </div>
         </div>
@@ -91,18 +91,18 @@ const AboutPage = () => {
               viewport={{ once: true }}
               className="space-y-10"
             >
-              <h2 className="text-xs font-black dark:text-white uppercase tracking-[0.4em] text-slate-400">Our Strategic Intent</h2>
+              <h2 className="text-xs font-black dark:text-white uppercase tracking-[0.4em] text-slate-400">Why We Exist</h2>
               <div className="space-y-8 text-lg font-bold leading-relaxed text-slate-600 dark:text-slate-400">
                 <p>
-                  FinFleet Academy emerged from a single realization: the gap between retail hope and institutional execution is wider than ever.
+                  FinFleet Academy emerged from a single realization: the gap between retail hope and professional execution is wider than ever.
                 </p>
                 <p>
-                  We are not another "get rich" scheme. We are a high-performance educational engine designed for those who view finance as a serious craft.
+                  We are not another "get rich" scheme. We are a comprehensive learning platform designed for those who view finance as a serious craft.
                 </p>
                 <div className="p-8 bg-slate-950 rounded-[2.5rem] border border-white/5 relative overflow-hidden group">
                   <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-125 transition-transform"><Target className="w-16 h-16 text-white" /></div>
-                  <h4 className="text-[10px] font-black text-brand-500 uppercase tracking-widest mb-4">Core Protocol</h4>
-                  <p className="text-white text-2xl font-black italic tracking-tight">"To transform raw market interest into calibrated strategic intelligence."</p>
+                  <h4 className="text-[10px] font-black text-brand-500 uppercase tracking-widest mb-4">Our Core Goal</h4>
+                  <p className="text-white text-2xl font-black italic tracking-tight">"To transform raw market interest into real-world market expertise."</p>
                 </div>
               </div>
             </motion.div>
@@ -119,14 +119,14 @@ const AboutPage = () => {
                 </div>
                 <h3 className="text-2xl font-black dark:text-white mb-4 uppercase tracking-tighter">Global Vision</h3>
                 <p className="text-slate-500 dark:text-slate-400 text-sm font-bold leading-relaxed">
-                  To become the primary infrastructure for the next generation of global investors. We believe financial literacy is a fundamental right.
+                  To become the primary resource for the next generation of global investors. We believe financial literacy is a fundamental right.
                 </p>
               </div>
               <div className="p-10 bg-brand-600 rounded-[3rem] text-white shadow-2xl shadow-brand-500/20 relative overflow-hidden group">
                 <div className="absolute top-0 right-0 p-6 opacity-20"><Zap className="w-16 h-16" /></div>
-                <h3 className="text-2xl font-black mb-6 uppercase tracking-tighter">Strategic Focus</h3>
+                <h3 className="text-2xl font-black mb-6 uppercase tracking-tighter">What You'll Learn</h3>
                 <ul className="space-y-4">
-                  {['Institutional Market Mechanics', 'Deep Behavioral Psychology', 'Capital Allocation Protocols', 'Recursive Knowledge Stacking'].map((item, idx) => (
+                  {['Market Mechanics', 'Investor Psychology', 'Risk Management', 'Step-by-Step Learning'].map((item, idx) => (
                     <li key={idx} className="flex items-center space-x-3 text-xs font-black uppercase tracking-widest">
                       <div className="w-1.5 h-1.5 rounded-full bg-white" />
                       <span>{item}</span>
@@ -143,8 +143,8 @@ const AboutPage = () => {
       <section className="py-32">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center md:text-left mb-20">
-            <h2 className="text-4xl font-black dark:text-white mb-4 uppercase tracking-tighter">The Fleet Advantage.</h2>
-            <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">High-Fidelity Training Infrastructure</p>
+            <h2 className="text-4xl font-black dark:text-white mb-4 uppercase tracking-tighter">The FinFleet Advantage.</h2>
+            <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">World-Class Learning Platform</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, idx) => (
@@ -166,7 +166,7 @@ const AboutPage = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 className="text-4xl md:text-7xl font-black text-white mb-8 leading-[0.95] tracking-tighter"
               >
-                Initiate your <br /> <span className="text-brand-500">Learning Protocol.</span>
+                Start your <br /> <span className="text-brand-500">learning journey.</span>
               </motion.h2>
               <p className="text-slate-400 text-lg md:text-xl font-bold mb-12 leading-relaxed">
                 Join 50,000+ members in the world's most advanced financial education ecosystem.
@@ -175,14 +175,14 @@ const AboutPage = () => {
                 to="/signup"
                 className="inline-flex items-center space-x-3 px-12 py-5 bg-white text-slate-950 rounded-[2rem] font-black text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl"
               >
-                <span>Access Dashboard</span>
+                <span>Get Started</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
             
             <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex items-center space-x-2 text-slate-700">
                <Heart className="w-3 h-3 fill-red-500/20" />
-               <span className="text-[9px] font-black uppercase tracking-[0.3em]">FinFleet Strategic Command</span>
+               <span className="text-[9px] font-black uppercase tracking-[0.3em]">Made with love by the FinFleet Team</span>
             </div>
           </div>
         </div>

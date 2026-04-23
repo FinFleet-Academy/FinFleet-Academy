@@ -26,7 +26,7 @@ const NotFoundPage = () => {
         >
           <ShieldAlert className="w-10 h-10 text-red-500" />
         </motion.div>
-
+ 
         <motion.h1 
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -42,7 +42,7 @@ const NotFoundPage = () => {
           transition={{ delay: 0.3 }}
           className="text-xl md:text-3xl text-slate-500 dark:text-slate-400 font-bold tracking-tight mb-12 uppercase"
         >
-          Protocol Deviation <span className="text-red-500">Detected.</span>
+          Page Not <span className="text-red-500">Found.</span>
         </motion.p>
 
         <motion.div 
@@ -52,7 +52,7 @@ const NotFoundPage = () => {
           className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[3rem] p-10 mb-12 shadow-sm"
         >
            <p className="text-sm font-medium text-slate-500 dark:text-slate-400 leading-relaxed max-w-lg mx-auto">
-             The intelligence packet you are seeking has either been decommissioned or moved to a restricted sector. Re-initialize your navigation parameters.
+             The page you are looking for has either been removed or moved to a new location. Please check the URL or return to the home page.
            </p>
         </motion.div>
 
@@ -66,13 +66,13 @@ const NotFoundPage = () => {
              onClick={() => navigate(-1)}
              className="w-full sm:w-auto flex items-center justify-center px-10 py-5 bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl"
            >
-              <ArrowLeft className="w-4 h-4 mr-3" /> Previous Node
+              <ArrowLeft className="w-4 h-4 mr-3" /> Go Back
            </button>
            <Link 
              to="/"
              className="w-full sm:w-auto flex items-center justify-center px-10 py-5 bg-brand-500 text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl shadow-brand-500/20"
            >
-              <Home className="w-4 h-4 mr-3" /> Command Hub
+              <Home className="w-4 h-4 mr-3" /> Home Page
            </Link>
         </motion.div>
 
@@ -90,7 +90,7 @@ const NotFoundPage = () => {
 
       {/* Footer Branding */}
       <div className="absolute bottom-10 left-1/2 -translate-x-1/2 opacity-10">
-         <p className="text-[10px] font-black dark:text-white uppercase tracking-[0.5em]">FinFleet Security Protocol</p>
+         <p className="text-[10px] font-black dark:text-white uppercase tracking-[0.5em]">FinFleet Academy</p>
       </div>
 
     </div>

@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 
 const STATUS_CONFIG = {
   open:        { label: 'Pending',     color: 'text-amber-500 bg-amber-50 dark:bg-amber-900/20',   icon: Clock },
-  in_progress: { label: 'In Analysis', color: 'text-blue-500 bg-blue-50 dark:bg-blue-900/20',      icon: AlertCircle },
+  in_progress: { label: 'Under Review', color: 'text-blue-500 bg-blue-50 dark:bg-blue-900/20',      icon: AlertCircle },
   resolved:    { label: 'Resolved',    color: 'text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20', icon: CheckCircle2 },
 };
 
@@ -56,12 +56,12 @@ const HelpPage = () => {
     setSubmitting(true);
     try {
       await axios.post('/api/help', form);
-      toast.success('Protocol Initiated. Our team will contact you.');
+      toast.success('Ticket submitted. Our team will get back to you soon.');
       setForm({ subject: '', description: '', screenshotUrl: '' });
       setShowForm(false);
       fetchMyTickets();
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Protocol failure');
+      toast.error(err.response?.data?.message || 'Submission failed');
     } finally {
       setSubmitting(false);
     }
@@ -77,13 +77,13 @@ const HelpPage = () => {
         <div className="mb-16 md:mb-24 text-center md:text-left">
            <motion.div {...fadeInUp} className="inline-flex items-center space-x-2 bg-brand-50 dark:bg-brand-900/20 px-3 py-1.5 rounded-full mb-6 border border-brand-100 dark:border-brand-800">
               <Star className="w-3 h-3 text-brand-600 fill-brand-600" />
-              <span className="text-[9px] font-black uppercase tracking-widest text-brand-700 dark:text-brand-300">24/7 Intelligence Support</span>
+              <span className="text-[9px] font-black uppercase tracking-widest text-brand-700 dark:text-brand-300">24/7 Customer Support</span>
            </motion.div>
            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
               <div className="max-w-xl">
-                 <motion.h1 {...fadeInUp} transition={{ delay: 0.1 }} className="text-4xl md:text-6xl font-black dark:text-white tracking-tighter mb-6">Support <span className="text-gradient">Console.</span></motion.h1>
+                 <motion.h1 {...fadeInUp} transition={{ delay: 0.1 }} className="text-4xl md:text-6xl font-black dark:text-white tracking-tighter mb-6">Help <span className="text-gradient">Center.</span></motion.h1>
                  <motion.p {...fadeInUp} transition={{ delay: 0.2 }} className="text-slate-500 dark:text-slate-400 text-sm font-bold leading-relaxed">
-                    Direct access to our financial technical team. Submit a protocol ticket for account issues, technical bugs, or premium access queries.
+                    Get direct help from our team. Submit a ticket for account issues, technical bugs, or subscription queries.
                  </motion.p>
               </div>
               <motion.button
@@ -93,7 +93,7 @@ const HelpPage = () => {
                 className="btn-primary py-4 px-10 text-xs shadow-xl shadow-slate-900/10"
               >
                 {showForm ? <X className="w-4 h-4 mr-2 inline" /> : <Plus className="w-4 h-4 mr-2 inline" />}
-                {showForm ? 'Cancel Protocol' : 'New Ticket'}
+                {showForm ? 'Cancel Ticket' : 'New Ticket'}
               </motion.button>
            </div>
         </div>
@@ -112,7 +112,7 @@ const HelpPage = () => {
                 
                 <h2 className="text-xl font-black dark:text-white uppercase tracking-widest flex items-center">
                    <ShieldQuestion className="w-6 h-6 mr-3 text-brand-600" />
-                   Submit Protocol Ticket
+                   Submit Support Ticket
                 </h2>
 
                 <div className="grid grid-cols-1 gap-8">
@@ -126,10 +126,10 @@ const HelpPage = () => {
                    </div>
 
                    <div className="space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Issue Intelligence</label>
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Describe your issue</label>
                       <textarea
                         name="description" value={form.description} onChange={handleChange} required rows={5} maxLength={2000}
-                        placeholder="Provide deep technical context..."
+                        placeholder="Provide as much detail as possible..."
                         className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm font-bold dark:text-white outline-none focus:ring-4 focus:ring-brand-500/5 transition-all resize-none"
                       />
                       <div className="flex justify-between items-center px-1">
@@ -139,10 +139,10 @@ const HelpPage = () => {
                    </div>
 
                    <div className="space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Evidence URL (Optional)</label>
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Screenshot URL (Optional)</label>
                       <input
                         name="screenshotUrl" type="url" value={form.screenshotUrl} onChange={handleChange}
-                        placeholder="https://imgur.com/intel-screenshot.png"
+                        placeholder="https://imgur.com/your-screenshot.png"
                         className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-[10px] font-black uppercase tracking-widest dark:text-white outline-none focus:ring-4 focus:ring-brand-500/5 transition-all"
                       />
                    </div>
@@ -151,7 +151,7 @@ const HelpPage = () => {
                 <div className="pt-4">
                   <button type="submit" disabled={submitting}
                     className="w-full py-5 rounded-2xl bg-brand-600 text-white text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-brand-500/20 hover:bg-brand-700 transition-all disabled:opacity-50">
-                    {submitting ? 'Initiating Protocol...' : 'Submit Intel'}
+                    {submitting ? 'Submitting...' : 'Submit Ticket'}
                   </button>
                 </div>
               </form>
@@ -162,14 +162,14 @@ const HelpPage = () => {
         {/* 3. Ticket History */}
         <div className="space-y-8">
           <div className="flex items-center justify-between px-2">
-             <h2 className="text-xs font-black dark:text-white uppercase tracking-[0.3em] text-slate-400">Communication Logs</h2>
-             <span className="text-[10px] font-black text-brand-600 uppercase tracking-widest bg-brand-50 dark:bg-brand-900/20 px-3 py-1 rounded-lg border border-brand-100 dark:border-brand-800">Active Sessions: {tickets.length}</span>
+             <h2 className="text-xs font-black dark:text-white uppercase tracking-[0.3em] text-slate-400">Your Support Tickets</h2>
+             <span className="text-[10px] font-black text-brand-600 uppercase tracking-widest bg-brand-50 dark:bg-brand-900/20 px-3 py-1 rounded-lg border border-brand-100 dark:border-brand-800">Total Tickets: {tickets.length}</span>
           </div>
 
           {tickets.length === 0 ? (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[3rem] p-20 text-center shadow-sm">
               <LifeBuoy className="w-16 h-16 text-slate-100 dark:text-slate-800 mx-auto mb-6" />
-              <p className="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">No logs found in secure storage</p>
+              <p className="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">No tickets found</p>
             </motion.div>
           ) : (
             <div className="space-y-4">
@@ -193,11 +193,11 @@ const HelpPage = () => {
                         <p className="text-sm font-medium text-slate-500 dark:text-slate-400 line-clamp-1 mb-4">{ticket.description}</p>
                         <div className="flex items-center space-x-4">
                            <button className="text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-brand-600 transition-colors flex items-center">
-                              <MessageSquare className="w-3.5 h-3.5 mr-1.5" /> View Transcript
+                              <MessageSquare className="w-3.5 h-3.5 mr-1.5" /> View Discussion
                            </button>
                            {ticket.screenshotUrl && (
                              <a href={ticket.screenshotUrl} target="_blank" rel="noreferrer" className="text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-brand-600 transition-colors flex items-center">
-                                <ExternalLink className="w-3.5 h-3.5 mr-1.5" /> Visual Evidence
+                                <ExternalLink className="w-3.5 h-3.5 mr-1.5" /> View Screenshot
                              </a>
                            )}
                         </div>
@@ -226,7 +226,7 @@ const HelpPage = () => {
               </div>
               <div className="p-10 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] text-left">
                  <h3 className="text-sm font-black dark:text-white uppercase tracking-widest mb-4">Documentation</h3>
-                 <p className="text-slate-400 text-xs font-bold leading-relaxed mb-8">Browse our deep-dive documentation on trading protocols and platform features.</p>
+                 <p className="text-slate-400 text-xs font-bold leading-relaxed mb-8">Browse our deep-dive documentation on trading features and platform features.</p>
                  <button className="text-[10px] font-black uppercase tracking-widest text-brand-600 flex items-center hover:translate-x-2 transition-transform">
                     Explore Docs <ArrowRight className="w-4 h-4 ml-2" />
                  </button>

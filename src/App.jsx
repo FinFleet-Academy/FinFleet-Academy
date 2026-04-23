@@ -28,6 +28,7 @@ import CommunityPage from './pages/CommunityPage';
 import PublicProfilePage from './pages/PublicProfilePage';
 import CourseDetailPage from './pages/CourseDetailPage';
 import TradingDashboard from './pages/TradingDashboard';
+import LiveClasses from './pages/LiveClasses';
 import NotFoundPage from './pages/NotFoundPage';
 
 // Show splash only once per browser session
@@ -93,6 +94,7 @@ function App() {
                 <Route path="/trading" element={<TradingDashboard />} />
                 <Route path="/community" element={<CommunityPage />} />
                 <Route path="/user/:userId" element={<PublicProfilePage />} />
+                <Route path="/live-classes" element={<LiveClasses />} />
                 <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </motion.main>

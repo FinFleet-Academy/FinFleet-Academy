@@ -43,13 +43,13 @@ const ToolsPage = () => {
         <div className="mb-20 text-center md:text-left">
            <motion.div {...fadeInUp} className="inline-flex items-center space-x-2 bg-brand-50 dark:bg-brand-900/20 px-3 py-1.5 rounded-full mb-6 border border-brand-100 dark:border-brand-800">
               <Star className="w-3 h-3 text-brand-600 fill-brand-600" />
-              <span className="text-[9px] font-black uppercase tracking-widest text-brand-700 dark:text-brand-300">Financial Planning Suite</span>
+              <span className="text-[9px] font-black uppercase tracking-widest text-brand-700 dark:text-brand-300">Financial Planning Tools</span>
            </motion.div>
            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
               <div className="max-w-xl">
-                 <motion.h1 {...fadeInUp} transition={{ delay: 0.1 }} className="text-4xl md:text-6xl font-black dark:text-white tracking-tighter mb-6">Execution <span className="text-gradient">Tools.</span></motion.h1>
+                 <motion.h1 {...fadeInUp} transition={{ delay: 0.1 }} className="text-4xl md:text-6xl font-black dark:text-white tracking-tighter mb-6">Financial <span className="text-gradient">Tools.</span></motion.h1>
                  <motion.p {...fadeInUp} transition={{ delay: 0.2 }} className="text-slate-500 dark:text-slate-400 text-sm font-bold leading-relaxed">
-                    Institutional-grade calculators and risk assessment protocols to refine your capital allocation strategy.
+                    Easy-to-use calculators to help you plan your investments and manage risk.
                  </motion.p>
               </div>
            </div>
@@ -58,8 +58,8 @@ const ToolsPage = () => {
         {/* Tool Switcher */}
         <div className="flex flex-wrap justify-center md:justify-start gap-3 mb-12">
           {[
-            { id: 'sip', label: 'SIP Engine', icon: Calculator },
-            { id: 'risk', label: 'Risk Protocol', icon: ShieldAlert },
+            { id: 'sip', label: 'SIP Calculator', icon: Calculator },
+            { id: 'risk', label: 'Risk Profile', icon: ShieldAlert },
           ].map(tool => (
             <button 
               key={tool.id}
@@ -85,14 +85,14 @@ const ToolsPage = () => {
               <div className="space-y-10">
                 <div className="flex items-center space-x-3 mb-4">
                    <TrendingUp className="w-6 h-6 text-brand-600" />
-                   <h3 className="text-xl font-black dark:text-white uppercase tracking-widest">Growth Parameters</h3>
+                   <h3 className="text-xl font-black dark:text-white uppercase tracking-widest">Investment Details</h3>
                 </div>
                 
                 <div className="space-y-8">
                   {[
-                    { label: 'Monthly Allocation (₹)', value: sipInvestment, setter: setSipInvestment, min: 500, max: 100000 },
-                    { label: 'Return Expectations (p.a %)', value: sipRate, setter: setSipRate, min: 1, max: 30 },
-                    { label: 'Time Horizon (Years)', value: sipYears, setter: setSipYears, min: 1, max: 40 },
+                    { label: 'Monthly Investment (₹)', value: sipInvestment, setter: setSipInvestment, min: 500, max: 100000 },
+                    { label: 'Expected Returns (p.a %)', value: sipRate, setter: setSipRate, min: 1, max: 30 },
+                    { label: 'Investment Duration (Years)', value: sipYears, setter: setSipYears, min: 1, max: 40 },
                   ].map((field, i) => (
                     <div key={i} className="space-y-4">
                       <div className="flex justify-between items-center px-1">
@@ -113,20 +113,20 @@ const ToolsPage = () => {
                 <div className="absolute top-0 right-0 p-6 opacity-20"><Calculator className="w-20 h-20" /></div>
                 
                 <div>
-                   <h3 className="text-[10px] font-black text-brand-400 uppercase tracking-[0.3em] mb-12">Projected Valuation</h3>
+                   <h3 className="text-[10px] font-black text-brand-400 uppercase tracking-[0.3em] mb-12">Projected Value</h3>
                    <div className="space-y-2">
-                     <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Future Corpus</p>
+                     <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Total Value</p>
                      <p className="text-5xl md:text-6xl font-black tracking-tighter leading-none">₹{sipResult.total.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>
                    </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-8 mt-16 pt-10 border-t border-white/10">
                   <div>
-                    <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Total Principle</p>
+                    <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Total Principal</p>
                     <p className="text-xl font-black">₹{sipResult.invested.toLocaleString('en-IN')}</p>
                   </div>
                   <div>
-                    <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Estimated Alpha</p>
+                    <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Estimated Returns</p>
                     <p className="text-xl font-black text-emerald-400">₹{sipResult.returns.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</p>
                   </div>
                 </div>
@@ -140,16 +140,16 @@ const ToolsPage = () => {
                   <div className="w-16 h-16 bg-brand-50 dark:bg-brand-900/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
                      <ShieldAlert className="w-8 h-8 text-brand-600" />
                   </div>
-                  <h3 className="text-2xl font-black dark:text-white uppercase tracking-tighter">Institutional Risk Assessment</h3>
-                  <p className="text-slate-400 text-xs font-bold mt-2">Evaluate your psychological tolerance for market volatility.</p>
+                  <h3 className="text-2xl font-black dark:text-white uppercase tracking-tighter">Your Risk Profile</h3>
+                  <p className="text-slate-400 text-xs font-bold mt-2">Check how much risk you can handle in the market.</p>
                </div>
 
                {!riskResult ? (
                  <form onSubmit={handleRiskSubmit} className="space-y-12">
                    {[
-                     { q: "PRIMARY INVESTMENT OBJECTIVE", opts: [{t: "Capital Preservation", v: 1}, {t: "Balanced Growth", v: 2}, {t: "High-Alpha Returns", v: 3}] },
-                     { q: "VOLATILITY RESPONSE (20% PORTFOLIO DROP)", opts: [{t: "Liquidate Everything", v: 1}, {t: "Hedge and Wait", v: 2}, {t: "Aggressive Buy-Back", v: 3}] },
-                     { q: "TIME HORIZON PROTOCOL", opts: [{t: "Short Term (< 3 Years)", v: 1}, {t: "Intermediate (3-7 Years)", v: 2}, {t: "Strategic Long Term (7+ Years)", v: 3}] }
+                     { q: "What is your investment goal?", opts: [{t: "Keep money safe", v: 1}, {t: "Moderate growth", v: 2}, {t: "High growth", v: 3}] },
+                     { q: "What would you do if the market drops by 20%?", opts: [{t: "Sell everything", v: 1}, {t: "Wait for recovery", v: 2}, {t: "Buy more stocks", v: 3}] },
+                     { q: "How long do you plan to invest?", opts: [{t: "Short Term (< 3 Years)", v: 1}, {t: "Medium Term (3-7 Years)", v: 2}, {t: "Long Term (7+ Years)", v: 3}] }
                    ].map((item, i) => (
                      <div key={i} className="space-y-6">
                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center">
@@ -169,18 +169,18 @@ const ToolsPage = () => {
                        </div>
                      </div>
                    ))}
-                   <button type="submit" className="w-full py-5 bg-brand-600 text-white text-xs font-black uppercase tracking-[0.25em] rounded-2xl shadow-xl shadow-brand-500/20 active:scale-95 transition-all">Analyze Protocol</button>
+                   <button type="submit" className="w-full py-5 bg-brand-600 text-white text-xs font-black uppercase tracking-[0.25em] rounded-2xl shadow-xl shadow-brand-500/20 active:scale-95 transition-all">Check My Profile</button>
                  </form>
                ) : (
                  <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center p-12 bg-slate-50 dark:bg-slate-950 rounded-[3rem] border border-slate-200 dark:border-slate-800">
                     <div className="w-20 h-20 bg-emerald-50 dark:bg-emerald-900/20 rounded-3xl flex items-center justify-center mx-auto mb-8">
                        <CheckCircle className="w-10 h-10 text-emerald-500" />
                     </div>
-                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-2">Analysis Complete</h4>
+                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-2">Profile Result</h4>
                     <h5 className="text-4xl font-black dark:text-white tracking-tighter mb-6">Profile: <span className="text-brand-600 uppercase">{riskResult}</span></h5>
-                    <p className="text-slate-500 dark:text-slate-400 text-sm font-bold leading-relaxed mb-10">Based on your strategic responses, we have classified your tolerance as {riskResult.toLowerCase()}. We recommend optimizing your asset allocation towards institutional grade diversified funds.</p>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm font-bold leading-relaxed mb-10">Based on your answers, we have classified your risk tolerance as {riskResult.toLowerCase()}. We recommend a well-diversified portfolio to balance risk and reward.</p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                       <button onClick={() => setRiskResult(null)} className="px-10 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl text-[10px] font-black uppercase tracking-widest">Recalibrate</button>
+                       <button onClick={() => setRiskResult(null)} className="px-10 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl text-[10px] font-black uppercase tracking-widest">Retake Quiz</button>
                        <button className="px-10 py-4 border-2 border-slate-200 dark:border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-widest dark:text-white">Detailed Report</button>
                     </div>
                  </motion.div>

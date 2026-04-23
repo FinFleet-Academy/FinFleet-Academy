@@ -112,7 +112,7 @@ const PricingCard = ({ tier, isPopular }) => {
     >
       {isPopular && (
         <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-brand-600 text-white text-[10px] font-black uppercase tracking-[0.2em] px-5 py-2 rounded-full shadow-lg">
-          Institutional Choice
+          Most Popular
         </div>
       )}
 
@@ -201,51 +201,51 @@ const PricingPage = () => {
     {
       name: PLANS.PRO, 
       price: 199,
-      desc: 'Institutional access to foundational learning modules.',
-      cta: 'Activate Pro',
+      desc: 'Perfect for beginners starting their learning journey.',
+      cta: 'Choose Pro',
       icon: Shield,
       iconBg: 'bg-slate-100 dark:bg-slate-800',
       iconColor: 'text-slate-600 dark:text-slate-400',
       features: [
-        { text: 'Basic Trading Knowledge', included: true },
-        { text: 'Free E-book (Starter)', included: true },
-        { text: 'Limited Financial News', included: true },
+        { text: 'Basic Learning Modules', included: true },
+        { text: 'Free Starter E-book', included: true },
+        { text: 'Market Updates', included: true },
         { text: 'Ads Enabled', included: true },
-        { text: 'AI Chatbot Access', included: false },
+        { text: 'AI Assistant Access', included: false },
         { text: 'Live Classes', included: false },
       ]
     },
     {
       name: PLANS.ELITE,
       price: 699,
-      desc: 'Advanced tools and advice for serious retail traders.',
-      cta: 'Secure Elite',
+      desc: 'Best for active learners and future traders.',
+      cta: 'Choose Elite',
       isPopular: true,
       icon: Zap,
       iconBg: 'bg-brand-50 dark:bg-brand-900/20',
       iconColor: 'text-brand-600',
       features: [
-        { text: 'Advanced Trading Courses', included: true },
-        { text: 'Daily Market News', included: true },
-        { text: 'Investment Advice', included: true },
+        { text: 'Advanced Courses', included: true },
+        { text: 'Daily Insights', included: true },
+        { text: 'Expert Advice', included: true },
         { text: 'No Ads', included: true },
-        { text: 'AI Chatbot Access', included: true },
+        { text: 'AI Assistant Access', included: true },
         { text: 'Live Classes', included: false },
       ]
     },
     {
       name: PLANS.PRIME,
       price: 1999,
-      desc: 'The ultimate experience for professional wealth management.',
-      cta: 'Go Elite Prime',
+      desc: 'Complete access with personal mentorship.',
+      cta: 'Choose Prime',
       isPopular: false,
       icon: Crown,
       iconBg: 'bg-amber-50 dark:bg-amber-900/20',
       iconColor: 'text-amber-500',
       features: [
         { text: 'Everything in Elite', included: true },
-        { text: 'Live Trading Classes', included: true },
-        { text: 'Unlimited AI Chatbot', included: true },
+        { text: 'Live Learning Classes', included: true },
+        { text: 'Unlimited AI Chat', included: true },
         { text: 'Priority Support', included: true },
         { text: 'Exclusive Strategies', included: true },
         { text: 'Personal Mentorship', included: true },
@@ -263,21 +263,21 @@ const PricingPage = () => {
         <div className="text-center max-w-3xl mx-auto mb-20">
           <motion.div {...fadeInUp} className="inline-flex items-center space-x-2 bg-brand-50 dark:bg-brand-900/20 px-4 py-2 rounded-full mb-8 border border-brand-100 dark:border-brand-800">
              <Star className="w-4 h-4 text-brand-600 fill-brand-600" />
-             <span className="text-[10px] font-black uppercase tracking-widest text-brand-700 dark:text-brand-300">Flexible Access Plans</span>
+             <span className="text-[10px] font-black uppercase tracking-widest text-brand-700 dark:text-brand-300">Simple Pricing Plans</span>
           </motion.div>
           <motion.h1 
             {...fadeInUp}
             transition={{ delay: 0.1 }}
             className="text-5xl md:text-7xl font-black mb-8 dark:text-white tracking-tighter"
           >
-            Invest in your <span className="text-gradient">Future.</span>
+            Upgrade Your <span className="text-gradient">Learning.</span>
           </motion.h1>
           <motion.p 
             {...fadeInUp}
             transition={{ delay: 0.2 }}
             className="text-slate-500 dark:text-slate-400 text-lg font-bold leading-relaxed mb-12"
           >
-            Unlock industry-grade education and AI intelligence. Scale your trading journey with the right infrastructure.
+            Choose the plan that fits your goals. Start learning with expert guidance and AI-powered tools.
           </motion.p>
 
           {/* Coupon Input Area */}
@@ -286,7 +286,7 @@ const PricingPage = () => {
                <div className="flex items-center justify-between bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-800 rounded-2xl p-4">
                  <div className="flex items-center space-x-3 text-emerald-600">
                    <ShieldCheck className="w-5 h-5" />
-                   <span className="font-black text-[10px] uppercase tracking-widest">Coupon {appliedCoupon.code} Active</span>
+                   <span className="font-black text-[10px] uppercase tracking-widest">Coupon {appliedCoupon.code} Applied</span>
                  </div>
                  <button onClick={removeCoupon} className="text-slate-400 hover:text-red-500 transition-colors">
                     <X className="w-5 h-5" />
@@ -300,7 +300,7 @@ const PricingPage = () => {
                      type="text"
                      value={couponInput}
                      onChange={(e) => setCouponInput(e.target.value)}
-                     placeholder="PROMO CODE"
+                     placeholder="COUPON CODE"
                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-12 pr-4 py-4 text-xs font-black uppercase tracking-widest focus:ring-4 focus:ring-brand-500/5 outline-none dark:text-white"
                    />
                  </div>
@@ -327,14 +327,14 @@ const PricingPage = () => {
           className="mt-40 overflow-hidden"
         >
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-black dark:text-white tracking-tighter uppercase">Infrastructure Comparison</h2>
-            <p className="text-slate-400 text-sm font-bold mt-2">Deep dive into technical specifications</p>
+            <h2 className="text-4xl font-black dark:text-white tracking-tighter uppercase">Plan Comparison</h2>
+            <p className="text-slate-400 text-sm font-bold mt-2">Compare features across our different plans</p>
           </div>
           <div className="card-premium overflow-x-auto !p-0">
             <table className="w-full text-left border-collapse min-w-[800px]">
               <thead>
                 <tr className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800">
-                  <th className="py-8 px-10 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Parameter</th>
+                  <th className="py-8 px-10 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Feature</th>
                   {tiers.map(t => (
                     <th key={t.name} className="py-8 px-10 text-[10px] font-black uppercase tracking-[0.2em] text-center dark:text-white">{t.name}</th>
                   ))}
@@ -343,11 +343,11 @@ const PricingPage = () => {
               <tbody className="text-xs font-bold">
                 {[
                   { name: 'Course Catalog Access', values: ['Basic', 'Advanced', 'Full'] },
-                  { name: 'Live Market Sessions', values: [false, false, true] },
-                  { name: 'AI Intelligence (msgs)', values: ['3/day', '20/day', 'Unlimited'] },
-                  { name: 'Network Priority', values: ['Standard', 'High', 'Institutional'] },
+                  { name: 'Live Classes', values: [false, false, true] },
+                  { name: 'AI Assistant (msgs)', values: ['3/day', '20/day', 'Unlimited'] },
+                  { name: 'Community Priority', values: ['Standard', 'High', 'Priority'] },
                   { name: 'Personal Mentorship', values: [false, false, true] },
-                  { name: 'Ad-Free Protocol', values: [false, true, true] },
+                  { name: 'Ad-Free Experience', values: [false, true, true] },
                 ].map((row, idx) => (
                   <tr key={idx} className="border-b border-slate-50 dark:border-slate-800/50 last:border-0 hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors">
                     <td className="py-6 px-10 dark:text-slate-300">{row.name}</td>
@@ -370,9 +370,9 @@ const PricingPage = () => {
         {/* FAQ Section Shortcut */}
         <div className="mt-32 text-center">
            <HelpCircle className="w-12 h-12 text-slate-300 mx-auto mb-6" />
-           <p className="text-slate-500 font-bold mb-6">Have technical questions about our plans?</p>
+           <p className="text-slate-500 font-bold mb-6">Have questions about our plans?</p>
            <button className="text-brand-600 font-black uppercase tracking-widest text-xs flex items-center mx-auto hover:translate-x-1 transition-transform">
-              Contact Infrastructure Support <ArrowRight className="w-4 h-4 ml-2" />
+              Contact Support Team <ArrowRight className="w-4 h-4 ml-2" />
            </button>
         </div>
       </div>

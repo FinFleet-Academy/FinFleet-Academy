@@ -177,7 +177,7 @@ const AnnouncementsTab = ({ currentUser, isAdmin }) => {
                 <motion.div key={ann._id} variants={fadeInUp} layout className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden group hover:shadow-md transition-all">
                   {ann.isPinned && (
                     <div className="bg-brand-600 text-white text-[9px] font-black uppercase tracking-[0.25em] px-8 py-2">
-                      Pinned Intel
+                      Pinned Post
                     </div>
                   )}
                   <div className="p-8 md:p-10">
@@ -211,7 +211,7 @@ const AnnouncementsTab = ({ currentUser, isAdmin }) => {
                       <button onClick={() => setExpanded(isExpanded ? null : ann._id)} 
                         className={`flex items-center space-x-2 px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${isExpanded ? 'bg-brand-600 text-white shadow-lg shadow-brand-500/20' : 'bg-slate-50 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white'}`}>
                         <MessageSquareQuote className="w-4 h-4" />
-                        <span>Intel Feed</span>
+                        <span>Comments</span>
                       </button>
                     </div>
 
@@ -255,7 +255,7 @@ const CommunityPage = () => {
           </motion.div>
           <motion.h1 initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="text-4xl md:text-6xl font-black dark:text-white tracking-tighter">Community</motion.h1>
           <motion.p initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-slate-500 dark:text-slate-400 mt-2 text-sm font-bold max-w-xl mx-auto md:mx-0">
-            A secure ecosystem for financial insights, verified announcements, and private peer discovery.
+            A secure platform for sharing knowledge, verified announcements, and discovering like-minded traders.
           </motion.p>
         </div>
 

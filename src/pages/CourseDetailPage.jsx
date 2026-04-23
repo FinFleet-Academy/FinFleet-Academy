@@ -45,8 +45,8 @@ const CourseDetailPage = () => {
       const res = await axios.get('/api/courses/progress');
       const prog = res.data.find(p => p.courseId?._id === courseId || p.courseId === courseId);
       setProgress(prog || null);
-      toast.success(prog?.completed ? 'Module completed!' : 'Progress reset');
-    } catch { toast.error('Sync failed'); }
+      toast.success(prog?.completed ? 'Lesson marked as complete!' : 'Progress reset');
+    } catch { toast.error('Failed to update progress'); }
   };
 
   const isPremiumLocked = course?.isPremium && plan === 'FREE';
@@ -61,8 +61,8 @@ const CourseDetailPage = () => {
   if (!course) return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-[#080C10]">
       <div className="text-center">
-        <h2 className="text-3xl font-black dark:text-white mb-4 uppercase tracking-tighter">Module Not Found</h2>
-        <Link to="/courses" className="text-brand-600 font-black uppercase tracking-widest text-xs">← Back to Academy</Link>
+        <h2 className="text-3xl font-black dark:text-white mb-4 uppercase tracking-tighter">Course Not Found</h2>
+        <Link to="/courses" className="text-brand-600 font-black uppercase tracking-widest text-xs">← Back to Courses</Link>
       </div>
     </div>
   );
@@ -75,7 +75,7 @@ const CourseDetailPage = () => {
          <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
             <Link to="/courses" className="flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-brand-600 transition-colors">
                <ArrowLeft className="w-4 h-4 mr-2" />
-               Academy Hub
+               All Courses
             </Link>
             <div className="flex items-center space-x-6">
                <div className="hidden md:flex items-center text-[10px] font-black uppercase tracking-widest text-slate-400">
@@ -97,7 +97,7 @@ const CourseDetailPage = () => {
                 <div className="max-w-2xl">
                    <div className="flex flex-wrap items-center gap-3 mb-6">
                       <span className="text-[10px] font-black px-3 py-1 bg-brand-50 dark:bg-brand-900/30 text-brand-600 rounded-full uppercase tracking-widest border border-brand-100 dark:border-brand-800">
-                         {course.difficulty || 'Expert'}
+                         {course.difficulty || 'All Levels'}
                       </span>
                       <span className="text-[10px] font-black px-3 py-1 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-full uppercase tracking-widest">
                          {course.category}
@@ -113,7 +113,7 @@ const CourseDetailPage = () => {
                 
                 <div className="flex-shrink-0">
                    <div className="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-none text-center min-w-[200px]">
-                      <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Mastery Progress</div>
+                      <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Your Progress</div>
                       <div className="relative w-24 h-24 mx-auto mb-6">
                          <svg className="w-full h-full transform -rotate-90">
                             <circle cx="48" cy="48" r="40" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-slate-100 dark:text-slate-800" />
@@ -132,24 +132,24 @@ const CourseDetailPage = () => {
                       <button 
                         onClick={handleToggleComplete}
                         className={`w-full py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${isCompleted ? 'bg-emerald-50 text-emerald-600' : 'bg-brand-600 text-white shadow-lg shadow-brand-500/20'}`}>
-                        {isCompleted ? 'Completed' : 'Finish Lesson'}
+                        {isCompleted ? 'Completed' : 'Mark as Complete'}
                       </button>
                    </div>
                 </div>
              </div>
           </div>
 
-          {/* 3. VIDEO ENGINE */}
+          {/* 3. VIDEO SECTION */}
           <div className="relative group">
              <div className="absolute -inset-1 bg-gradient-to-r from-brand-500 to-indigo-500 rounded-[3rem] blur opacity-20 group-hover:opacity-30 transition-opacity" />
              <div className="relative bg-black rounded-[2.5rem] overflow-hidden aspect-video shadow-2xl border border-white/5">
                 {isPremiumLocked ? (
-                  <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900/50 backdrop-blur-md p-10 text-center">
-                     <Lock className="w-16 h-16 text-white mb-6 animate-pulse" />
-                     <h3 className="text-2xl font-black text-white mb-4 uppercase tracking-tighter">Premium Access Required</h3>
-                     <p className="text-slate-400 text-sm font-bold mb-10 max-w-sm">This high-value module is reserved for our Pro and Elite members. Unlock institutional grade insights today.</p>
-                     <Link to="/pricing" className="px-12 py-5 bg-white text-slate-900 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl hover:scale-105 transition-all">Upgrade Membership</Link>
-                  </div>
+                   <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900/50 backdrop-blur-md p-10 text-center">
+                      <Lock className="w-16 h-16 text-white mb-6 animate-pulse" />
+                      <h3 className="text-2xl font-black text-white mb-4 uppercase tracking-tighter">Premium Plan Required</h3>
+                      <p className="text-slate-400 text-sm font-bold mb-10 max-w-sm">This premium course is reserved for our Pro and Elite members. Upgrade your plan to unlock all lessons.</p>
+                      <Link to="/pricing" className="px-12 py-5 bg-white text-slate-900 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl hover:scale-105 transition-all">Upgrade Plan</Link>
+                   </div>
                 ) : course.videoUrl ? (
                   <iframe
                     src={course.videoUrl.replace('watch?v=', 'embed/')}
@@ -161,24 +161,24 @@ const CourseDetailPage = () => {
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900">
                      <BookOpen className="w-16 h-16 text-slate-700 mb-4" />
-                     <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Text Only Module</p>
+                     <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Text Only Lesson</p>
                   </div>
                 )}
              </div>
              {!isPremiumLocked && course.videoUrl && (
-               <div className="mt-4 flex items-center justify-between px-6">
-                  <div className="flex items-center space-x-2">
-                     <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Verified Content Engine</span>
-                  </div>
-                  <a href={course.videoUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] font-black uppercase tracking-widest text-brand-600 hover:underline flex items-center">
-                     External Link <ExternalLink className="w-3 h-3 ml-1.5" />
-                  </a>
-               </div>
+                <div className="mt-4 flex items-center justify-between px-6">
+                   <div className="flex items-center space-x-2">
+                      <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Verified Content</span>
+                   </div>
+                   <a href={course.videoUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] font-black uppercase tracking-widest text-brand-600 hover:underline flex items-center">
+                      Watch on YouTube <ExternalLink className="w-3 h-3 ml-1.5" />
+                   </a>
+                </div>
              )}
           </div>
 
-          {/* 4. CONTENT & ENGAGEMENT */}
+          {/* 4. CONTENT & DISCUSSION */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 pt-12 border-t border-slate-100 dark:border-slate-800">
              <div className="lg:col-span-2 space-y-12">
                 <div className="prose prose-slate dark:prose-invert max-w-none">
@@ -188,14 +188,14 @@ const CourseDetailPage = () => {
                         {para}
                      </p>
                    )) : (
-                     <p className="text-slate-400 italic">No additional notes for this module.</p>
+                     <p className="text-slate-400 italic">No additional notes for this lesson.</p>
                    )}
                 </div>
 
                 <div className="pt-12 border-t border-slate-100 dark:border-slate-800">
                    <div className="flex items-center space-x-4 mb-10">
                       <MessageSquare className="w-6 h-6 text-brand-600" />
-                      <h3 className="text-xl font-black dark:text-white uppercase tracking-widest">Community Discussion</h3>
+                      <h3 className="text-xl font-black dark:text-white uppercase tracking-widest">Student Discussion</h3>
                    </div>
                    <CommentSection targetId={course._id} targetType="course" />
                 </div>
@@ -206,7 +206,7 @@ const CourseDetailPage = () => {
                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-8">Quick Actions</h3>
                    <div className="space-y-6">
                       <div className="flex items-center justify-between">
-                         <span className="text-xs font-bold dark:text-white">Appreciate Lesson</span>
+                         <span className="text-xs font-bold dark:text-white">Like this Lesson</span>
                          <LikeButton targetId={course._id} targetType="course" size="md" />
                       </div>
                       <div className="flex items-center justify-between">
@@ -221,11 +221,11 @@ const CourseDetailPage = () => {
 
                 <div className="bg-slate-900 rounded-[2.5rem] p-10 text-white relative overflow-hidden shadow-xl">
                    <div className="absolute top-0 right-0 w-24 h-24 bg-brand-500 rounded-full blur-3xl opacity-20 -mr-8 -mt-8" />
-                   <h3 className="text-[10px] font-black uppercase tracking-widest text-brand-400 mb-6">Expert Verdict</h3>
-                   <p className="text-slate-400 text-xs font-bold leading-relaxed">"Mastering this module is key to understanding the institutional order flow in modern markets."</p>
+                   <h3 className="text-[10px] font-black uppercase tracking-widest text-brand-400 mb-6">Instructor's Note</h3>
+                   <p className="text-slate-400 text-xs font-bold leading-relaxed">"Mastering this lesson is key to understanding how markets really work."</p>
                    <div className="mt-8 flex items-center space-x-3">
                       <div className="w-10 h-10 rounded-xl bg-slate-800 border border-white/10 flex items-center justify-center font-black text-xs text-brand-400">FF</div>
-                      <div className="text-[9px] font-black uppercase tracking-widest text-slate-500">FinFleet Research Team</div>
+                      <div className="text-[9px] font-black uppercase tracking-widest text-slate-500">FinFleet Academy Team</div>
                    </div>
                 </div>
              </div>

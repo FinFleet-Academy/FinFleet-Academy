@@ -37,7 +37,7 @@ const NewsDetailPage = () => {
       setExplanation(response.data.explanation);
     } catch (error) {
       console.error('Error explaining news:', error);
-      setExplanation('Protocol failure in AI simplification engine.');
+      setExplanation('AI summary unavailable at the moment.');
     } finally {
       setExplaining(false);
     }
@@ -57,9 +57,9 @@ const NewsDetailPage = () => {
     return (
       <div className="min-h-screen bg-[#F9FAFB] dark:bg-[#080C10] flex flex-col items-center justify-center py-24">
         <ShieldAlert className="w-16 h-16 text-slate-300 mb-6" />
-        <h2 className="text-3xl font-black dark:text-white mb-8 uppercase tracking-tighter">Intel Not Found.</h2>
+        <h2 className="text-3xl font-black dark:text-white mb-8 uppercase tracking-tighter">Article Not Found.</h2>
         <Link to="/finor" className="btn-brand py-4 px-8 text-xs font-black uppercase tracking-widest flex items-center">
-          <ArrowLeft className="w-4 h-4 mr-2" /> Back to Console
+          <ArrowLeft className="w-4 h-4 mr-2" /> Back to News Hub
         </Link>
       </div>
     );
@@ -75,7 +75,7 @@ const NewsDetailPage = () => {
           className="inline-flex items-center text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-brand-600 transition-colors mb-12 group"
         >
           <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-          Back to Intel Console
+          Back to News Hub
         </Link>
 
         <motion.article
@@ -104,7 +104,7 @@ const NewsDetailPage = () => {
             {news.title}
           </h1>
 
-          {/* AI Intelligence Simplified */}
+          {/* AI News Summary */}
           <div className="mb-16 p-8 md:p-10 bg-slate-50 dark:bg-slate-950/50 rounded-[2.5rem] border border-slate-100 dark:border-slate-800/50 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                <Sparkles className="w-20 h-20 text-brand-600" />
@@ -116,8 +116,8 @@ const NewsDetailPage = () => {
                     <Sparkles className="w-6 h-6 text-white" />
                  </div>
                  <div>
-                    <h3 className="text-xs font-black dark:text-white uppercase tracking-widest">AI Intelligence Recap</h3>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Simplifying complex market signals</p>
+                    <h3 className="text-xs font-black dark:text-white uppercase tracking-widest">AI News Summary</h3>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Summarizing market news for you</p>
                  </div>
               </div>
               {!explanation && (
@@ -126,7 +126,7 @@ const NewsDetailPage = () => {
                   disabled={explaining}
                   className="px-8 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-[10px] font-black uppercase tracking-widest rounded-xl hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
                 >
-                  {explaining ? 'Processing...' : 'Initiate Recap'}
+                  {explaining ? 'Processing...' : 'Generate Summary'}
                 </button>
               )}
             </div>
@@ -153,10 +153,10 @@ const NewsDetailPage = () => {
           <div className="flex flex-wrap items-center justify-between gap-6 py-10 border-t border-slate-50 dark:border-slate-800">
              <div className="flex items-center space-x-4">
                 <button className="flex items-center space-x-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-brand-600 transition-colors">
-                   <Share2 className="w-4 h-4" /> <span>Strategic Share</span>
+                   <Share2 className="w-4 h-4" /> <span>Share Article</span>
                 </button>
                 <button className="flex items-center space-x-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-brand-600 transition-colors">
-                   <Bookmark className="w-4 h-4" /> <span>Secure Link</span>
+                   <Bookmark className="w-4 h-4" /> <span>Save Article</span>
                 </button>
              </div>
              {news.sourceLink && (
@@ -172,14 +172,14 @@ const NewsDetailPage = () => {
              )}
           </div>
 
-          {/* Disclaimer Protocol */}
+          {/* Disclaimer Section */}
           <div className="p-8 bg-amber-50 dark:bg-amber-900/10 rounded-[2rem] border border-amber-100 dark:border-amber-900/20 flex items-start space-x-4 relative overflow-hidden">
             <div className="absolute top-0 right-0 p-4 opacity-10">
                <ShieldAlert className="w-12 h-12 text-amber-600" />
             </div>
             <ShieldAlert className="w-6 h-6 text-amber-600 shrink-0 mt-0.5" />
             <p className="text-[11px] text-amber-800 dark:text-amber-400 leading-relaxed font-bold uppercase tracking-wide relative">
-              <span className="font-black">Legal Protocol:</span> This intelligence packet is provided for educational purposes only. It does not constitute financial advice, market manipulation, or institutional recommendation. Invest at your own risk.
+              <span className="font-black">Disclaimer:</span> This article is for educational purposes only. It does not constitute financial advice or institutional recommendation. Invest at your own risk.
             </p>
           </div>
 
@@ -187,7 +187,7 @@ const NewsDetailPage = () => {
           <div className="mt-20 pt-20 border-t border-slate-50 dark:border-slate-800">
              <div className="flex items-center space-x-3 mb-12">
                 <MessageCircle className="w-6 h-6 text-brand-600" />
-                <h2 className="text-xl font-black dark:text-white uppercase tracking-widest">Public Discussion</h2>
+                <h2 className="text-xl font-black dark:text-white uppercase tracking-widest">Community Comments</h2>
              </div>
              <CommentSection targetId={news._id} targetType="news" />
           </div>
@@ -197,7 +197,7 @@ const NewsDetailPage = () => {
         {/* Footer Navigation Shortcut */}
         <div className="mt-20 text-center">
            <Link to="/finor" className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-brand-600 transition-colors flex items-center justify-center">
-              Explore More Intel <Star className="w-4 h-4 ml-3 fill-brand-600 text-brand-600" />
+              Explore More News <Star className="w-4 h-4 ml-3 fill-brand-600 text-brand-600" />
            </Link>
         </div>
       </div>

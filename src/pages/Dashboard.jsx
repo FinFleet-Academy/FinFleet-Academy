@@ -93,16 +93,16 @@ const Dashboard = () => {
       {/* 1. TOP KPI ROW */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
         <motion.div variants={itemVars} className="mb-10">
-          <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Dashboard</h1>
-          <p className="text-slate-500 dark:text-slate-400 font-medium mt-1">Ready for today's market analysis, {user?.name?.split(' ')[0]}?</p>
+          <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">My Dashboard</h1>
+          <p className="text-slate-500 dark:text-slate-400 font-medium mt-1">Welcome back, {user?.name?.split(' ')[0]}! Ready to learn today?</p>
         </motion.div>
 
         <motion.div variants={containerVars} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           {[
-            { label: 'Followers', value: user?.followersCount || 0, sub: '+2 new today', icon: Users, color: 'text-brand-600', bg: 'bg-brand-50 dark:bg-brand-900/10' },
-            { label: 'AI Usage', value: user?.chatCount || 0, sub: 'Daily quota: 20', icon: Zap, color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/10' },
-            { label: 'Membership', value: plan === 'ELITE PRIME' ? 'Prime' : plan, sub: 'Active Plan', icon: Star, color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-900/10' },
-            { label: 'Usage Value', value: `₹${plan === PLANS.PRIME ? '1999' : plan === PLANS.ELITE ? '699' : '0'}`, sub: 'Current Value', icon: ShieldCheck, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/10' }
+            { label: 'Followers', value: user?.followersCount || 0, sub: '+2 today', icon: Users, color: 'text-brand-600', bg: 'bg-brand-50 dark:bg-brand-900/10' },
+            { label: 'AI Messages', value: user?.chatCount || 0, sub: 'Daily quota: 20', icon: Zap, color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/10' },
+            { label: 'My Plan', value: plan === 'ELITE PRIME' ? 'Prime' : plan, sub: 'Active now', icon: Star, color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-900/10' },
+            { label: 'Account Value', value: `₹${plan === PLANS.PRIME ? '1999' : plan === PLANS.ELITE ? '699' : '0'}`, sub: 'Current Plan', icon: ShieldCheck, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/10' }
           ].map((kpi, i) => (
             <motion.div key={i} variants={itemVars} className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all">
               <div className="flex justify-between items-start mb-4">
@@ -117,7 +117,7 @@ const Dashboard = () => {
           ))}
         </motion.div>
 
-        {/* 2. MAIN ACTION ZONE (Dominant AI Chat) */}
+        {/* 2. MAIN ACTION ZONE (AI Assistant) */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
           <motion.div variants={itemVars} className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col min-h-[450px]">
             <div className="px-8 py-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/30 dark:bg-slate-900/50">
@@ -126,10 +126,10 @@ const Dashboard = () => {
                   <Bot className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">AI Insight Hub</h2>
+                  <h2 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">AI Learning Assistant</h2>
                   <div className="flex items-center text-[10px] text-emerald-500 font-bold">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse mr-1.5" />
-                    Online & Calibrated
+                    Active & Ready
                   </div>
                 </div>
               </div>
@@ -142,11 +142,11 @@ const Dashboard = () => {
               <div className="space-y-6">
                 <div className="flex items-start max-w-[80%]">
                   <div className="bg-slate-100 dark:bg-slate-800 p-5 rounded-[1.5rem] rounded-tl-none text-sm font-medium text-slate-700 dark:text-slate-300 leading-relaxed shadow-sm">
-                    Welcome back! Markets are showing interesting trends in the energy sector today. What would you like to analyze together?
+                    Welcome back! Markets are showing interesting trends today. What would you like to learn about or analyze together?
                   </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-md">
-                  {['"Analyze Nifty 50 trends"', '"SIP vs Lumpsum guide"', '"Explain Inflation"', '"Risk profiles"'].map((q, i) => (
+                  {['"Check market trends"', '"SIP vs Lumpsum guide"', '"What is inflation?"', '"Understand risk"'].map((q, i) => (
                     <button key={i} onClick={() => setChatInput(q.replace(/"/g, ''))} className="text-left p-3 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-500 hover:border-brand-500/50 hover:text-brand-600 transition-all bg-slate-50/50 dark:bg-slate-900/50">
                       {q}
                     </button>
@@ -177,7 +177,7 @@ const Dashboard = () => {
                 <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500 rounded-full blur-[80px] opacity-40 -mr-10 -mt-10" />
                 <h3 className="text-xs font-black uppercase tracking-[0.2em] text-brand-400 mb-6 flex items-center">
                   <TrendingUp className="w-4 h-4 mr-2" />
-                  Daily Insight
+                  Daily Insights
                 </h3>
                 {dailyInsight ? (
                   <>
@@ -186,19 +186,19 @@ const Dashboard = () => {
                     <Link to="/finor" className="text-xs font-black uppercase tracking-widest text-white border-b border-brand-500 pb-1 hover:text-brand-400 transition-colors">Read Full Article</Link>
                   </>
                 ) : (
-                  <p className="text-slate-500 italic">Connecting to intelligence feed...</p>
+                  <p className="text-slate-500 italic">Loading latest insights...</p>
                 )}
              </div>
 
              <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 p-8 shadow-sm">
                 <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-6 flex items-center">
                   <Link2 className="w-4 h-4 mr-2" />
-                  Quick Invite
+                  Refer & Earn
                 </h3>
-                <p className="text-xs font-bold text-slate-500 mb-6 leading-relaxed">Refer a friend and unlock <span className="text-indigo-500">+10 AI Messages</span> instantly.</p>
+                <p className="text-xs font-bold text-slate-500 mb-6 leading-relaxed">Refer a friend and get <span className="text-indigo-500">+10 AI Messages</span> instantly.</p>
                 <div className="flex items-center bg-slate-50 dark:bg-slate-950 rounded-xl p-1.5 border border-slate-200 dark:border-slate-800">
                   <code className="flex-grow text-[10px] font-black text-slate-700 dark:text-slate-300 px-3 uppercase tracking-tighter truncate">
-                    {user?.referralCode || 'FN-PRO-721'}
+                    {user?.referralCode || 'REF-CODE-HERE'}
                   </code>
                   <button onClick={copyReferral} className="p-2.5 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700 hover:bg-slate-50 transition-colors active:scale-90">
                     <Copy className="w-3.5 h-3.5 text-slate-500" />
@@ -208,15 +208,15 @@ const Dashboard = () => {
           </motion.div>
         </div>
 
-        {/* 3. SECONDARY SECTION (Progress & Bookmarks) */}
+        {/* 3. SECONDARY SECTION (Learning & Bookmarks) */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
            <motion.div variants={itemVars} className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
               <div className="px-8 py-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
                 <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider flex items-center">
                   <Clock className="w-4 h-4 mr-2 text-indigo-500" />
-                  Learning Progress
+                  My Learning Progress
                 </h3>
-                <Link to="/courses" className="text-xs font-black text-brand-600 hover:underline">Continue All</Link>
+                <Link to="/courses" className="text-xs font-black text-brand-600 hover:underline">View All</Link>
               </div>
               <div className="p-0">
                 {courses.length > 0 ? (
@@ -229,7 +229,7 @@ const Dashboard = () => {
                           </div>
                           <div>
                             <h4 className="text-sm font-bold text-slate-900 dark:text-white">{c.title}</h4>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-0.5">{c.progress === 100 ? 'Completed' : 'Action Required'}</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-0.5">{c.progress === 100 ? 'Completed' : 'Continue Learning'}</p>
                           </div>
                         </div>
                         <div className="flex items-center space-x-6">
@@ -249,8 +249,8 @@ const Dashboard = () => {
                   </div>
                 ) : (
                   <div className="p-12 text-center">
-                    <p className="text-sm font-bold text-slate-400 mb-4">You haven't started any learning modules yet.</p>
-                    <Link to="/courses" className="btn-primary py-2.5 px-6 text-xs">Explore Academy</Link>
+                    <p className="text-sm font-bold text-slate-400 mb-4">You haven't started any courses yet.</p>
+                    <Link to="/courses" className="btn-primary py-2.5 px-6 text-xs">Browse Courses</Link>
                   </div>
                 )}
               </div>
@@ -276,7 +276,7 @@ const Dashboard = () => {
                    </Link>
                  )) : (
                    <div className="p-12 text-center text-slate-400">
-                      <p className="text-xs font-bold">No bookmarks saved.</p>
+                      <p className="text-xs font-bold">No bookmarks saved yet.</p>
                    </div>
                  )}
               </div>

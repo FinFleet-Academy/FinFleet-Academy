@@ -38,11 +38,11 @@ const HomePage = () => {
   return (
     <div className="bg-[#F9FAFB] dark:bg-[#080C10] min-h-screen font-sans selection:bg-brand-500/20 overflow-x-hidden">
       
-      {/* 1. INSTITUTIONAL HERO */}
+      {/* 1. HERO SECTION */}
       <section className="relative pt-20 pb-20 md:pt-32 md:pb-28 px-6 overflow-hidden">
-        {/* Background Sophistication */}
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-500 rounded-full blur-[160px] opacity-10 -mr-64 -mt-64 animate-glow" />
-        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-500 rounded-full blur-[140px] opacity-10 -ml-64 -mb-64 animate-glow" />
+        {/* Background Elements */}
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-500 rounded-full blur-[160px] opacity-10 -mr-64 -mt-64" />
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-500 rounded-full blur-[140px] opacity-10 -ml-64 -mb-64" />
         
         <div className="max-w-6xl mx-auto relative z-10 text-center">
           <motion.div
@@ -54,21 +54,21 @@ const HomePage = () => {
                 <div className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-brand-400 opacity-75"></div>
                 <div className="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></div>
              </div>
-             <span className="text-[10px] font-black text-brand-700 dark:text-brand-300 uppercase tracking-widest">Institutional Protocol v2.4</span>
+             <span className="text-[10px] font-black text-brand-700 dark:text-brand-300 uppercase tracking-widest">Master Your Finances</span>
           </motion.div>
 
           <motion.h1 
             {...fadeInUp} transition={{ duration: 0.5 }}
             className="text-5xl md:text-7xl font-black text-slate-900 dark:text-white leading-tight tracking-tight mb-6"
           >
-            Wealth <br /> <span className="text-gradient">Engine.</span>
+            FinFleet <br /> <span className="text-gradient">Academy.</span>
           </motion.h1>
 
           <motion.p 
             {...fadeInUp} transition={{ delay: 0.15, duration: 0.5 }}
             className="text-lg md:text-xl text-slate-600 dark:text-slate-300 mb-10 max-w-2xl mx-auto leading-relaxed"
           >
-            High-fidelity courses, real-time market intelligence, and a private network for the elite retail mind.
+            Learn finance the right way with practical tools, structured courses, and a strong community of learners.
           </motion.p>
           
           <motion.div 
@@ -76,26 +76,26 @@ const HomePage = () => {
             className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6"
           >
             <Link to="/courses" className="btn-brand py-4 px-10 text-[11px] font-black uppercase tracking-wide shadow-xl shadow-brand-500/30 flex items-center group">
-              Start Protocol
+              Get Started
               <ArrowRight className="w-4 h-4 ml-3 group-hover:translate-x-2 transition-transform" />
             </Link>
             <Link to="/community" className="btn-secondary py-4 px-10 text-[11px] font-black uppercase tracking-wide dark:text-white flex items-center group">
-              Enter Community
+              Join Community
               <Globe className="w-4 h-4 ml-3 group-hover:rotate-12 transition-transform" />
             </Link>
           </motion.div>
         </div>
       </section>
 
-      {/* 2. FLEET METRICS (Trust Bar) */}
+      {/* 2. METRICS SECTION */}
       <section className="py-14 border-y border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-slate-900/30 backdrop-blur-md">
         <div className="max-w-6xl mx-auto px-6">
            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
               {[
-                { label: 'Active Fleet', value: '12K+', icon: Users, color: 'text-brand-600' },
-                { label: 'Intel Accuracy', value: '98.4%', icon: ShieldCheck, color: 'text-emerald-500' },
-                { label: 'Daily Alpha', value: '142', icon: Zap, color: 'text-amber-500' },
-                { label: 'Market Nodes', value: '500+', icon: Globe, color: 'text-blue-500' }
+                { label: 'Students', value: '12K+', icon: Users, color: 'text-brand-600' },
+                { label: 'Rating', value: '4.8/5', icon: Star, color: 'text-amber-500' },
+                { label: 'Daily News', value: '50+', icon: Newspaper, color: 'text-blue-500' },
+                { label: 'Expert Mentors', value: '100+', icon: Sparkles, color: 'text-emerald-500' }
               ].map((stat, i) => (
                 <motion.div 
                   key={i} whileInView={{ opacity: 1, y: 0 }} initial={{ opacity: 0, y: 20 }} 
@@ -112,21 +112,21 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* 3. STRATEGIC MODULES (Courses) */}
+      {/* 3. COURSES SECTION */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
             <div className="max-w-2xl">
               <motion.div {...fadeInUp} className="flex items-center space-x-3 mb-6">
                  <BookOpen className="w-6 h-6 text-brand-600" />
-                 <h2 className="text-[10px] font-black dark:text-white uppercase tracking-[0.4em]">Academy Infrastructure</h2>
+                 <h2 className="text-[10px] font-black dark:text-white uppercase tracking-[0.4em]">Learn from Experts</h2>
               </motion.div>
               <h3 className="text-3xl md:text-5xl font-black dark:text-white tracking-tight leading-tight">
-                Tactical <br /> <span className="text-gradient">Curriculum.</span>
+                Featured <br /> <span className="text-gradient">Courses.</span>
               </h3>
             </div>
             <Link to="/courses" className="text-[11px] font-black uppercase tracking-widest text-brand-600 flex items-center hover:translate-x-3 transition-transform group">
-              Access Full Database <ArrowRight className="w-4 h-4 ml-3" />
+              View All Courses <ArrowRight className="w-4 h-4 ml-3" />
             </Link>
           </div>
 
@@ -154,12 +154,12 @@ const HomePage = () => {
                        <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
                     </div>
                     <p className="text-sm font-bold text-slate-500 dark:text-slate-400 leading-relaxed italic">
-                      "{course.description || "Mastering the structural components of capital growth."}"
+                      "{course.description || "Master the art of investing with our comprehensive guide."}"
                     </p>
                     <div className="pt-6 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between">
                        <div className="flex items-center -space-x-3">
                           {[1,2,3].map(j => <div key={j} className="w-8 h-8 rounded-full border-2 border-white dark:border-slate-900 bg-slate-100 dark:bg-slate-800" />)}
-                          <span className="ml-6 text-[9px] font-black text-slate-400 uppercase tracking-widest">+1.2K Active</span>
+                          <span className="ml-6 text-[9px] font-black text-slate-400 uppercase tracking-widest">+1.2K Enrolled</span>
                        </div>
                        <Link to={`/courses/${course._id}`} className="w-12 h-12 bg-slate-950 dark:bg-white text-white dark:text-slate-950 rounded-2xl flex items-center justify-center group-hover:bg-brand-600 group-hover:text-white transition-all">
                           <PlayCircle className="w-6 h-6" />
@@ -173,17 +173,17 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* 4. INTEL BROADCASTS (Announcements) */}
+      {/* 4. ANNOUNCEMENTS SECTION */}
       <section className="py-16 bg-slate-950 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-brand-900/10 via-transparent to-transparent opacity-50" />
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="text-center mb-10">
             <motion.div {...fadeInUp} className="inline-flex items-center space-x-3 mb-8 bg-white/5 px-4 py-2 rounded-full border border-white/10">
                <Newspaper className="w-4 h-4 text-brand-400" />
-               <span className="text-[10px] font-black text-brand-400 uppercase tracking-widest">Global Heatmap Logs</span>
+               <span className="text-[10px] font-black text-brand-400 uppercase tracking-widest">Latest Updates</span>
             </motion.div>
-            <h2 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tight leading-tight">Fleet <span className="text-brand-500">Comms.</span></h2>
-            <p className="text-slate-300 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">Official strategic updates directly from the high-command terminal.</p>
+            <h2 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tight leading-tight">Latest <span className="text-brand-500">News.</span></h2>
+            <p className="text-slate-300 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">Stay updated with the latest market insights and announcements.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-6xl mx-auto">
@@ -199,14 +199,14 @@ const HomePage = () => {
                   <div className="flex justify-between items-center mb-10">
                     <div className="flex items-center space-x-3 px-4 py-1.5 bg-brand-500/10 rounded-full border border-brand-500/20">
                       <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
-                      <span className="text-[9px] font-black text-brand-500 uppercase tracking-[0.2em]">Live Node</span>
+                      <span className="text-[9px] font-black text-brand-500 uppercase tracking-[0.2em]">New</span>
                     </div>
                     <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{new Date(ann.createdAt).toLocaleDateString()}</span>
                   </div>
                   <h3 className="text-2xl font-black text-white mb-6 uppercase tracking-tighter group-hover:text-brand-500 transition-colors leading-tight">{ann.title}</h3>
                   <p className="text-slate-400 text-sm font-bold leading-relaxed mb-10 line-clamp-2 italic opacity-80">"{ann.content}"</p>
                   <Link to="/community" className="inline-flex items-center text-[10px] font-black text-white uppercase tracking-[0.3em] group/btn">
-                    Secure Participation <ArrowRight className="w-4 h-4 ml-3 group-hover/btn:translate-x-3 transition-transform text-brand-500" />
+                    Learn More <ArrowRight className="w-4 h-4 ml-3 group-hover/btn:translate-x-3 transition-transform text-brand-500" />
                   </Link>
                 </motion.div>
               ))
@@ -215,7 +215,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* 5. ELITE UPGRADE CTA */}
+      {/* 5. CALL TO ACTION */}
       <section className="py-20 relative text-center px-6 overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-brand-500 rounded-full blur-[200px] opacity-[0.03]" />
         
@@ -226,16 +226,16 @@ const HomePage = () => {
           <div className="w-24 h-24 bg-brand-50 dark:bg-brand-900/20 rounded-[2rem] flex items-center justify-center mx-auto mb-12 shadow-inner border border-brand-100 dark:border-brand-800 animate-float">
              <Sparkles className="w-10 h-10 text-brand-600" />
           </div>
-          <h2 className="text-4xl md:text-6xl font-black dark:text-white mb-6 tracking-tight leading-tight">Join the <br /> <span className="text-gradient">Expansion.</span></h2>
+          <h2 className="text-4xl md:text-6xl font-black dark:text-white mb-6 tracking-tight leading-tight">Start Your <br /> <span className="text-gradient">Journey.</span></h2>
           <p className="text-base md:text-lg text-slate-500 dark:text-slate-300 mb-10 max-w-2xl mx-auto leading-relaxed">
-            The private fleet is scaling. Secure your institutional seat and master the global markets.
+            Join thousands of learners and start mastering the markets today with expert-led courses.
           </p>
           <div className="flex flex-col sm:flex-row justify-center items-center gap-6">
-             <Link to="/community" className="btn-brand py-6 px-16 text-[12px] font-black uppercase tracking-[0.3em] rounded-[2.5rem] shadow-2xl shadow-brand-500/40 group">
-               Initial Entry Protocol
+             <Link to="/signup" className="btn-brand py-6 px-16 text-[12px] font-black uppercase tracking-[0.3em] rounded-[2.5rem] shadow-2xl shadow-brand-500/40 group">
+               Join Now
              </Link>
              <Link to="/pricing" className="btn-secondary py-6 px-16 text-[12px] font-black uppercase tracking-[0.3em] rounded-[2.5rem] group">
-               View Tiers
+               Pricing Plans
              </Link>
           </div>
           
@@ -248,7 +248,7 @@ const HomePage = () => {
         </motion.div>
       </section>
 
-      {/* FOOTER OVERLAY */}
+      {/* FOOTER BACKGROUND TEXT */}
       <div className="py-20 text-center select-none pointer-events-none overflow-hidden opacity-[0.03]">
          <h2 className="text-[20vw] font-black leading-none tracking-tighter dark:text-white">FINFLEET</h2>
       </div>

@@ -30,6 +30,7 @@ import likeRoutes from './routes/likeRoutes.js';
 import tradeRoutes from './routes/tradeRoutes.js';
 import quizRoutes from './routes/quizRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
+import liveClassRoutes from './routes/liveClassRoutes.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
 dotenv.config();
@@ -104,6 +105,7 @@ app.use('/api/likes', likeRoutes);
 app.use('/api/trade', tradeRoutes);
 app.use('/api/quizzes', quizRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/live-classes', liveClassRoutes);
 
 // Error Handling
 app.use(notFound);
