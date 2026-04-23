@@ -43,6 +43,9 @@ const PORT = process.env.PORT || 5000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Trust proxy for Render/Cloudflare to get correct client IPs
+app.set('trust proxy', 1);
+
 // Enable Compression (Gzip/Brotli)
 app.use(compression());
 
@@ -80,7 +83,7 @@ app.use(xss());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 1000, // Increased for dashboard/multiple users
+  max: 2000, // Further increased to prevent false positives on heavy dashboards
   message: 'Too many requests from this IP, please try again after 15 minutes'
 });
 app.use('/api/', limiter);
