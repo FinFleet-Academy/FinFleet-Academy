@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Calendar, Tag, ExternalLink, ShieldAlert } from 'lucide-react';
+import CommentSection from '../components/shared/CommentSection';
 
 const NewsDetailPage = () => {
   const { slug } = useParams();
@@ -140,6 +141,10 @@ const NewsDetailPage = () => {
               <span className="font-bold">Disclaimer:</span> This content is for educational purposes only and not financial advice.
             </p>
           </div>
+
+          {/* Comments Section */}
+          <CommentSection targetId={news._id} targetType="news" />
+
         </motion.article>
       </div>
     </div>

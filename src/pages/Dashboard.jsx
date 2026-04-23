@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, Trophy, TrendingUp, Award, Star, Bell, CheckCircle2, Wallet, Users, MessageSquare, Zap, Calculator, ChevronRight, FileText, Send, Sparkles, ShieldCheck } from 'lucide-react';
+import { BookOpen, Trophy, TrendingUp, Award, Star, Bell, CheckCircle2, Wallet, Users, MessageSquare, Zap, Calculator, ChevronRight, FileText, Send, Sparkles, ShieldCheck, Link2, Copy } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 import { useAuth, PLANS } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -9,6 +10,7 @@ const Dashboard = () => {
   const { user, plan, notifications, markNotificationRead } = useAuth();
   const [courses, setCourses] = useState([]);
   const [bookmarks, setBookmarks] = useState([]);
+  const [dailyInsight, setDailyInsight] = useState(null);
   const [loading, setLoading] = useState(true);
   const [chatInput, setChatInput] = useState('');
   const navigate = useNavigate();
@@ -16,9 +18,10 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [courseRes, bookmarkRes] = await Promise.all([
+        const [courseRes, bookmarkRes, insightRes] = await Promise.all([
           axios.get('/api/courses/progress').catch(() => ({ data: [] })),
-          axios.get('/api/bookmarks').catch(() => ({ data: [] }))
+          axios.get('/api/bookmarks').catch(() => ({ data: [] })),
+          axios.get('/api/insights/today').catch(() => ({ data: null }))
         ]);
         
         const mappedCourses = courseRes.data.map(p => ({
@@ -27,6 +30,7 @@ const Dashboard = () => {
         }));
         setCourses(mappedCourses);
         setBookmarks(bookmarkRes.data.slice(0, 4));
+        setDailyInsight(insightRes.data);
       } catch (err) {
         console.error("Failed to fetch dashboard data", err);
       } finally {
@@ -45,6 +49,12 @@ const Dashboard = () => {
       // In a real app, we might pass this via state to the ChatPage
       navigate('/chatbot');
     }
+  };
+
+  const copyReferral = () => {
+    const link = `https://finfleetacademy.com/signup?ref=${user?.referralCode || ''}`;
+    navigator.clipboard.writeText(link);
+    toast.success('Referral link copied!');
   };
 
   return (
@@ -277,6 +287,72 @@ const Dashboard = () => {
                   )}
                 </tbody>
               </table>
+            </div>
+          </div>
+
+        </div>
+
+        {/* 4. ENGAGEMENT ZONE (Insights, Referrals, Community) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          {/* Daily Insight */}
+          <div className="bg-brand-900 rounded-xl border border-brand-800 shadow-sm text-white overflow-hidden flex flex-col relative">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500 rounded-full blur-3xl opacity-20 -mr-10 -mt-10 pointer-events-none"></div>
+            <div className="px-6 py-4 border-b border-brand-800/50 flex justify-between items-center z-10">
+              <h2 className="font-semibold flex items-center text-sm">
+                <TrendingUp className="w-4 h-4 mr-2 text-brand-300" />
+                Today's Insight
+              </h2>
+            </div>
+            <div className="p-6 flex-grow z-10">
+              {dailyInsight ? (
+                <>
+                  <h3 className="font-bold text-lg mb-2">{dailyInsight.title}</h3>
+                  <p className="text-sm text-brand-100/80 mb-4 line-clamp-3">{dailyInsight.content}</p>
+                </>
+              ) : (
+                <p className="text-sm text-brand-100/80">Check back later for today's market insight.</p>
+              )}
+            </div>
+          </div>
+
+          {/* Referral Dashboard */}
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col">
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50">
+              <h2 className="font-semibold flex items-center text-sm">
+                <Link2 className="w-4 h-4 mr-2 text-brand-600" />
+                Invite & Earn
+              </h2>
+            </div>
+            <div className="p-6 flex-grow flex flex-col justify-center text-center">
+              <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+                Invite friends and get <strong className="text-slate-900 dark:text-white">+10 AI Messages</strong> for each successful signup!
+              </p>
+              <div className="flex items-center bg-slate-100 dark:bg-slate-950 rounded-lg p-2 border border-slate-200 dark:border-slate-800">
+                <code className="flex-grow text-xs font-bold text-slate-700 dark:text-slate-300">
+                  {user?.referralCode || 'GENERATING...'}
+                </code>
+                <button onClick={copyReferral} className="p-2 bg-white dark:bg-slate-800 rounded-md shadow-sm border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                  <Copy className="w-4 h-4 text-slate-500" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Community Chat Shortcut */}
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col group cursor-pointer hover:border-brand-500/50 transition-colors" onClick={() => navigate('/community')}>
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50 transition-colors group-hover:bg-brand-50/50 dark:group-hover:bg-brand-900/10">
+              <h2 className="font-semibold flex items-center text-sm">
+                <Users className="w-4 h-4 mr-2 text-brand-600" />
+                Community Space
+              </h2>
+            </div>
+            <div className="p-6 flex-grow flex flex-col items-center justify-center text-center">
+              <div className="w-12 h-12 rounded-full bg-brand-100 dark:bg-brand-900/30 text-brand-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <MessageSquare className="w-6 h-6" />
+              </div>
+              <h3 className="font-bold text-sm mb-1 dark:text-white">Join the Conversation</h3>
+              <p className="text-xs text-slate-500">Connect with other traders in real-time.</p>
             </div>
           </div>
 

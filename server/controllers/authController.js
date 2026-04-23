@@ -49,9 +49,16 @@ export const registerUser = async (req, res) => {
 
     if (user) {
       if (referredById) {
+         // Reward referrer: Add user to referred list and give +10 AI messages (decrement usage)
          await User.findByIdAndUpdate(referredById, {
-           $push: { referredUsers: user._id }
-           // Add chat count reward or similar logic here if needed
+           $push: { referredUsers: user._id },
+           $inc: { chatCount: -10 }
+         });
+         
+         // Notify referrer
+         await Notification.create({
+           userEmail: (await User.findById(referredById)).email,
+           message: `Someone just signed up using your referral code! We've added 10 bonus AI messages to your account.`
          });
       }
 

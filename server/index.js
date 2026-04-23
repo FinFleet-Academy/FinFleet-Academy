@@ -22,6 +22,7 @@ import helpRoutes from './routes/helpRoutes.js';
 import bookmarkRoutes from './routes/bookmarkRoutes.js';
 import commentRoutes from './routes/commentRoutes.js';
 import insightRoutes from './routes/insightRoutes.js';
+import communityChatRoutes from './routes/communityChatRoutes.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
 dotenv.config();
@@ -72,6 +73,7 @@ app.use('/api/help', helpRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/insights', insightRoutes);
+app.use('/api/community-chat', communityChatRoutes);
 
 // Error Handling
 app.use(notFound);

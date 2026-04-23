@@ -24,6 +24,7 @@ const Navbar = () => {
     { name: 'Learning', path: '/courses' },
     { name: 'News', path: '/finor' },
     { name: 'Tools', path: '/tools' },
+    { name: 'Community', path: '/community' },
     { name: 'Pricing', path: '/pricing' }
   ];
 

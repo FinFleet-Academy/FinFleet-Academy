@@ -22,6 +22,7 @@ import ProfilePage from './pages/ProfilePage';
 import FeedbackPage from './pages/FeedbackPage';
 import HelpPage from './pages/HelpPage';
 import ToolsPage from './pages/ToolsPage';
+import CommunityPage from './pages/CommunityPage';
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
               <Route path="/feedback" element={<FeedbackPage />} />
               <Route path="/help" element={<HelpPage />} />
               <Route path="/tools" element={<ToolsPage />} />
+              <Route path="/community" element={<CommunityPage />} />
             </Routes>
           </main>
           <Footer />
