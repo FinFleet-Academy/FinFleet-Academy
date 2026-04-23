@@ -10,6 +10,8 @@ const LiveChartHero = () => {
   const [change, setChange] = useState(2.4);
 
   useEffect(() => {
+    if (!chartContainerRef.current) return;
+
     const chart = createChart(chartContainerRef.current, {
       layout: {
         background: { type: ColorType.Solid, color: 'transparent' },
@@ -19,7 +21,7 @@ const LiveChartHero = () => {
         vertLines: { visible: false },
         horzLines: { color: 'rgba(255, 255, 255, 0.05)' },
       },
-      width: chartContainerRef.current.clientWidth,
+      width: chartContainerRef.current.clientWidth || 500,
       height: 350,
       timeScale: { visible: false },
       rightPriceScale: { visible: false },

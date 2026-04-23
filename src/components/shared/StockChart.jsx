@@ -11,6 +11,8 @@ const StockChart = ({ data, symbol, colors = {} }) => {
       chart.applyOptions({ width: chartContainerRef.current.clientWidth });
     };
 
+    if (!chartContainerRef.current) return;
+
     const chart = createChart(chartContainerRef.current, {
       layout: {
         background: { type: ColorType.Solid, color: colors.backgroundColor || 'transparent' },
@@ -20,7 +22,7 @@ const StockChart = ({ data, symbol, colors = {} }) => {
         vertLines: { color: colors.gridColor || 'rgba(255, 255, 255, 0.05)' },
         horzLines: { color: colors.gridColor || 'rgba(255, 255, 255, 0.05)' },
       },
-      width: chartContainerRef.current.clientWidth,
+      width: chartContainerRef.current.clientWidth || 500,
       height: 400,
       timeScale: {
         borderColor: 'rgba(255, 255, 255, 0.1)',
