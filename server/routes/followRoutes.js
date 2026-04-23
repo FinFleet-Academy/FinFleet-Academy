@@ -1,3 +1,4 @@
+import express from 'express';
 import { followUser, unfollowUser, getFollowers, getFollowing, discoverUsers, getMySocial } from '../controllers/followController.js';
 import { protect, optionalProtect } from '../middleware/authMiddleware.js';
 
