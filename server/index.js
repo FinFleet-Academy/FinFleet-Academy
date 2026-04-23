@@ -34,6 +34,8 @@ import tradeRoutes from './routes/tradeRoutes.js';
 import quizRoutes from './routes/quizRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
 import liveClassRoutes from './routes/liveClassRoutes.js';
+import stockRoutes from './routes/stockRoutes.js';
+import stockSimulator from './services/stockSimulator.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
 dotenv.config();
@@ -121,6 +123,7 @@ app.use('/api/trade', tradeRoutes);
 app.use('/api/quizzes', quizRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/live-classes', liveClassRoutes);
+app.use('/api/stocks', stockRoutes);
 
 // Static Asset Caching & Serving (Production)
 if (process.env.NODE_ENV === 'production') {
@@ -153,6 +156,8 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/finfleet')
     console.log('Connected to MongoDB');
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
+      // Start Simulation Engines
+      stockSimulator.startSimulation();
     });
   })
   .catch((err) => {

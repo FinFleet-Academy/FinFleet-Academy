@@ -9,9 +9,18 @@ const router = express.Router();
 
 router.post('/execute', protect, async (req, res) => {
   try {
-    const { symbol, type, quantity, price } = req.body;
-    const total = quantity * price;
+    let { symbol, type, quantity, price, market = 'INDIA' } = req.body;
     const user = await User.findById(req.user._id);
+    
+    // If Indian market, use our simulated price instead of client-side price
+    if (market === 'INDIA') {
+      const Stock = (await import('../models/Stock.js')).default;
+      const stock = await Stock.findOne({ symbol: symbol.toUpperCase() });
+      if (!stock) return res.status(404).json({ message: 'Stock not found in simulator' });
+      price = stock.currentPrice;
+    }
+
+    const total = quantity * price;
 
     if (type === 'BUY') {
       if (user.virtualBalance < total) {
@@ -50,13 +59,14 @@ router.post('/execute', protect, async (req, res) => {
     await trade.save();
 
     // Log activity
+    const UserActivity = (await import('../models/UserActivity.js')).default;
     await UserActivity.create({
       user: user._id,
       action: 'TRADE_EXECUTED',
-      metadata: { symbol, type, quantity, price, total }
+      metadata: { symbol, type, quantity, price, total, market }
     });
 
-    res.status(201).json({ message: 'Trade executed successfully', balance: user.virtualBalance });
+    res.status(201).json({ message: 'Trade executed successfully', balance: user.virtualBalance, price });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -7,6 +7,7 @@ const tradeSchema = new mongoose.Schema({
   quantity: { type: Number, required: true },
   price: { type: Number, required: true },
   total: { type: Number, required: true },
+  market: { type: String, default: 'INDIA' },
 }, { timestamps: true });
 
 export default mongoose.model('Trade', tradeSchema);

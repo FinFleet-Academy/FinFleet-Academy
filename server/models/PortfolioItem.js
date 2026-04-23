@@ -5,8 +5,9 @@ const portfolioItemSchema = new mongoose.Schema({
   symbol: { type: String, required: true },
   quantity: { type: Number, default: 0 },
   averagePrice: { type: Number, default: 0 },
+  market: { type: String, default: 'INDIA' },
 }, { timestamps: true });
 
-portfolioItemSchema.index({ user: 1, symbol: 1 }, { unique: true });
+portfolioItemSchema.index({ user: 1, symbol: 1, market: 1 }, { unique: true });
 
 export default mongoose.model('PortfolioItem', portfolioItemSchema);
