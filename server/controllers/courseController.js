@@ -3,7 +3,7 @@ import Progress from '../models/Progress.js';
 
 export const getCourses = async (req, res) => {
   try {
-    const courses = await Course.find({});
+    const courses = await Course.find({}).lean();
     res.json(courses);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -12,7 +12,7 @@ export const getCourses = async (req, res) => {
 
 export const getCourseById = async (req, res) => {
   try {
-    const course = await Course.findById(req.params.id);
+    const course = await Course.findById(req.params.id).lean();
     if (course) {
       res.json(course);
     } else {
@@ -25,7 +25,7 @@ export const getCourseById = async (req, res) => {
 
 export const getProgress = async (req, res) => {
   try {
-    const progress = await Progress.find({ userId: req.user._id }).populate('courseId');
+    const progress = await Progress.find({ userId: req.user._id }).populate('courseId').lean();
     res.json(progress);
   } catch (error) {
     res.status(500).json({ message: error.message });

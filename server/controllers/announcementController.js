@@ -5,7 +5,8 @@ export const getAnnouncements = async (req, res) => {
   try {
     const announcements = await Announcement.find()
       .populate('createdBy', 'name')
-      .sort({ isPinned: -1, createdAt: -1 });
+      .sort({ isPinned: -1, createdAt: -1 })
+      .lean();
     res.json(announcements);
   } catch (error) {
     res.status(500).json({ message: "Server error" });

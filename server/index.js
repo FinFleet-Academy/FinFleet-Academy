@@ -6,6 +6,9 @@ import rateLimit from 'express-rate-limit';
 import mongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss-clean';
 import dotenv from 'dotenv';
+import compression from 'compression';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import transactionRoutes from './routes/transactionRoutes.js';
@@ -37,6 +40,11 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Enable Compression (Gzip/Brotli)
+app.use(compression());
 
 const allowedOrigins = [
   'https://finfleetacademy.com',
@@ -110,6 +118,27 @@ app.use('/api/trade', tradeRoutes);
 app.use('/api/quizzes', quizRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/live-classes', liveClassRoutes);
+
+// Static Asset Caching & Serving (Production)
+if (process.env.NODE_ENV === 'production') {
+  const distPath = path.join(__dirname, '../dist');
+  
+  // Serve static assets with long-term caching
+  app.use(express.static(distPath, {
+    maxAge: '1y',
+    etag: true,
+    setHeaders: (res, path) => {
+      if (path.endsWith('.html')) {
+        res.setHeader('Cache-Control', 'no-cache'); // HTML should not be cached long-term
+      }
+    }
+  }));
+
+  // SPA fallback
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+}
 
 // Error Handling
 app.use(notFound);
