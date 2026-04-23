@@ -25,6 +25,7 @@ import FeedbackPage from './pages/FeedbackPage';
 import HelpPage from './pages/HelpPage';
 import ToolsPage from './pages/ToolsPage';
 import CommunityPage from './pages/CommunityPage';
+import PublicProfilePage from './pages/PublicProfilePage';
 
 // Show splash only once per browser session
 const shouldShowSplash = !sessionStorage.getItem('finfleet_intro_seen');
@@ -86,6 +87,7 @@ function App() {
                 <Route path="/help" element={<HelpPage />} />
                 <Route path="/tools" element={<ToolsPage />} />
                 <Route path="/community" element={<CommunityPage />} />
+                <Route path="/user/:userId" element={<PublicProfilePage />} />
               </Routes>
             </motion.main>
 
