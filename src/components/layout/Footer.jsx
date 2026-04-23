@@ -12,12 +12,13 @@ const Footer = () => {
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
-    if (!email) return;
-
     try {
+      const trimmedEmail = email.trim();
+      if (!trimmedEmail) return;
+
       setIsSubmitting(true);
-      await axios.post('/api/subscribers', { email, source: 'footer' });
-      toast.success('Success! You have subscribed to our newsletter.');
+      const { data } = await axios.post('/api/subscribers', { email: trimmedEmail, source: 'footer' });
+      toast.success(data.message || 'Success! You have subscribed to our newsletter.');
       setEmail('');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Subscription failed. Please try again.');
