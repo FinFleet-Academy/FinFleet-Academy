@@ -58,6 +58,7 @@ export const registerUser = async (req, res) => {
          // Notify referrer
          await Notification.create({
            userEmail: (await User.findById(referredById)).email,
+           title: 'Referral Bonus',
            message: `Someone just signed up using your referral code! We've added 10 bonus AI messages to your account.`
          });
       }
@@ -65,6 +66,7 @@ export const registerUser = async (req, res) => {
       // Create welcome notification
       await Notification.create({
         userEmail: user.email,
+        title: 'Welcome to FinFleet Academy',
         message: `Welcome to FinFleet Academy, ${user.name}! We're excited to help you master the markets.`
       });
 

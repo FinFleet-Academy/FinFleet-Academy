@@ -9,9 +9,13 @@ import Contact from '../models/Contact.js';
 // ... (other controllers)
 
 export const broadcastNotification = async (req, res) => {
-  const { userEmail, message } = req.body;
+  const { userEmail, title, message } = req.body;
   try {
-    const notification = await Notification.create({ userEmail, message });
+    const notification = await Notification.create({ 
+      userEmail, 
+      title: title || 'Platform Notification', 
+      message 
+    });
     res.status(201).json(notification);
   } catch (error) {
     res.status(500).json({ message: error.message });
