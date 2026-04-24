@@ -42,17 +42,19 @@ class MarketDataService extends EventEmitter {
       ws.on('error', (err) => {
         console.error('MarketDataService: WebSocket Error:', err.message);
         
+        if (err.message.includes('451')) {
+          console.error('MarketDataService: CRITICAL - Regional Block (451) detected. Suspending Binance connection.');
+          this.isBlocked = true;
+          this.isCircuitOpen = true; // Block future attempts
+          ws.terminate();
+          return;
+        }
+
         this.failureCount++;
         if (this.failureCount >= 5) {
           console.error('MarketDataService: CRITICAL FAILURE THRESHOLD REACHED. OPENING CIRCUIT.');
           this.isCircuitOpen = true;
           this.lastFailureTime = Date.now();
-        }
-
-        if (err.message.includes('451')) {
-          console.error('MarketDataService: Regional Block (451) detected. Suspending Binance connection.');
-          this.isBlocked = true;
-          ws.terminate();
         }
       });
 

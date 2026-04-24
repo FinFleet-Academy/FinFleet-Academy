@@ -50,8 +50,21 @@ export const getAllUsers = async (req, res) => {
 
 export const getAllSubscribers = async (req, res) => {
   try {
-    const subscribers = await Subscriber.find({}).sort({ createdAt: -1 });
-    res.json(subscribers);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [subscribers, total] = await Promise.all([
+      Subscriber.find({}).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Subscriber.countDocuments()
+    ]);
+
+    res.json({
+      subscribers,
+      total,
+      page,
+      pages: Math.ceil(total / limit)
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -149,8 +162,21 @@ export const deleteCourse = async (req, res) => {
 // Contact Management
 export const getAllContacts = async (req, res) => {
   try {
-    const contacts = await Contact.find({}).sort({ createdAt: -1 });
-    res.json(contacts);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const [contacts, total] = await Promise.all([
+      Contact.find({}).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Contact.countDocuments()
+    ]);
+
+    res.json({
+      contacts,
+      total,
+      page,
+      pages: Math.ceil(total / limit)
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -10,14 +10,16 @@ class AdminService {
     const cached = await cacheService.get('analytics:dashboard');
     if (cached) return cached;
 
-    const [totalUsers, totalSubscribers, totalCourses, transactions] = await Promise.all([
+    const [totalUsers, totalSubscribers, totalCourses, revenueData] = await Promise.all([
       User.countDocuments(),
       Subscriber.countDocuments(),
       Course.countDocuments(),
-      Transaction.find({}).select('amount createdAt')
+      Transaction.aggregate([
+        { $group: { _id: null, total: { $sum: "$amount" } } }
+      ])
     ]);
 
-    const totalRevenue = transactions.reduce((acc, curr) => acc + (curr.amount || 0), 0);
+    const totalRevenue = revenueData[0]?.total || 0;
     
     const stats = {
       summary: {
