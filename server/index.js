@@ -8,6 +8,7 @@ import xss from 'xss-clean';
 import dotenv from 'dotenv';
 import compression from 'compression';
 import path from 'path';
+import cookieParser from 'cookie-parser';
 import { fileURLToPath } from 'url';
 import { apiLimiter, authLimiter } from './middleware/rateLimiter.js';
 import authRoutes from './routes/authRoutes.js';
@@ -51,6 +52,7 @@ app.set('trust proxy', 1);
 
 // Enable Compression (Gzip/Brotli)
 app.use(compression());
+app.use(cookieParser());
 
 const allowedOrigins = [
   'https://finfleetacademy.com',
@@ -92,6 +94,14 @@ app.use(express.json({ limit: '10kb' }));
 app.use('/api', apiLimiter);
 
 // Health Check
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'healthy', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
 app.get('/', (req, res) => {
   res.send('FinFleet Backend API is running...');
 });

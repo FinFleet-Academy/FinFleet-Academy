@@ -1,0 +1,16 @@
+# Build Stage
+FROM node:18-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+
+# Production Stage
+FROM node:18-alpine
+WORKDIR /app
+COPY --from=builder /app/package*.json ./
+RUN npm ci --production
+COPY --from=builder /app ./
+
+EXPOSE 5000
+CMD ["npm", "start"]

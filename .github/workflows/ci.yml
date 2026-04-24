@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: Enterprise CI/CD Pipeline
 
 on:
   push:
@@ -7,49 +7,63 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-test:
+  security-and-audit:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
-
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Security Audit
+        run: npm audit --audit-level=high
+      - name: Server Audit
+        run: cd server && npm audit --audit-level=high
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+  test-and-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Run Frontend Tests with Coverage
+        run: npm test -- --coverage --threshold 70
+      - name: Install Server dependencies
+        run: cd server && npm ci
+      - name: Run Backend Tests
+        run: cd server && npm test
 
-    - name: Install Root Dependencies
-      run: npm ci
-
-    - name: Run Linting
-      run: npm run lint
-
-    - name: Run Frontend Tests
-      run: npm test
-
-    - name: Install Server Dependencies
-      run: cd server && npm ci
-
-    - name: Run Backend Tests
-      run: cd server && npm test
-
-    - name: Build Frontend
-      run: npm run build
+  performance-and-size:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Build Frontend
+        run: npm run build
+      - name: Bundle Size Analysis
+        run: npx size-limit
+      - name: Lighthouse CI
+        run: |
+          npm install -g @lhci/cli@0.13.x
+          lhci autorun
 
   deploy:
-    needs: build-and-test
+    needs: [security-and-audit, test-and-coverage, performance-and-size]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v20
         with:

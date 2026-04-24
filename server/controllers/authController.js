@@ -4,10 +4,14 @@ import Subscriber from '../models/Subscriber.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET || 'finfleet_super_secret_key_123!', {
-    expiresIn: '30d',
+const generateTokens = (id) => {
+  const accessToken = jwt.sign({ id }, process.env.JWT_SECRET || 'finfleet_super_secret_key_123!', {
+    expiresIn: '15m',
   });
+  const refreshToken = jwt.sign({ id }, process.env.REFRESH_TOKEN_SECRET || 'finfleet_refresh_secret_key_456!', {
+    expiresIn: '7d',
+  });
+  return { accessToken, refreshToken };
 };
 
 export const registerUser = async (req, res) => {
@@ -22,7 +26,6 @@ export const registerUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Generate unique referral code
     const baseCode = name.replace(/[^a-zA-Z0-9]/g, '').substring(0, 4).toUpperCase();
     const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
     const myReferralCode = `${baseCode}${randomStr}`;
@@ -32,8 +35,6 @@ export const registerUser = async (req, res) => {
       const referrer = await User.findOne({ referralCode: inputReferral.toUpperCase() });
       if (referrer) {
         referredById = referrer._id;
-        // Optionally reward referrer immediately (e.g. +10 AI messages)
-        // This can be done after user creation
       }
     }
 
@@ -49,13 +50,11 @@ export const registerUser = async (req, res) => {
 
     if (user) {
       if (referredById) {
-         // Reward referrer: Add user to referred list and give +10 AI messages (decrement usage)
          await User.findByIdAndUpdate(referredById, {
            $push: { referredUsers: user._id },
            $inc: { chatCount: -10 }
          });
          
-         // Notify referrer
          await Notification.create({
            userEmail: (await User.findById(referredById)).email,
            title: 'Referral Bonus',
@@ -63,23 +62,20 @@ export const registerUser = async (req, res) => {
          });
       }
 
-      // Create welcome notification
       await Notification.create({
         userEmail: user.email,
         title: 'Welcome to FinFleet Academy',
         message: `Welcome to FinFleet Academy, ${user.name}! We're excited to help you master the markets.`
       });
 
-      // Add to subscribers automatically
-      try {
-        await Subscriber.findOneAndUpdate(
-          { email: user.email },
-          { $setOnInsert: { email: user.email, source: 'registration' } },
-          { upsert: true }
-        );
-      } catch (subErr) {
-        console.error('Error adding subscriber:', subErr);
-      }
+      const { accessToken, refreshToken } = generateTokens(user._id);
+
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      });
 
       res.status(201).json({
         _id: user._id,
@@ -87,12 +83,8 @@ export const registerUser = async (req, res) => {
         email: user.email,
         plan: user.plan,
         isAdmin: user.isAdmin,
-        chatCount: user.chatCount,
-        referralCode: user.referralCode,
-        token: generateToken(user._id),
+        token: accessToken,
       });
-    } else {
-      res.status(400).json({ message: 'Invalid user data' });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -102,20 +94,17 @@ export const registerUser = async (req, res) => {
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-
     const user = await User.findOne({ email });
 
     if (user && (await bcrypt.compare(password, user.password))) {
-      // Add to subscribers automatically if they aren't already
-      try {
-        await Subscriber.findOneAndUpdate(
-          { email: user.email },
-          { $setOnInsert: { email: user.email, source: 'login' } },
-          { upsert: true }
-        );
-      } catch (subErr) {
-        console.error('Error adding subscriber:', subErr);
-      }
+      const { accessToken, refreshToken } = generateTokens(user._id);
+
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000
+      });
 
       res.json({
         _id: user._id,
@@ -123,8 +112,7 @@ export const loginUser = async (req, res) => {
         email: user.email,
         plan: user.plan,
         isAdmin: user.isAdmin,
-        chatCount: user.chatCount,
-        token: generateToken(user._id),
+        token: accessToken,
       });
     } else {
       res.status(401).json({ message: 'Invalid email or password' });
@@ -132,4 +120,22 @@ export const loginUser = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
+};
+
+export const refreshAccessToken = async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+  if (!refreshToken) return res.status(401).json({ message: 'No refresh token' });
+
+  try {
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET || 'finfleet_refresh_secret_key_456!');
+    const { accessToken } = generateTokens(decoded.id);
+    res.json({ token: accessToken });
+  } catch (error) {
+    res.status(403).json({ message: 'Invalid refresh token' });
+  }
+};
+
+export const logoutUser = async (req, res) => {
+  res.clearCookie('refreshToken');
+  res.json({ message: 'Logged out successfully' });
 };
