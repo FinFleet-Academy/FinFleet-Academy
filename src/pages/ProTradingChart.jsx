@@ -8,13 +8,16 @@ import {
   Sparkles, Brain, HelpCircle, ChevronRight, AlertTriangle,
   Waves, Target, Gauge
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AdvancedChart from '../components/shared/AdvancedChart';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
 import msgpack from 'msgpack-lite';
 
 const ProTradingChart = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   // 1. INTELLIGENT STATE
   const [activeStock, setActiveStock] = useState({ symbol: 'RELIANCE', name: 'Reliance Industries', price: 2542.45 });
   const [chartData, setChartData] = useState([]);
@@ -26,12 +29,23 @@ const ProTradingChart = () => {
   const wsRef = useRef(null);
   const chartRef = useRef(null);
 
+  useEffect(() => {
+    if (!user && !localStorage.getItem('token')) {
+      navigate('/login');
+    }
+  }, [user]);
+
   // 2. BINARY STREAM CONNECTOR (The Engine Backbone)
   useEffect(() => {
-    if (!isLive) return;
+    if (!isLive || !user) return;
 
     const connectStream = () => {
-      const ws = new WebSocket('ws://localhost:5005/ws/intelligence');
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const host = import.meta.env.VITE_API_URL 
+        ? import.meta.env.VITE_API_URL.replace(/^https?:\/\//, '') 
+        : 'localhost:5005';
+      
+      const ws = new WebSocket(`${protocol}//${host}/ws/intelligence`);
       ws.binaryType = 'arraybuffer';
       
       ws.onopen = () => {

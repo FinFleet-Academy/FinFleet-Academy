@@ -4,9 +4,9 @@ import {
   TrendingUp, Activity, DollarSign, Target, Award, BrainCircuit, 
   ArrowUpRight, ArrowDownRight, Calculator, PieChart, Globe, Eye, Info, Maximize2, Zap, ShieldCheck
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useAppStore } from '../store/useAppStore';
+import { useAuth } from '../context/AuthContext';
 import { useToastStore } from '../components/feedback/Toast';
 import { uiContent } from '../config/ui-content';
 import Card from '../components/ui/Card';
@@ -17,7 +17,8 @@ import Skeleton, { TableSkeleton } from '../components/ui/Skeleton';
 import MarketDataChart from '../components/shared/MarketDataChart';
 
 const TradingDashboard = () => {
-  const { user } = useAppStore();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const { addToast } = useToastStore();
   const [activeTab, setActiveTab] = useState('portfolio');
   const [marketType, setMarketType] = useState('INDIA');
@@ -34,8 +35,12 @@ const TradingDashboard = () => {
   const [tradeForm, setTradeForm] = useState({ type: 'BUY', quantity: 1 });
 
   useEffect(() => {
+    if (!user && !localStorage.getItem('token')) {
+      navigate('/login');
+      return;
+    }
     fetchInitialData();
-  }, []);
+  }, [user]);
 
   const fetchInitialData = async () => {
     try {
@@ -50,6 +55,9 @@ const TradingDashboard = () => {
       setPoints(portfolioRes.data.points);
     } catch (error) {
       console.error("Initial load failed", error);
+      if (error.response?.status === 401) {
+        navigate('/login');
+      }
     } finally {
       setLoading(false);
     }

@@ -54,10 +54,15 @@ export const getFollowing = async (req, res) => {
 export const discoverUsers = async (req, res) => {
   try {
     const { search } = req.query;
-    const myFollowing = await Follow.find({ follower: req.user.id }).select('following');
-    const followingIds = myFollowing.map(f => f.following.toString());
+    let followingIds = [];
+    let userId = req.user?.id;
 
-    let query = { _id: { $ne: req.user.id } };
+    if (userId) {
+      const myFollowing = await Follow.find({ follower: userId }).select('following');
+      followingIds = myFollowing.map(f => f.following.toString());
+    }
+
+    let query = userId ? { _id: { $ne: userId } } : {};
     if (search) {
       query.name = { $regex: search, $options: 'i' };
     }
