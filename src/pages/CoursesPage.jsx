@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, CheckCircle2, Circle, PlayCircle, Star, Search, Filter, ArrowRight, Heart, MessageSquare } from 'lucide-react';
+import { BookOpen, CheckCircle2, Circle, PlayCircle, Star, Search, Filter, ArrowRight, ArrowLeft, Heart, MessageSquare } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
@@ -15,13 +15,17 @@ const CoursesPage = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  const fetchData = async () => {
+  const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 });
+
+  const fetchData = async (page = 1) => {
     try {
       const [coursesRes, progressRes] = await Promise.all([
-        axios.get('/api/courses'),
+        axios.get('/api/courses', { params: { page, limit: 12 } }),
         axios.get('/api/courses/progress').catch(() => ({ data: [] }))
       ]);
-      setCourses(coursesRes.data);
+      const { courses: fetchedCourses, page: currentPage, pages, total } = coursesRes.data;
+      setCourses(fetchedCourses || coursesRes.data);
+      setPagination({ page: currentPage, pages, total });
       setProgress(progressRes.data);
     } catch (error) {
       toast.error('Failed to load courses');
@@ -31,8 +35,8 @@ const CoursesPage = () => {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData(pagination.page);
+  }, [pagination.page]);
 
   const handleToggleComplete = async (e, courseId) => {
     e.preventDefault();
@@ -218,6 +222,36 @@ const CoursesPage = () => {
               )}
             </AnimatePresence>
           </motion.div>
+        )}
+
+        {/* Pagination */}
+        {!loading && pagination.pages > 1 && (
+          <div className="mt-20 flex flex-col items-center">
+            <div className="flex items-center space-x-4">
+              <button 
+                disabled={pagination.page === 1}
+                onClick={() => setPagination(p => ({...p, page: p.page - 1}))}
+                className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl disabled:opacity-30 disabled:cursor-not-allowed hover:border-brand-500 transition-all shadow-sm"
+              >
+                <ArrowLeft className="w-5 h-5 text-slate-500" />
+              </button>
+              
+              <div className="px-8 py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl font-black text-xs uppercase tracking-widest text-slate-400">
+                Page <span className="text-brand-600 mx-1">{pagination.page}</span> of {pagination.pages}
+              </div>
+
+              <button 
+                disabled={pagination.page === pagination.pages}
+                onClick={() => setPagination(p => ({...p, page: p.page + 1}))}
+                className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl disabled:opacity-30 disabled:cursor-not-allowed hover:border-brand-500 transition-all shadow-sm"
+              >
+                <ArrowRight className="w-5 h-5 text-slate-500" />
+              </button>
+            </div>
+            <p className="mt-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+               Displaying {courses.length} of {pagination.total} premium courses
+            </p>
+          </div>
         )}
       </div>
     </div>

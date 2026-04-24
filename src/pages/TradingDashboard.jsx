@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   TrendingUp, BarChart2, DollarSign, Target, Award, BrainCircuit, 
-  ArrowRight, ShieldCheck, Zap, PieChart, Activity, Crosshair, ArrowUpRight, ArrowDownRight,
+  ArrowRight, ArrowLeft, ShieldCheck, Zap, PieChart, Activity, Crosshair, ArrowUpRight, ArrowDownRight,
   Calculator, ChevronRight, Lock, Search, Filter, Globe, Eye, Trash2, Info, Maximize2
 } from 'lucide-react';
 import { Link } from 'react-router-dom';

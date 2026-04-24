@@ -23,7 +23,9 @@ const HomePage = () => {
           axios.get('/api/courses'),
           axios.get('/api/announcements')
         ]);
-        setCourses(coursesRes.data.slice(0, 3));
+        // Handle paginated response structure
+        const coursesData = coursesRes.data.courses || coursesRes.data;
+        setCourses(coursesData.slice(0, 3));
         setAnnouncements(annRes.data.slice(0, 2));
       } catch (err) {
         console.error('Failed to fetch home data', err);
