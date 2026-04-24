@@ -51,8 +51,12 @@ const Navbar = () => {
               <Rocket className="text-white dark:text-slate-900 w-5 h-5" />
             </div>
             <div className="flex flex-col -space-y-1">
-               <span className="text-xl font-black text-slate-900 dark:text-white tracking-tighter">FinFleet</span>
-               <span className="text-[10px] font-black text-brand-600 uppercase tracking-[0.2em]">Academy</span>
+               <span className="text-xl font-black text-slate-900 dark:text-white tracking-tighter">
+                 {location.pathname.startsWith('/finor') ? 'Finor' : 'FinFleet'}
+               </span>
+               <span className="text-[9px] font-black text-brand-600 uppercase tracking-[0.2em]">
+                 {location.pathname.startsWith('/finor') ? 'By FinFleet Academy' : 'Academy'}
+               </span>
             </div>
           </Link>
 
