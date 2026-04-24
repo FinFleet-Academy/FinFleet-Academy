@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useAuth, PLANS } from '../context/AuthContext';
-import { Users, Ticket, Trash2, ArrowUpCircle, XCircle, Search, ShieldAlert, BellRing, Send } from 'lucide-react';
+import { Users, Ticket, Trash2, ArrowUpCircle, XCircle, Search, ShieldAlert, BellRing, Send, Mail } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
