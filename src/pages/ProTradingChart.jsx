@@ -327,29 +327,18 @@ const ProTradingChart = () => {
             <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Beginner Mode</span>
             <button 
               onClick={() => setIsBeginnerMode(!isBeginnerMode)}
-              className={`w-8 h-4 rounded-full transition-colors relative ${isBeginnerMode ? 'bg-amber-500' : 'bg-slate-700'}`}
+              className={`w-10 h-5 rounded-full transition-colors relative flex items-center px-1 ${isBeginnerMode ? 'bg-amber-500' : 'bg-slate-700'}`}
             >
-              <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all ${isBeginnerMode ? 'left-4.5' : 'left-0.5'}`} />
+              <motion.div 
+                animate={{ x: isBeginnerMode ? 20 : 0 }}
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                className="w-3 h-3 bg-white rounded-full shadow-sm" 
+              />
             </button>
           </div>
         </div>
 
         <div className="flex items-center space-x-4">
-          <button 
-            onClick={() => setIsLive(!isLive)}
-            className="flex items-center space-x-2 mr-4 group"
-          >
-            <div className={`w-2 h-2 rounded-full ${isLive ? 'bg-emerald-500 animate-pulse' : 'bg-slate-600'}`} />
-            <span className="text-[9px] font-black uppercase text-slate-400 group-hover:text-white transition-colors">
-              {isLive ? 'Live Connection' : 'Paused'}
-            </span>
-          </button>
-          
-          <div className="flex items-center bg-slate-950 rounded-xl p-1 border border-slate-800 mr-4">
-            <button onClick={() => handleTrade('BUY')} className="px-6 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition-all shadow-lg shadow-emerald-500/20 active:scale-95">Buy</button>
-            <button onClick={() => handleTrade('SELL')} className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition-all shadow-lg shadow-red-500/20 ml-1 active:scale-95">Sell</button>
-          </div>
-
           <button 
             onClick={() => setIsSettingsOpen(!isSettingsOpen)}
             className={`p-2 rounded-lg transition-colors ${isSettingsOpen ? 'bg-brand-500 text-white shadow-lg' : 'hover:bg-slate-800'}`}
@@ -372,7 +361,7 @@ const ProTradingChart = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/80 backdrop-blur-md z-[500] flex items-center justify-center p-6"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-6"
               onClick={() => setIsExplainOpen(false)}
             >
               <motion.div 
