@@ -9,7 +9,7 @@ import {
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
-const LiveChartHero = lazy(() => import('../components/shared/LiveChartHero'));
+const PremiumLiveChart = lazy(() => import('../components/shared/PremiumLiveChart'));
 
 const HomePage = () => {
   const [courses, setCourses] = useState([]);
@@ -42,7 +42,7 @@ const HomePage = () => {
       
       {/* 1. PREMIUM HERO SECTION */}
       <Suspense fallback={<div className="h-[700px] flex items-center justify-center bg-slate-950"><div className="w-12 h-12 border-4 border-brand-500 border-t-transparent rounded-full animate-spin" /></div>}>
-        <LiveChartHero />
+        <PremiumLiveChart />
       </Suspense>
 
       {/* 2. METRICS SECTION */}

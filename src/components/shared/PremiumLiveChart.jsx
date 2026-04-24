@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { TrendingUp, ArrowRight, Activity, Users, Zap, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const LiveChartHero = () => {
+const PremiumLiveChart = () => {
   const chartContainerRef = useRef();
   const [currentPrice, setCurrentPrice] = useState(2542.45);
   const [change, setChange] = useState(2.4);

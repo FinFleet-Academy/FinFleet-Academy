@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import * as LightweightCharts from 'lightweight-charts';
 
-const StockChart = ({ data, symbol, colors = {} }) => {
+const MarketDataChart = ({ data, symbol, colors = {} }) => {
   const chartContainerRef = useRef();
 
   useEffect(() => {
@@ -73,4 +73,4 @@ const StockChart = ({ data, symbol, colors = {} }) => {
   );
 };
 
-export default StockChart;
+export default MarketDataChart;

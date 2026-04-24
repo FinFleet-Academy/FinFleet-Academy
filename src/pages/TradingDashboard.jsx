@@ -9,7 +9,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import StockChart from '../components/shared/StockChart';
+import MarketDataChart from '../components/shared/MarketDataChart';
 
 const TradingDashboard = () => {
   const { user, isAuthenticated } = useAuth();
@@ -382,7 +382,7 @@ const TradingDashboard = () => {
                   {selectedStock ? (
                     <>
                       <div className="bg-slate-950 rounded-[3.5rem] p-1 relative overflow-hidden shadow-2xl border border-slate-800 min-h-[450px]">
-                         <StockChart symbol={selectedStock.symbol} data={selectedStock.history || []} colors={{ backgroundColor: '#020617', lineColor: '#22c55e' }} />
+                         <MarketDataChart symbol={selectedStock.symbol} data={selectedStock.history || []} colors={{ backgroundColor: '#020617', lineColor: '#22c55e' }} />
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
