@@ -9,4 +9,8 @@ const userSchema = new mongoose.Schema({
   chatCount: { type: Number, default: 0 }
 }, { timestamps: true });
 
+userSchema.index({ plan: 1 });
+userSchema.index({ isAdmin: 1 });
+userSchema.index({ email: 1 }); // Ensuring email index explicitly
+
 export default mongoose.model('User', userSchema);

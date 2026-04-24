@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { useAuth, PLANS } from '../context/AuthContext';
 import { Users, Ticket, Trash2, ArrowUpCircle, XCircle, Search, ShieldAlert, BellRing, Send } from 'lucide-react';
 import { toast } from 'react-hot-toast';
@@ -21,6 +22,7 @@ const AdminDashboard = () => {
   const [usersList, setUsersList] = useState([]);
   const [subscribersList, setSubscribersList] = useState([]);
   const [coupons, setCoupons] = useState([]);
+  const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [couponCode, setCouponCode] = useState('');
   const [discountPercent, setDiscountPercent] = useState('');
@@ -31,14 +33,16 @@ const AdminDashboard = () => {
 
   const loadData = async () => {
     try {
-      const [users, allCoupons, subscribers] = await Promise.all([
+      const [users, allCoupons, subscribers, adminStats] = await Promise.all([
         fetchUsers(),
         fetchCoupons(),
-        fetchSubscribers()
+        fetchSubscribers(),
+        axios.get('/api/admin/stats').then(res => res.data)
       ]);
       setUsersList(users);
       setCoupons(allCoupons);
       setSubscribersList(subscribers);
+      setStats(adminStats);
     } catch (error) {
       toast.error("Failed to fetch admin data");
     } finally {
@@ -145,6 +149,14 @@ const AdminDashboard = () => {
             Admin Operations
           </h1>
           <p className="text-slate-500 mt-2">Manage users, their subscriptions, notifications, and promotional coupons.</p>
+        </div>
+
+        {/* Stats Summary */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+          <StatCard title="Total Users" value={stats?.summary?.totalUsers || 0} icon={<Users className="w-6 h-6" />} color="blue" />
+          <StatCard title="Subscribers" value={stats?.summary?.totalSubscribers || 0} icon={<Mail className="w-6 h-6" />} color="purple" />
+          <StatCard title="Total Courses" value={stats?.summary?.totalCourses || 0} icon={<Ticket className="w-6 h-6" />} color="amber" />
+          <StatCard title="Revenue" value={`$${stats?.summary?.totalRevenue || 0}`} icon={<ArrowUpCircle className="w-6 h-6" />} color="green" />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -369,6 +381,27 @@ const AdminDashboard = () => {
           </div>
 
         </div>
+      </div>
+    </div>
+  );
+};
+
+const StatCard = ({ title, value, icon, color }) => {
+  const colors = {
+    blue: 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400',
+    purple: 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400',
+    amber: 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400',
+    green: 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400',
+  };
+
+  return (
+    <div className="card-premium p-6 flex items-center space-x-4">
+      <div className={`p-3 rounded-xl ${colors[color]}`}>
+        {icon}
+      </div>
+      <div>
+        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">{title}</p>
+        <p className="text-2xl font-bold dark:text-white mt-1">{value}</p>
       </div>
     </div>
   );

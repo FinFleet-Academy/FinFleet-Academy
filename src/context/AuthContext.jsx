@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { cachedGet } from '../utils/api';
 
 if (import.meta.env.VITE_API_URL) {
   axios.defaults.baseURL = import.meta.env.VITE_API_URL;
@@ -101,17 +102,15 @@ export const AuthProvider = ({ children }) => {
   };
 
   const fetchUsers = async () => {
-    const { data } = await axios.get('/api/admin/users');
-    return data;
+    return await cachedGet('/api/admin/users');
   };
 
   const fetchSubscribers = async () => {
-    const { data } = await axios.get('/api/admin/subscribers');
-    return data;
+    return await cachedGet('/api/admin/subscribers');
   };
 
   const fetchCoupons = async () => {
-    const { data } = await axios.get('/api/admin/coupons');
+    const data = await cachedGet('/api/admin/coupons');
     setCoupons(data);
     return data;
   };

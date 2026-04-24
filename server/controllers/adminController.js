@@ -2,6 +2,8 @@ import User from '../models/User.js';
 import Coupon from '../models/Coupon.js';
 import Notification from '../models/Notification.js';
 import Subscriber from '../models/Subscriber.js';
+import Course from '../models/Course.js';
+import Transaction from '../models/Transaction.js';
 
 // ... (other controllers)
 
@@ -73,6 +75,42 @@ export const deleteCoupon = async (req, res) => {
     const coupon = await Coupon.findByIdAndDelete(req.params.id);
     if (!coupon) return res.status(404).json({ message: 'Coupon not found' });
     res.json({ message: 'Coupon deleted' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+export const getAdminStats = async (req, res) => {
+  try {
+    const [
+      userCount,
+      subscriberCount,
+      courseCount,
+      transactions,
+      recentUsers,
+      recentNotifications
+    ] = await Promise.all([
+      User.countDocuments(),
+      Subscriber.countDocuments(),
+      Course.countDocuments(),
+      Transaction.find({}),
+      User.find({}).sort({ createdAt: -1 }).limit(5).select('-password'),
+      Notification.find({}).sort({ createdAt: -1 }).limit(5)
+    ]);
+
+    const totalRevenue = transactions.reduce((sum, t) => sum + t.amount, 0);
+
+    res.json({
+      summary: {
+        totalUsers: userCount,
+        totalSubscribers: subscriberCount,
+        totalCourses: courseCount,
+        totalRevenue: totalRevenue
+      },
+      recentActivity: {
+        users: recentUsers,
+        notifications: recentNotifications
+      }
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

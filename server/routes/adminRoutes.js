@@ -6,11 +6,15 @@ import {
   createCoupon, 
   deleteCoupon,
   broadcastNotification,
-  getAllSubscribers
+  getAllSubscribers,
+  getAdminStats
 } from '../controllers/adminController.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
+
+// Stats
+router.get('/stats', protect, admin, getAdminStats);
 
 // User Management
 router.get('/users', protect, admin, getAllUsers);

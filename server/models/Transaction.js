@@ -9,4 +9,7 @@ const transactionSchema = new mongoose.Schema({
   description: { type: String }
 }, { timestamps: true });
 
+transactionSchema.index({ userId: 1 });
+transactionSchema.index({ date: -1 });
+
 export default mongoose.model('Transaction', transactionSchema);

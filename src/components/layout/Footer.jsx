@@ -1,9 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Rocket, Mail, Instagram, Linkedin, Twitter, ShieldAlert } from 'lucide-react';
+import { useCookies } from '../../context/CookieContext';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const { setShowSettings } = useCookies();
 
   return (
     <footer className="bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-900 pt-16 pb-8">
@@ -90,7 +92,12 @@ const Footer = () => {
           <div className="flex items-center space-x-6">
             <a href="#" className="hover:text-brand-600 transition-colors">Security</a>
             <a href="#" className="hover:text-brand-600 transition-colors">Sitemap</a>
-            <a href="#" className="hover:text-brand-600 transition-colors">Cookies</a>
+            <button 
+              onClick={() => setShowSettings(true)}
+              className="hover:text-brand-600 transition-colors"
+            >
+              Cookies
+            </button>
           </div>
         </div>
       </div>
