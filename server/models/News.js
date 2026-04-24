@@ -27,6 +27,9 @@ const newsSchema = new mongoose.Schema({
   sourceLink: {
     type: String
   },
+  imageUrl: {
+    type: String
+  },
   isTrending: {
     type: Boolean,
     default: false

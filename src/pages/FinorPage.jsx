@@ -111,7 +111,7 @@ const FinorPage = () => {
                {trendingNews.slice(0, 2).map((news, idx) => (
                  <Link key={news._id} to={`/finor/${news.slug}`} className="group relative aspect-[16/9] md:aspect-auto md:h-[450px] rounded-[3rem] overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800">
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent z-10" />
-                    <div className="absolute inset-0 bg-slate-800 group-hover:scale-105 transition-transform duration-1000" style={{ backgroundImage: `url('https://images.unsplash.com/photo-1611974717482-753ee1f66b8b?q=80&w=2070&auto=format&fit=crop')`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+                    <div className="absolute inset-0 bg-slate-800 group-hover:scale-105 transition-transform duration-1000" style={{ backgroundImage: `url('${news.imageUrl || 'https://images.unsplash.com/photo-1611974717482-753ee1f66b8b?q=80&w=2070&auto=format&fit=crop'}')`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
                     
                     <div className="absolute top-8 left-8 z-20 flex space-x-3">
                        <span className="px-4 py-2 bg-brand-600 text-white text-[9px] font-black rounded-full uppercase tracking-widest shadow-xl">
@@ -168,6 +168,12 @@ const FinorPage = () => {
                              viewport={{ once: true }}
                              className="group bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 overflow-hidden hover:shadow-2xl hover:shadow-brand-500/5 transition-all duration-500"
                            >
+                              {news.imageUrl && (
+                                 <div className="h-64 w-full relative overflow-hidden bg-slate-100 dark:bg-slate-800">
+                                    <div className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700" style={{ backgroundImage: `url('${news.imageUrl}')` }} />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                 </div>
+                              )}
                               <div className="p-8 md:p-12">
                                  <div className="flex items-center justify-between mb-6">
                                     <span className="px-4 py-1.5 bg-slate-50 dark:bg-slate-950 text-slate-400 dark:text-slate-500 text-[9px] font-black rounded-lg uppercase tracking-widest border border-slate-100 dark:border-slate-800">
