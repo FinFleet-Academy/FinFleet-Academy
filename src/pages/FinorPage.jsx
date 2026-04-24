@@ -43,7 +43,7 @@ const FinorPage = () => {
       toast.success('Subscribed successfully! Check your inbox.');
       setEmail('');
     } catch (error) {
-      toast.error('Subscription failed. Please try again.');
+      toast.error(error.response?.data?.message || 'Subscription failed. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
