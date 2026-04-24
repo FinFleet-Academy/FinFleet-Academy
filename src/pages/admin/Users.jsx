@@ -10,9 +10,9 @@ import { PLANS } from '../../context/AuthContext';
 const AdminUsers = ({ users = [], upgradePlan }) => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  const filteredUsers = users.filter(u => 
-    u.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    u.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredUsers = (users || []).filter(u => 
+    (u.name || "").toLowerCase().includes(searchTerm.toLowerCase()) || 
+    (u.email || "").toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (

@@ -93,7 +93,7 @@ const AdminLiveClasses = ({ classes = [], loadData }) => {
                 </tr>
              </thead>
              <tbody>
-                {classes.map((c) => (
+                {(classes || []).map((c) => (
                   <tr key={c._id} className="group hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors border-b border-slate-50 dark:border-slate-800/50 last:border-none">
                      <td className="px-10 py-8">
                         <div className="flex items-center space-x-6">

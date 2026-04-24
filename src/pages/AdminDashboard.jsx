@@ -37,8 +37,8 @@ const AdminDashboard = () => {
         }).catch(() => ({ data: null }))
       ]);
       
-      setUsersList(users || []);
-      setLiveClassesList(allLiveClasses.data || []);
+      setUsersList(Array.isArray(users) ? users : []);
+      setLiveClassesList(Array.isArray(allLiveClasses.data) ? allLiveClasses.data : []);
       setAnalyticsData(allAnalytics.data);
     } catch (error) {
       console.error("Admin Load Error:", error);
