@@ -31,7 +31,8 @@ const courseSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    default: 'Trading'
+    default: 'Trading',
+    index: true
   },
   difficulty: {
     type: String,

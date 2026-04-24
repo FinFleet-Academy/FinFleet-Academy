@@ -22,7 +22,8 @@ const stockSchema = new mongoose.Schema({
   },
   market: {
     type: String,
-    default: 'INDIA'
+    default: 'INDIA',
+    index: true
   },
   basePrice: {
     type: Number,
@@ -50,6 +51,7 @@ const stockSchema = new mongoose.Schema({
 
 // Indexing for search
 stockSchema.index({ symbol: 'text', name: 'text' });
+stockSchema.index({ symbol: 1, market: 1 });
 
 const Stock = mongoose.model('Stock', stockSchema);
 export default Stock;

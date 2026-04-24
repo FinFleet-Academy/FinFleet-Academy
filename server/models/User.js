@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   plan: { type: String, default: 'FREE' },
-  isAdmin: { type: Boolean, default: false },
+  isAdmin: { type: Boolean, default: false, index: true },
   mobile: { type: String, default: '' },
   bio: { type: String, default: '', maxlength: 300 },
   profileImage: { type: String, default: '' },

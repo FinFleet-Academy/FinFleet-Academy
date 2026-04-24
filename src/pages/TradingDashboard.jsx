@@ -67,19 +67,23 @@ const TradingDashboard = () => {
     }
   };
 
+  const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 });
+
   // 2. Poll for Market Data (Live Simulation)
-  const fetchMarketData = useCallback(async () => {
+  const fetchMarketData = useCallback(async (page = 1) => {
     try {
       const res = await axios.get('/api/stocks', {
-        params: { search: searchTerm, sector: selectedSector, market: marketType }
+        params: { search: searchTerm, sector: selectedSector, market: marketType, page, limit: 20 }
       });
-      setStocks(res.data);
+      
+      const { stocks: fetchedStocks, page: currentPage, pages, total } = res.data;
+      setStocks(fetchedStocks);
+      setPagination({ page: currentPage, pages, total });
       
       // Update selected stock if it's currently being viewed to show latest price
       if (selectedStock) {
-        const latest = res.data.find(s => s.symbol === selectedStock.symbol);
+        const latest = fetchedStocks.find(s => s.symbol === selectedStock.symbol);
         if (latest) {
-          // If viewing details, fetch full history occasionally or update current price
           setSelectedStock(prev => ({ ...prev, ...latest }));
         }
       }
@@ -90,11 +94,11 @@ const TradingDashboard = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      fetchMarketData();
-      const interval = setInterval(fetchMarketData, 5000);
+      fetchMarketData(pagination.page);
+      const interval = setInterval(() => fetchMarketData(pagination.page), 5000);
       return () => clearInterval(interval);
     }
-  }, [fetchMarketData, isAuthenticated]);
+  }, [fetchMarketData, isAuthenticated, pagination.page]);
 
   // 3. Tab Specific Data
   useEffect(() => {
@@ -362,7 +366,7 @@ const TradingDashboard = () => {
                           <button key={s} onClick={() => setSelectedSector(s)} className={`px-4 py-2 rounded-xl text-[8px] font-black uppercase tracking-widest border transition-all ${selectedSector === s ? 'bg-brand-600 border-brand-600 text-white' : 'bg-transparent border-slate-100 dark:border-slate-800 text-slate-500 hover:border-brand-500/30'}`}>{s}</button>
                         ))}
                      </div>
-                     <div className="space-y-3 max-h-[600px] overflow-y-auto custom-scrollbar pr-2">
+                     <div className="space-y-3 max-h-[600px] overflow-y-auto custom-scrollbar pr-2 mb-6">
                         {stocks.map(stock => (
                           <div 
                             key={stock.symbol} onClick={() => setSelectedStock(stock)}
@@ -378,6 +382,30 @@ const TradingDashboard = () => {
                              </div>
                           </div>
                         ))}
+                     </div>
+
+                     {/* Pagination Controls */}
+                     <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
+                        <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest">
+                           {pagination.total} Assets
+                        </div>
+                        <div className="flex items-center space-x-2">
+                           <button 
+                             disabled={pagination.page === 1}
+                             onClick={() => setPagination(p => ({...p, page: p.page - 1}))}
+                             className="p-2 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed hover:border-brand-500/30 transition-all"
+                           >
+                              <ArrowLeft className="w-3 h-3" />
+                           </button>
+                           <span className="text-[10px] font-black text-slate-400">{pagination.page} / {pagination.pages}</span>
+                           <button 
+                             disabled={pagination.page === pagination.pages}
+                             onClick={() => setPagination(p => ({...p, page: p.page + 1}))}
+                             className="p-2 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed hover:border-brand-500/30 transition-all"
+                           >
+                              <ChevronRight className="w-3 h-3" />
+                           </button>
+                        </div>
                      </div>
                   </div>
                </div>

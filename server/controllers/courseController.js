@@ -3,8 +3,22 @@ import Progress from '../models/Progress.js';
 
 export const getCourses = async (req, res) => {
   try {
-    const courses = await Course.find({}).lean();
-    res.json(courses);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 12;
+    const skip = (page - 1) * limit;
+
+    const total = await Course.countDocuments({});
+    const courses = await Course.find({})
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    res.json({
+      courses,
+      page,
+      pages: Math.ceil(total / limit),
+      total
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

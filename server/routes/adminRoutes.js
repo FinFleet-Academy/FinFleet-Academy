@@ -9,8 +9,10 @@ import {
   getAllSubscribers,
   createNews,
   deleteNews,
+  updateNews,
   createCourse,
   deleteCourse,
+  updateCourse,
   getAllContacts,
   deleteContact
 } from '../controllers/adminController.js';
@@ -33,10 +35,12 @@ router.post('/notify', protect, admin, broadcastNotification);
 
 // News Management
 router.post('/news', protect, admin, createNews);
+router.put('/news/:id', protect, admin, updateNews);
 router.delete('/news/:id', protect, admin, deleteNews);
 
 // Course Management
 router.post('/courses', protect, admin, createCourse);
+router.put('/courses/:id', protect, admin, updateCourse);
 router.delete('/courses/:id', protect, admin, deleteCourse);
 
 // Contact Messages

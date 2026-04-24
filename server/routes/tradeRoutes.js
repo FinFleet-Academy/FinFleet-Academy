@@ -10,6 +10,12 @@ const router = express.Router();
 router.post('/execute', protect, async (req, res) => {
   try {
     let { symbol, type, quantity, price, market = 'INDIA' } = req.body;
+    
+    // VALIDATION
+    if (!symbol || !type || !quantity || quantity <= 0) {
+      return res.status(400).json({ message: 'Invalid trade parameters. Quantity must be greater than zero.' });
+    }
+    
     const user = await User.findById(req.user._id);
     
     // If Indian market, use our simulated price instead of client-side price

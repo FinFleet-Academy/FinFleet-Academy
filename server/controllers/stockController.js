@@ -16,8 +16,24 @@ export const getStocks = async (req, res) => {
       query.sector = sector;
     }
 
-    const stocks = await Stock.find(query).select('-history').sort({ symbol: 1 }).lean();
-    res.json(stocks);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const total = await Stock.countDocuments(query);
+    const stocks = await Stock.find(query)
+      .select('-history')
+      .sort({ symbol: 1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    res.json({
+      stocks,
+      page,
+      pages: Math.ceil(total / limit),
+      total
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
