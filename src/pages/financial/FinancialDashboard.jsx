@@ -8,7 +8,9 @@ import {
   Calculator, 
   ArrowRight,
   ShieldCheck,
-  Star
+  Star,
+  Activity,
+  ChevronRight
 } from 'lucide-react';
 import CreditCardComparison from './components/CreditCardComparison';
 import LoanEligibility from './components/LoanEligibility';
