@@ -288,70 +288,6 @@ const ProTradingChart = () => {
             <Maximize2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
           </button>
         </div>
-
-        {/* 5. SETTINGS MODAL */}
-        <AnimatePresence>
-          {isSettingsOpen && (
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              className="absolute top-20 right-6 w-80 bg-slate-900/95 backdrop-blur-xl border border-slate-800 rounded-3xl shadow-2xl z-[100] p-6"
-            >
-              <div className="flex items-center justify-between mb-8">
-                <h3 className="text-sm font-black text-white uppercase tracking-widest">Chart Settings</h3>
-                <button onClick={() => setIsSettingsOpen(false)} className="p-2 hover:bg-white/5 rounded-lg text-slate-500 hover:text-white">✕</button>
-              </div>
-
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase text-slate-400">Show Grid Lines</span>
-                  <button 
-                    onClick={() => updateConfig('showGrid', !chartConfig.showGrid)}
-                    className={`w-10 h-5 rounded-full transition-colors relative ${chartConfig.showGrid ? 'bg-brand-500' : 'bg-slate-800'}`}
-                  >
-                    <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${chartConfig.showGrid ? 'left-6' : 'left-1'}`} />
-                  </button>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase text-slate-400">Show Price Labels</span>
-                  <button 
-                    onClick={() => updateConfig('showLabels', !chartConfig.showLabels)}
-                    className={`w-10 h-5 rounded-full transition-colors relative ${chartConfig.showLabels ? 'bg-brand-500' : 'bg-slate-800'}`}
-                  >
-                    <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${chartConfig.showLabels ? 'left-6' : 'left-1'}`} />
-                  </button>
-                </div>
-
-                <div className="pt-4 border-t border-slate-800">
-                   <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mb-4">Chart Style</p>
-                   <div className="grid grid-cols-2 gap-2">
-                      <button 
-                        onClick={() => updateConfig('chartStyle', 'solid')}
-                        className={`py-2 rounded-xl text-[9px] font-black uppercase border transition-all ${chartConfig.chartStyle === 'solid' ? 'bg-brand-500/10 border-brand-500 text-brand-500' : 'border-slate-800 text-slate-500 hover:border-slate-700'}`}
-                      >
-                        Solid
-                      </button>
-                      <button 
-                        onClick={() => updateConfig('chartStyle', 'gradient')}
-                        className={`py-2 rounded-xl text-[9px] font-black uppercase border transition-all ${chartConfig.chartStyle === 'gradient' ? 'bg-brand-500/10 border-brand-500 text-brand-500' : 'border-slate-800 text-slate-500 hover:border-slate-700'}`}
-                      >
-                        Gradient
-                      </button>
-                   </div>
-                </div>
-
-                <button 
-                  onClick={() => { setMarkers([]); toast.success('Chart markers cleared'); }}
-                  className="w-full py-3 bg-slate-950 border border-slate-800 rounded-xl text-[9px] font-black uppercase text-slate-500 hover:text-white hover:border-slate-600 transition-all"
-                >
-                   Reset All Markers
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
 
       <div className="flex-grow flex overflow-hidden">
@@ -463,6 +399,70 @@ const ProTradingChart = () => {
         </div>
 
       </div>
+
+      {/* 5. SETTINGS MODAL - FIXED OVERLAY */}
+      <AnimatePresence>
+        {isSettingsOpen && (
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            className="fixed top-20 right-6 w-80 bg-slate-900/98 backdrop-blur-3xl border border-slate-800 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)] z-[200] p-6"
+          >
+            <div className="flex items-center justify-between mb-8">
+              <h3 className="text-sm font-black text-white uppercase tracking-widest">Chart Settings</h3>
+              <button onClick={() => setIsSettingsOpen(false)} className="p-2 hover:bg-white/5 rounded-lg text-slate-500 hover:text-white transition-colors">✕</button>
+            </div>
+
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-black uppercase text-slate-400">Show Grid Lines</span>
+                <button 
+                  onClick={() => updateConfig('showGrid', !chartConfig.showGrid)}
+                  className={`w-10 h-5 rounded-full transition-colors relative ${chartConfig.showGrid ? 'bg-brand-500' : 'bg-slate-800'}`}
+                >
+                  <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${chartConfig.showGrid ? 'left-6' : 'left-1'}`} />
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-black uppercase text-slate-400">Show Price Labels</span>
+                <button 
+                  onClick={() => updateConfig('showLabels', !chartConfig.showLabels)}
+                  className={`w-10 h-5 rounded-full transition-colors relative ${chartConfig.showLabels ? 'bg-brand-500' : 'bg-slate-800'}`}
+                >
+                  <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${chartConfig.showLabels ? 'left-6' : 'left-1'}`} />
+                </button>
+              </div>
+
+              <div className="pt-4 border-t border-slate-800">
+                 <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mb-4">Chart Style</p>
+                 <div className="grid grid-cols-2 gap-2">
+                    <button 
+                      onClick={() => updateConfig('chartStyle', 'solid')}
+                      className={`py-2 rounded-xl text-[9px] font-black uppercase border transition-all ${chartConfig.chartStyle === 'solid' ? 'bg-brand-500/10 border-brand-500 text-brand-500' : 'border-slate-800 text-slate-500 hover:border-slate-700'}`}
+                    >
+                      Solid
+                    </button>
+                    <button 
+                      onClick={() => updateConfig('chartStyle', 'gradient')}
+                      className={`py-2 rounded-xl text-[9px] font-black uppercase border transition-all ${chartConfig.chartStyle === 'gradient' ? 'bg-brand-500/10 border-brand-500 text-brand-500' : 'border-slate-800 text-slate-500 hover:border-slate-700'}`}
+                    >
+                      Gradient
+                    </button>
+                 </div>
+              </div>
+
+              <button 
+                onClick={() => { setMarkers([]); toast.success('Chart markers cleared'); }}
+                className="w-full py-3 bg-slate-950 border border-slate-800 rounded-xl text-[9px] font-black uppercase text-slate-500 hover:text-white hover:border-slate-600 transition-all"
+              >
+                 Reset All Markers
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
