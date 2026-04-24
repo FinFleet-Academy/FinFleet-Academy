@@ -41,22 +41,32 @@ const MarketDataChart = ({ data, symbol, colors = {} }) => {
         lineWidth: 2,
       });
 
-    // Format data for lightweight-charts (needs time as unix timestamp and value)
-    const formattedData = data.map(item => ({
-      time: Math.floor(new Date(item.timestamp).getTime() / 1000),
-      value: item.price
-    })).sort((a, b) => a.time - b.time);
+      // Format data for lightweight-charts (needs time as unix timestamp and value)
+      const formattedData = data.map(item => ({
+        time: Math.floor(new Date(item.timestamp).getTime() / 1000),
+        value: item.price
+      })).sort((a, b) => a.time - b.time);
 
-    series.setData(formattedData);
-    chart.timeScale().fitContent();
+      series.setData(formattedData);
+      chart.timeScale().fitContent();
 
-    window.addEventListener('resize', handleResize);
+      handleResize = () => {
+        if (chart && chartContainerRef.current) {
+          chart.applyOptions({ width: chartContainerRef.current.clientWidth });
+        }
+      };
+
+      window.addEventListener('resize', handleResize);
+    };
+
+    const timer = setTimeout(initChart, 100);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
-      chart.remove();
+      clearTimeout(timer);
+      if (handleResize) window.removeEventListener('resize', handleResize);
+      if (chart) chart.remove();
     };
-  }, [data, colors]);
+  }, [data, colors, symbol]);
 
   return (
     <div className="relative w-full">
