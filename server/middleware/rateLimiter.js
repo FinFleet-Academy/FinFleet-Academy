@@ -2,10 +2,11 @@ import rateLimit from 'express-rate-limit';
 
 // Standard API limiter (Per IP)
 export const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200, // Limit each IP to 200 requests per windowMs
+  windowMs: 15 * 60 * 1000, 
+  max: 200, 
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { default: false },
   message: {
     message: 'Too many requests from this IP, please try again later.'
   }
@@ -13,21 +14,23 @@ export const apiLimiter = rateLimit({
 
 // Strict limiter for authentication (Login/Signup - Per IP)
 export const authLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 15, // Limit each IP to 15 attempts per hour
+  windowMs: 60 * 60 * 1000, 
+  max: 15, 
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { default: false },
   message: {
     message: 'Too many authentication attempts, please try again after an hour.'
   },
-  skipSuccessfulRequests: false // Security: count all attempts
+  skipSuccessfulRequests: false
 });
 
 // Per-User Limiter (Sensitive Actions)
 export const userLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 50, // Limit each user to 50 sensitive requests per 15 mins
-  keyGenerator: (req) => req.user?.id || req.ip, // Use user ID if available, else IP
+  windowMs: 15 * 60 * 1000, 
+  max: 50, 
+  validate: { default: false },
+  keyGenerator: (req) => req.user?.id || req.ip, 
   message: {
     message: 'Action frequency limit exceeded for your account.'
   }
@@ -37,6 +40,7 @@ export const userLimiter = rateLimit({
 export const adminLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
+  validate: { default: false },
   message: {
     message: 'Excessive admin actions detected.'
   }
