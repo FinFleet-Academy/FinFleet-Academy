@@ -2,20 +2,49 @@ import User from '../models/User.js';
 import Coupon from '../models/Coupon.js';
 import Notification from '../models/Notification.js';
 import Subscriber from '../models/Subscriber.js';
+import News from '../models/News.js';
 import Course from '../models/Course.js';
+import Contact from '../models/Contact.js';
 import Transaction from '../models/Transaction.js';
 
-// ... (other controllers)
+export const getAdminStats = async (req, res) => {
+  try {
+    const [totalUsers, totalSubscribers, totalCourses, transactions] = await Promise.all([
+      User.countDocuments(),
+      Subscriber.countDocuments(),
+      Course.countDocuments(),
+      Transaction.find({})
+    ]);
+
+    const totalRevenue = transactions.reduce((acc, curr) => acc + (curr.amount || 0), 0);
+
+    res.json({
+      summary: {
+        totalUsers,
+        totalSubscribers,
+        totalCourses,
+        totalRevenue
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 export const broadcastNotification = async (req, res) => {
-  const { userEmail, message } = req.body;
+  const { userEmail, title, message } = req.body;
   try {
-    const notification = await Notification.create({ userEmail, message });
+    const notification = await Notification.create({ 
+      userEmail, 
+      title: title || 'Platform Notification', 
+      message 
+    });
     res.status(201).json(notification);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 export const getAllUsers = async (req, res) => {
   try {
     const users = await User.find({}).select('-password');
@@ -79,38 +108,85 @@ export const deleteCoupon = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-export const getAdminStats = async (req, res) => {
+
+// News Management
+export const createNews = async (req, res) => {
   try {
-    const [
-      userCount,
-      subscriberCount,
-      courseCount,
-      transactions,
-      recentUsers,
-      recentNotifications
-    ] = await Promise.all([
-      User.countDocuments(),
-      Subscriber.countDocuments(),
-      Course.countDocuments(),
-      Transaction.find({}),
-      User.find({}).sort({ createdAt: -1 }).limit(5).select('-password'),
-      Notification.find({}).sort({ createdAt: -1 }).limit(5)
-    ]);
+    const { title, summary, content, category, sourceLink, isTrending } = req.body;
+    // Simple slug generation
+    const slug = title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+    const news = await News.create({ title, slug, summary, content, category, sourceLink, isTrending });
+    res.status(201).json(news);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-    const totalRevenue = transactions.reduce((sum, t) => sum + t.amount, 0);
+export const deleteNews = async (req, res) => {
+  try {
+    const news = await News.findByIdAndDelete(req.params.id);
+    if (!news) return res.status(404).json({ message: 'News not found' });
+    res.json({ message: 'News deleted' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-    res.json({
-      summary: {
-        totalUsers: userCount,
-        totalSubscribers: subscriberCount,
-        totalCourses: courseCount,
-        totalRevenue: totalRevenue
-      },
-      recentActivity: {
-        users: recentUsers,
-        notifications: recentNotifications
-      }
-    });
+// Course Management
+export const createCourse = async (req, res) => {
+  try {
+    const course = await Course.create(req.body);
+    res.status(201).json(course);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const deleteCourse = async (req, res) => {
+  try {
+    const course = await Course.findByIdAndDelete(req.params.id);
+    if (!course) return res.status(404).json({ message: 'Course not found' });
+    res.json({ message: 'Course deleted' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Contact Management
+export const getAllContacts = async (req, res) => {
+  try {
+    const contacts = await Contact.find({}).sort({ createdAt: -1 });
+    res.json(contacts);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const deleteContact = async (req, res) => {
+  try {
+    const contact = await Contact.findByIdAndDelete(req.params.id);
+    if (!contact) return res.status(404).json({ message: 'Message not found' });
+    res.json({ message: 'Message deleted' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const updateCourse = async (req, res) => {
+  try {
+    const course = await Course.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!course) return res.status(404).json({ message: 'Course not found' });
+    res.json(course);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const updateNews = async (req, res) => {
+  try {
+    const news = await News.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!news) return res.status(404).json({ message: 'News not found' });
+    res.json(news);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

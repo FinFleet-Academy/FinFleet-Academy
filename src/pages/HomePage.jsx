@@ -1,231 +1,218 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { TrendingUp, ShieldCheck, Users, Award, BookOpen, MessageSquare, PlayCircle, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  ArrowRight, Bot, BookOpen, Newspaper, Calculator, 
+  CheckCircle2, Star, Users, ShieldCheck, Heart, 
+  MessageSquare, Zap, TrendingUp, Globe, Sparkles,
+  ShieldAlert, PlayCircle, Activity
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { toast } from 'react-hot-toast';
+
+const PremiumLiveChart = lazy(() => import('../components/shared/PremiumLiveChart'));
 
 const HomePage = () => {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.2 }
-    }
-  };
+  const [courses, setCourses] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1 }
-  };
+  useEffect(() => {
+    const fetchPreviewData = async () => {
+      try {
+        const [coursesRes, annRes] = await Promise.all([
+          axios.get('/api/courses'),
+          axios.get('/api/announcements')
+        ]);
+        // Handle paginated response structure
+        const coursesData = coursesRes.data.courses || coursesRes.data;
+        setCourses(coursesData.slice(0, 3));
+        setAnnouncements(annRes.data.slice(0, 2));
+      } catch (err) {
+        console.error('Failed to fetch home data', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPreviewData();
+  }, []);
 
-  const [email, setEmail] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSubscribe = async (e) => {
-    e.preventDefault();
-    if (!email) return;
-
-    try {
-      setIsSubmitting(true);
-      await axios.post('/api/subscribers', { 
-        email, 
-        source: 'newsletter' 
-      });
-      toast.success('Successfully subscribed to updates!');
-      setEmail('');
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to subscribe');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const fadeInUp = { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 } };
+  const staggerContainer = { animate: { transition: { staggerChildren: 0.1 } } };
 
   return (
-    <div className="overflow-hidden">
-      {/* Hero Section */}
-      <section className="relative pt-20 pb-32 lg:pt-32 lg:pb-52">
-        {/* Background Decor */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[800px] pointer-events-none overflow-hidden">
-          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-500/10 rounded-full blur-[120px]" />
-          <div className="absolute bottom-[20%] right-[-10%] w-[50%] h-[50%] bg-accent-success/10 rounded-full blur-[150px]" />
-        </div>
+    <div className="bg-[#F9FAFB] dark:bg-[#080C10] min-h-screen font-sans selection:bg-brand-500/20 overflow-x-hidden">
+      
+      {/* 1. PREMIUM HERO SECTION */}
+      <Suspense fallback={<div className="h-[700px] flex items-center justify-center bg-slate-950"><div className="w-12 h-12 border-4 border-brand-500 border-t-transparent rounded-full animate-spin" /></div>}>
+        <PremiumLiveChart />
+      </Suspense>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <motion.div 
-            initial="hidden"
-            animate="visible"
-            variants={containerVariants}
-            className="text-center max-w-4xl mx-auto"
-          >
-            <motion.div variants={itemVariants} className="inline-flex items-center space-x-2 bg-brand-50 dark:bg-brand-950/30 px-4 py-2 rounded-full border border-brand-100 dark:border-brand-900 mb-8">
-              <span className="flex h-2 w-2 rounded-full bg-brand-500 animate-pulse" />
-              <span className="text-xs font-bold text-brand-700 dark:text-brand-400 tracking-wider uppercase">Live Sessions Now Available</span>
-            </motion.div>
-            
-            <motion.h1 variants={itemVariants} className="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-6">
-              Master Trading. <br />
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-brand-600 via-accent-success to-brand-400">
-                Build Wealth.
-              </span>
-            </motion.h1>
-            
-            <motion.p variants={itemVariants} className="text-xl text-slate-600 dark:text-slate-400 mb-10 leading-relaxed">
-              Join FinFleet Academy and unlock premium trading knowledge, 
-              AI-powered insights, and a community of elite investors. 
-              Start your journey from beginner to professional today.
-            </motion.p>
-            
-            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-              <Link to="/signup" className="btn-primary flex items-center group w-full sm:w-auto">
-                Start Learning Now
-                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link to="/courses" className="btn-secondary w-full sm:w-auto">
-                View All Plans
-              </Link>
-            </motion.div>
-
-            {/* Stats */}
-            <motion.div 
-              variants={itemVariants}
-              className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-slate-200 dark:border-slate-800 pt-10"
-            >
+      {/* 2. METRICS SECTION */}
+      <section className="py-14 border-y border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-slate-900/30 backdrop-blur-md">
+        <div className="max-w-6xl mx-auto px-6">
+           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
               {[
-                { label: 'Active Students', value: '15k+', icon: Users },
-                { label: 'Success Rate', value: '94%', icon: TrendingUp },
-                { label: 'Courses', value: '50+', icon: BookOpen },
-                { label: 'Live Classes', value: '24/7', icon: PlayCircle },
-              ].map((stat, idx) => (
-                <div key={idx} className="flex flex-col items-center">
-                  <stat.icon className="w-6 h-6 text-brand-500 mb-2" />
-                  <div className="text-2xl font-bold text-slate-900 dark:text-white">{stat.value}</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-500 uppercase tracking-widest">{stat.label}</div>
-                </div>
+                { label: 'Students', value: '12K+', icon: Users, color: 'text-brand-600' },
+                { label: 'Rating', value: '4.8/5', icon: Star, color: 'text-amber-500' },
+                { label: 'Daily News', value: '50+', icon: Newspaper, color: 'text-blue-500' },
+                { label: 'Expert Mentors', value: '100+', icon: Sparkles, color: 'text-emerald-500' }
+              ].map((stat, i) => (
+                <motion.div 
+                  key={i} whileInView={{ opacity: 1, y: 0 }} initial={{ opacity: 0, y: 20 }} 
+                  transition={{ delay: i * 0.1 }} viewport={{ once: true }}
+                >
+                   <div className="flex flex-col items-center">
+                      <stat.icon className={`w-8 h-8 ${stat.color} mb-4 opacity-50`} />
+                      <div className="text-4xl font-black dark:text-white tracking-tighter mb-1">{stat.value}</div>
+                      <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">{stat.label}</div>
+                   </div>
+                </motion.div>
               ))}
-            </motion.div>
+           </div>
+        </div>
+      </section>
+
+      {/* 3. COURSES SECTION */}
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
+            <div className="max-w-2xl">
+              <motion.div {...fadeInUp} className="flex items-center space-x-3 mb-6">
+                 <BookOpen className="w-6 h-6 text-brand-600" />
+                 <h2 className="text-[10px] font-black dark:text-white uppercase tracking-[0.4em]">Learn from Experts</h2>
+              </motion.div>
+              <h3 className="text-3xl md:text-5xl font-black dark:text-white tracking-tight leading-tight">
+                Featured <br /> <span className="text-gradient">Courses.</span>
+              </h3>
+            </div>
+            <Link to="/courses" className="text-[11px] font-black uppercase tracking-widest text-brand-600 flex items-center hover:translate-x-3 transition-transform group">
+              View All Courses <ArrowRight className="w-4 h-4 ml-3" />
+            </Link>
+          </div>
+
+          <motion.div 
+            variants={staggerContainer} whileInView="animate" initial="initial" viewport={{ once: true }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12"
+          >
+            {loading ? (
+              [...Array(3)].map((_, i) => <div key={i} className="h-[500px] bg-slate-100 dark:bg-slate-900/50 rounded-[3rem] animate-pulse" />)
+            ) : (
+              courses.map((course, i) => (
+                <motion.div key={course._id} variants={fadeInUp} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[3.5rem] p-10 group hover:shadow-2xl hover:shadow-brand-500/10 transition-all duration-500 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500 rounded-full blur-[80px] opacity-0 group-hover:opacity-10 transition-opacity" />
+                  
+                  <div className="aspect-[4/3] rounded-[2.5rem] bg-slate-50 dark:bg-slate-950 flex items-center justify-center mb-10 relative overflow-hidden border border-slate-100 dark:border-slate-800/50">
+                    <BookOpen className="w-20 h-20 text-brand-600 opacity-10 group-hover:scale-125 transition-transform duration-700" />
+                    <div className="absolute top-6 right-6">
+                       <span className="px-4 py-2 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-[9px] font-black rounded-full uppercase tracking-widest shadow-sm">Module {i + 1}</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div className="flex justify-between items-start">
+                       <h3 className="text-2xl font-black dark:text-white group-hover:text-brand-600 transition-colors tracking-tighter leading-tight uppercase">{course.title}</h3>
+                       <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
+                    </div>
+                    <p className="text-sm font-bold text-slate-500 dark:text-slate-400 leading-relaxed italic">
+                      "{course.description || "Master the art of investing with our comprehensive guide."}"
+                    </p>
+                    <div className="pt-6 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between">
+                       <div className="flex items-center -space-x-3">
+                          {[1,2,3].map(j => <div key={j} className="w-8 h-8 rounded-full border-2 border-white dark:border-slate-900 bg-slate-100 dark:bg-slate-800" />)}
+                          <span className="ml-6 text-[9px] font-black text-slate-400 uppercase tracking-widest">+1.2K Enrolled</span>
+                       </div>
+                       <Link to={`/courses/${course._id}`} className="w-12 h-12 bg-slate-950 dark:bg-white text-white dark:text-slate-950 rounded-2xl flex items-center justify-center group-hover:bg-brand-600 group-hover:text-white transition-all">
+                          <PlayCircle className="w-6 h-6" />
+                       </Link>
+                    </div>
+                  </div>
+                </motion.div>
+              ))
+            )}
           </motion.div>
         </div>
       </section>
 
-
-      {/* Features Section */}
-      <section id="features" className="py-24 bg-slate-50 dark:bg-slate-900/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-20">
-            <h2 className="text-3xl md:text-5xl font-bold mb-6 dark:text-white">Everything you need to <span className="text-brand-600">Succeed</span></h2>
-            <p className="text-slate-600 dark:text-slate-400">Our platform is designed to provide comprehensive tools and education for every stage of your trading career.</p>
+      {/* 4. ANNOUNCEMENTS SECTION */}
+      <section className="py-16 bg-slate-950 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-brand-900/10 via-transparent to-transparent opacity-50" />
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <div className="text-center mb-10">
+            <motion.div {...fadeInUp} className="inline-flex items-center space-x-3 mb-8 bg-white/5 px-4 py-2 rounded-full border border-white/10">
+               <Newspaper className="w-4 h-4 text-brand-400" />
+               <span className="text-[10px] font-black text-brand-400 uppercase tracking-widest">Latest Updates</span>
+            </motion.div>
+            <h2 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tight leading-tight">Latest <span className="text-brand-500">News.</span></h2>
+            <p className="text-slate-300 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">Stay updated with the latest market insights and announcements.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                title: 'Live Trading Classes',
-                desc: 'Watch professionals trade live markets and explain their strategies in real-time.',
-                icon: PlayCircle,
-                color: 'bg-blue-500'
-              },
-              {
-                title: 'AI Trading Assistant',
-                desc: 'Get instant answers to complex financial questions with our modern AI chatbot.',
-                icon: MessageSquare,
-                color: 'bg-accent-premium'
-              },
-              {
-                title: 'Market Analysis',
-                desc: 'Daily breakdowns of the global economy and specific trade setups for you to study.',
-                icon: TrendingUp,
-                color: 'bg-accent-success'
-              },
-              {
-                title: 'Premium E-books',
-                desc: 'Access our exclusive library of guides covering everything from basics to expert strategies.',
-                icon: BookOpen,
-                color: 'bg-amber-500'
-              },
-              {
-                title: 'Verified Certificates',
-                desc: 'Earn industry-recognized certificates as you complete modules and pass assessments.',
-                icon: Award,
-                color: 'bg-brand-600'
-              },
-              {
-                title: 'Secure & Trusted',
-                desc: 'Your learning journey is backed by our commitement to excellence and student success.',
-                icon: ShieldCheck,
-                color: 'bg-slate-700'
-              }
-            ].map((feature, idx) => (
-              <motion.div 
-                whileHover={{ y: -5 }}
-                key={idx} 
-                className="card-premium h-full transition-all border-slate-100 hover:border-brand-500/30"
-              >
-                <div className={`w-12 h-12 ${feature.color} rounded-xl flex items-center justify-center mb-6 shadow-lg shadow-black/10`}>
-                  <feature.icon className="text-white w-6 h-6" />
-                </div>
-                <h3 className="text-xl font-bold mb-3 dark:text-white">{feature.title}</h3>
-                <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">{feature.desc}</p>
-              </motion.div>
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-6xl mx-auto">
+            {loading ? (
+              [...Array(2)].map((_, i) => <div key={i} className="h-64 bg-white/5 rounded-[3rem] animate-pulse" />)
+            ) : (
+              announcements.map((ann) => (
+                <motion.div 
+                  key={ann._id} whileInView={{ opacity: 1, x: 0 }} initial={{ opacity: 0, x: -20 }} viewport={{ once: true }}
+                  className="p-12 bg-white/5 backdrop-blur-xl border border-white/10 rounded-[3.5rem] hover:border-brand-500/40 transition-all group relative overflow-hidden"
+                >
+                  <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity"><MessageSquare className="w-24 h-24 text-white" /></div>
+                  <div className="flex justify-between items-center mb-10">
+                    <div className="flex items-center space-x-3 px-4 py-1.5 bg-brand-500/10 rounded-full border border-brand-500/20">
+                      <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
+                      <span className="text-[9px] font-black text-brand-500 uppercase tracking-[0.2em]">New</span>
+                    </div>
+                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{new Date(ann.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <h3 className="text-2xl font-black text-white mb-6 uppercase tracking-tighter group-hover:text-brand-500 transition-colors leading-tight">{ann.title}</h3>
+                  <p className="text-slate-400 text-sm font-bold leading-relaxed mb-10 line-clamp-2 italic opacity-80">"{ann.content}"</p>
+                  <Link to="/community" className="inline-flex items-center text-[10px] font-black text-white uppercase tracking-[0.3em] group/btn">
+                    Learn More <ArrowRight className="w-4 h-4 ml-3 group-hover/btn:translate-x-3 transition-transform text-brand-500" />
+                  </Link>
+                </motion.div>
+              ))
+            )}
           </div>
         </div>
       </section>
 
-      {/* Trust Badges */}
-      <section className="py-20 border-y border-slate-100 dark:border-slate-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap justify-center items-center gap-12 opacity-50 grayscale hover:grayscale-0 transition-all duration-700">
-            {/* Mock brand logos */}
-            <div className="text-xl font-bold text-slate-400">FINANCE INSIGHTS</div>
-            <div className="text-xl font-bold text-slate-400">TRADER WEEKLY</div>
-            <div className="text-xl font-bold text-slate-400">BULLS & BEARS</div>
-            <div className="text-xl font-bold text-slate-400">MARKET PULSE</div>
-            <div className="text-xl font-bold text-slate-400">WEALTH FLOW</div>
+      {/* 5. CALL TO ACTION */}
+      <section className="py-20 relative text-center px-6 overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-brand-500 rounded-full blur-[200px] opacity-[0.03]" />
+        
+        <motion.div 
+          whileInView={{ opacity: 1, scale: 1 }} initial={{ opacity: 0, scale: 0.95 }} viewport={{ once: true }}
+          className="max-w-4xl mx-auto relative z-10"
+        >
+          <div className="w-24 h-24 bg-brand-50 dark:bg-brand-900/20 rounded-[2rem] flex items-center justify-center mx-auto mb-12 shadow-inner border border-brand-100 dark:border-brand-800 animate-float">
+             <Sparkles className="w-10 h-10 text-brand-600" />
           </div>
-        </div>
+          <h2 className="text-4xl md:text-6xl font-black dark:text-white mb-6 tracking-tight leading-tight">Start Your <br /> <span className="text-gradient">Journey.</span></h2>
+          <p className="text-base md:text-lg text-slate-500 dark:text-slate-300 mb-10 max-w-2xl mx-auto leading-relaxed">
+            Join thousands of learners and start mastering the markets today with expert-led courses.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-6">
+             <Link to="/signup" className="btn-brand py-6 px-16 text-[12px] font-black uppercase tracking-[0.3em] rounded-[2.5rem] shadow-2xl shadow-brand-500/40 group">
+               Join Now
+             </Link>
+             <Link to="/pricing" className="btn-secondary py-6 px-16 text-[12px] font-black uppercase tracking-[0.3em] rounded-[2.5rem] group">
+               Pricing Plans
+             </Link>
+          </div>
+          
+          <div className="mt-12 flex items-center justify-center space-x-12 opacity-30 grayscale hover:grayscale-0 transition-all duration-700">
+             <Globe className="w-10 h-10" />
+             <Activity className="w-10 h-10" />
+             <TrendingUp className="w-10 h-10" />
+             <ShieldCheck className="w-10 h-10" />
+          </div>
+        </motion.div>
       </section>
 
-      {/* FAQ Preview */}
-      <section className="py-24">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold dark:text-white">Frequently Asked Questions</h2>
-          </div>
-          <div className="space-y-4">
-            {[
-              { q: 'Is this suitable for absolute beginners?', a: 'Yes! Our course structure starts from the very basics of financial markets and moves towards advanced strategies.' },
-              { q: 'Can I access the classes on mobile?', a: 'Absolutely. FinFleet Academy is fully responsive and optimized for mobile learning.' },
-              { q: 'What is the AI assistant?', a: 'Our AI Chatbot (available for Elite plans) helps you analyze market conditions and answers financial queries 24/7.' }
-            ].map((faq, idx) => (
-              <div key={idx} className="p-6 bg-white dark:bg-dark-900 border border-slate-100 dark:border-slate-800 rounded-2xl">
-                <h4 className="font-bold mb-2 dark:text-white">{faq.q}</h4>
-                <p className="text-sm text-slate-500 dark:text-slate-400">{faq.a}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* FOOTER BACKGROUND TEXT */}
+      <div className="py-20 text-center select-none pointer-events-none overflow-hidden opacity-[0.03]">
+         <h2 className="text-[20vw] font-black leading-none tracking-tighter dark:text-white">FINFLEET</h2>
+      </div>
 
-      {/* CTA Section */}
-      <section className="py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gradient-to-r from-brand-600 to-brand-800 rounded-[32px] p-8 md:p-16 text-center relative overflow-hidden shadow-2xl">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-accent-success/20 rounded-full -ml-32 -mb-32 blur-3xl" />
-            
-            <h2 className="text-white text-3xl md:text-5xl font-bold mb-6 relative">Ready to start your journey?</h2>
-            <p className="text-brand-100 text-lg mb-10 max-w-2xl mx-auto relative">
-              Join 15,000+ students and gain access to the tools you need to build long-term wealth.
-            </p>
-            <div className="relative">
-              <Link to="/signup" className="px-8 py-4 bg-white text-brand-700 rounded-xl font-bold hover:bg-slate-50 transition-colors shadow-lg">
-                Join the Academy Now
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   );
 };

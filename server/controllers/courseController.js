@@ -3,8 +3,35 @@ import Progress from '../models/Progress.js';
 
 export const getCourses = async (req, res) => {
   try {
-    const courses = await Course.find({});
-    res.json(courses);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 12;
+    const skip = (page - 1) * limit;
+
+    const total = await Course.countDocuments({});
+    const courses = await Course.find({})
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    res.json({
+      courses,
+      page,
+      pages: Math.ceil(total / limit),
+      total
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getCourseById = async (req, res) => {
+  try {
+    const course = await Course.findById(req.params.id).lean();
+    if (course) {
+      res.json(course);
+    } else {
+      res.status(404).json({ message: 'Course not found' });
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -12,7 +39,7 @@ export const getCourses = async (req, res) => {
 
 export const getProgress = async (req, res) => {
   try {
-    const progress = await Progress.find({ userId: req.user._id }).populate('courseId');
+    const progress = await Progress.find({ userId: req.user._id }).populate('courseId').lean();
     res.json(progress);
   } catch (error) {
     res.status(500).json({ message: error.message });

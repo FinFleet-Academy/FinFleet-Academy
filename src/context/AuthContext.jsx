@@ -72,9 +72,9 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
-  const registerUser = async (name, email, password, initialPlan) => {
+  const registerUser = async (name, email, password, initialPlan, referralCode = '') => {
     const { data } = await axios.post('/api/auth/register', { 
-      name, email, password, plan: initialPlan 
+      name, email, password, plan: initialPlan, referralCode
     });
     setUser(data);
     setToken(data.token);
@@ -150,6 +150,15 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const markAllNotificationsAsRead = async () => {
+    try {
+      await axios.put('/api/notifications/read-all');
+      setNotifications(notifications.map(n => ({ ...n, read: true })));
+    } catch (error) {
+      console.error("Failed to mark all as read", error);
+    }
+  };
+
   const adminSendNotification = async (userEmail, message) => {
     const { data } = await axios.post('/api/admin/notify', { userEmail, message });
     return data;
@@ -164,11 +173,40 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const createNews = async (newsData) => {
+    const { data } = await axios.post('/api/admin/news', newsData);
+    return data;
+  };
+
+  const deleteNews = async (newsId) => {
+    await axios.delete(`/api/admin/news/${newsId}`);
+  };
+
+  const createCourse = async (courseData) => {
+    const { data } = await axios.post('/api/admin/courses', courseData);
+    return data;
+  };
+
+  const deleteCourse = async (courseId) => {
+    await axios.delete(`/api/admin/courses/${courseId}`);
+  };
+
+  const fetchContacts = async () => {
+    const { data } = await axios.get('/api/admin/contacts');
+    return data;
+  };
+
+  const deleteAdminContact = async (contactId) => {
+    await axios.delete(`/api/admin/contacts/${contactId}`);
+  };
+
   return (
     <AuthContext.Provider value={{ 
       user, 
+      setUser,
       token,
       plan, 
+      setPlan,
       isAdmin,
       chatCount,
       coupons,
@@ -186,8 +224,16 @@ export const AuthProvider = ({ children }) => {
       validateAndApplyCoupon,
       removeCoupon,
       markNotificationRead,
+      markAllNotificationsAsRead,
       adminSendNotification,
       updateChatCount,
+      setChatCount,
+      createNews,
+      deleteNews,
+      createCourse,
+      deleteCourse,
+      fetchContacts,
+      deleteAdminContact,
       isAuthenticated: !!user 
     }}>
       {children}

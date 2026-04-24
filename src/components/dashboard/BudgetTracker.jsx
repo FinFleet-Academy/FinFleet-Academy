@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Trash2, TrendingUp, TrendingDown, DollarSign, PieChart, Calendar } from 'lucide-react';
+import { Plus, Trash2, TrendingUp, TrendingDown, IndianRupee, PieChart, Calendar } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 const BudgetTracker = () => {
@@ -70,26 +70,26 @@ const BudgetTracker = () => {
     <div className="space-y-6">
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="card-premium p-6 bg-gradient-to-br from-brand-600 to-brand-700 text-white">
+        <div className="card-premium p-6 bg-brand-600 text-white">
           <div className="flex justify-between items-center mb-2">
             <span className="text-xs font-bold uppercase tracking-wider opacity-80">Total Balance</span>
-            <DollarSign className="w-4 h-4" />
+            <IndianRupee className="w-4 h-4" />
           </div>
-          <div className="text-3xl font-bold">${balance.toLocaleString()}</div>
+          <div className="text-3xl font-bold">₹{balance.toLocaleString()}</div>
         </div>
         <div className="card-premium p-6 bg-white dark:bg-slate-900">
           <div className="flex justify-between items-center mb-2">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Income</span>
             <TrendingUp className="w-4 h-4 text-emerald-500" />
           </div>
-          <div className="text-2xl font-bold text-emerald-500">${totals.income.toLocaleString()}</div>
+          <div className="text-2xl font-bold text-emerald-500">₹{totals.income.toLocaleString()}</div>
         </div>
         <div className="card-premium p-6 bg-white dark:bg-slate-900">
           <div className="flex justify-between items-center mb-2">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Expenses</span>
             <TrendingDown className="w-4 h-4 text-rose-500" />
           </div>
-          <div className="text-2xl font-bold text-rose-500">${totals.expense.toLocaleString()}</div>
+          <div className="text-2xl font-bold text-rose-500">₹{totals.expense.toLocaleString()}</div>
         </div>
       </div>
 
@@ -187,7 +187,7 @@ const BudgetTracker = () => {
                     </div>
                     <div className="flex items-center space-x-4">
                       <div className={`text-sm font-bold ${t.type === 'income' ? 'text-emerald-500' : 'text-rose-500'}`}>
-                        {t.type === 'income' ? '+' : '-'}${t.amount}
+                        {t.type === 'income' ? '+' : '-'}₹{t.amount}
                       </div>
                       <button 
                         onClick={() => deleteTransaction(t._id)}

@@ -12,7 +12,7 @@ const generateToken = (id) => {
 
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password, plan } = req.body;
+    const { name, email, password, plan, referralCode: inputReferral } = req.body;
 
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -22,18 +22,51 @@ export const registerUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    // Generate unique referral code
+    const baseCode = name.replace(/[^a-zA-Z0-9]/g, '').substring(0, 4).toUpperCase();
+    const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
+    const myReferralCode = `${baseCode}${randomStr}`;
+
+    let referredById = null;
+    if (inputReferral) {
+      const referrer = await User.findOne({ referralCode: inputReferral.toUpperCase() });
+      if (referrer) {
+        referredById = referrer._id;
+        // Optionally reward referrer immediately (e.g. +10 AI messages)
+        // This can be done after user creation
+      }
+    }
+
     const user = await User.create({
       name,
       email,
       password: hashedPassword,
       plan: plan || 'FREE',
-      isAdmin: email === 'admin@finfleet.com'
+      isAdmin: email === 'admin@finfleet.com',
+      referralCode: myReferralCode,
+      referredBy: inputReferral ? inputReferral.toUpperCase() : null
     });
 
     if (user) {
+      if (referredById) {
+         // Reward referrer: Add user to referred list and give +10 AI messages (decrement usage)
+         await User.findByIdAndUpdate(referredById, {
+           $push: { referredUsers: user._id },
+           $inc: { chatCount: -10 }
+         });
+         
+         // Notify referrer
+         await Notification.create({
+           userEmail: (await User.findById(referredById)).email,
+           title: 'Referral Bonus',
+           message: `Someone just signed up using your referral code! We've added 10 bonus AI messages to your account.`
+         });
+      }
+
       // Create welcome notification
       await Notification.create({
         userEmail: user.email,
+        title: 'Welcome to FinFleet Academy',
         message: `Welcome to FinFleet Academy, ${user.name}! We're excited to help you master the markets.`
       });
 
@@ -55,6 +88,7 @@ export const registerUser = async (req, res) => {
         plan: user.plan,
         isAdmin: user.isAdmin,
         chatCount: user.chatCount,
+        referralCode: user.referralCode,
         token: generateToken(user._id),
       });
     } else {
