@@ -31,18 +31,33 @@ export const registerUser = async (req, res) => {
   try {
     const { name, email, password, plan, referralCode: inputReferral } = req.body;
 
+    // 1. Check if email already exists
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
+    // 2. Hash Password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const baseCode = name.replace(/[^a-zA-Z0-9]/g, '').substring(0, 4).toUpperCase();
-    const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
-    const myReferralCode = `${baseCode}${randomStr}`;
+    // 3. Generate UNIQUE Referral Code (with retry logic)
+    let myReferralCode;
+    let isUnique = false;
+    let attempts = 0;
+    
+    while (!isUnique && attempts < 5) {
+      const baseCode = name.replace(/[^a-zA-Z0-9]/g, '').substring(0, 4).toUpperCase() || 'FF';
+      const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
+      myReferralCode = `${baseCode}${randomStr}`;
+      
+      const existing = await User.findOne({ referralCode: myReferralCode });
+      if (!existing) isUnique = true;
+      attempts++;
+    }
 
+    // 4. Create User
+    console.log(`[Registration] Creating user: ${email} with plan: ${plan}`);
     const user = await User.create({
       name,
       email,
@@ -54,16 +69,17 @@ export const registerUser = async (req, res) => {
     });
 
     if (user) {
-      const { accessToken, refreshToken } = generateTokens(user._id);
+      console.log(`[Registration] User created successfully: ${user.id}`);
+      const { accessToken, refreshToken } = generateTokens(user.id.toString());
       
-      // Store refresh token in DB
+      // Store refresh token
       user.refreshTokens.push(refreshToken);
       await user.save();
 
       sendRefreshTokenCookie(res, refreshToken);
 
-      res.status(201).json({
-        _id: user._id,
+      return res.status(201).json({
+        _id: user.id,
         name: user.name,
         email: user.email,
         plan: user.plan,
@@ -72,11 +88,24 @@ export const registerUser = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error(`[Registration Error]: ${error.message}`, {
+    console.error('CRITICAL REGISTRATION FAILURE:', {
+      message: error.message,
       stack: error.stack,
-      body: { ...req.body, password: '***' }
+      email: req.body.email,
+      name: req.body.name
     });
-    res.status(500).json({ message: error.message });
+    
+    // Handle Mongoose Duplicate Key Error explicitly
+    if (error.code === 11000) {
+      return res.status(400).json({ 
+        message: 'Registration failed: Duplicate value detected (Email or Referral Code)' 
+      });
+    }
+
+    res.status(500).json({ 
+      message: 'Internal Server Error during registration',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
 
