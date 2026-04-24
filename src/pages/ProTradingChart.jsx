@@ -180,41 +180,58 @@ const ProTradingChart = () => {
                 </div>
                 <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest leading-none">NSE India</p>
               </div>
-            </div>
-
-            {/* Dropdown Menu */}
+            </div>            {/* Dropdown Menu */}
             <AnimatePresence>
               {isStockSelectorOpen && (
-                <motion.div 
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  className="absolute top-14 left-0 w-64 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl z-50 overflow-hidden"
-                >
-                  <div className="p-3">
-                    <div className="relative mb-2">
-                      <Search className="absolute left-3 top-2.5 w-3 h-3 text-slate-500" />
-                      <input 
-                        type="text" 
-                        placeholder="Search stock..." 
-                        className="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 pl-9 pr-4 text-[10px] focus:outline-none focus:border-brand-500"
-                      />
-                    </div>
-                    {watchlist.map(s => (
-                      <div 
-                        key={s.symbol}
-                        onClick={() => selectStock({ symbol: s.symbol, name: s.symbol, price: s.currentPrice })}
-                        className="flex items-center justify-between p-3 hover:bg-white/5 rounded-xl cursor-pointer transition-colors"
-                      >
-                        <span className="text-[10px] font-black text-white">{s.symbol}</span>
-                        <span className={`text-[10px] font-bold ${s.changePercent >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>{s.changePercent}%</span>
+                <>
+                  <div 
+                    className="fixed inset-0 z-[290]" 
+                    onClick={() => setIsStockSelectorOpen(false)} 
+                  />
+                  <motion.div 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="fixed top-16 left-[120px] w-80 bg-[#0F172A] border border-slate-800 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-[300] overflow-hidden"
+                  >
+                    <div className="p-4">
+                      <div className="relative mb-4">
+                        <Search className="absolute left-3 top-3 w-4 h-4 text-slate-500" />
+                        <input 
+                          type="text" 
+                          placeholder="Search 500+ stocks..." 
+                          className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-brand-500 transition-colors"
+                        />
                       </div>
-                    ))}
-                  </div>
-                </motion.div>
+                      <div className="max-h-[400px] overflow-y-auto custom-scrollbar space-y-1">
+                        {watchlist.map(s => (
+                          <div 
+                            key={s.symbol}
+                            onClick={() => selectStock({ symbol: s.symbol, name: s.symbol, price: s.currentPrice })}
+                            className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all ${activeStock.symbol === s.symbol ? 'bg-brand-500/10 border border-brand-500/20' : 'hover:bg-white/5'}`}
+                          >
+                            <div className="flex items-center space-x-3">
+                              <div className="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center text-[10px] font-black text-slate-400">{s.symbol[0]}</div>
+                              <div>
+                                <p className="text-[11px] font-black text-white">{s.symbol}</p>
+                                <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">NSE India</p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-[11px] font-black text-white">₹{s.currentPrice?.toLocaleString()}</p>
+                              <p className={`text-[9px] font-bold ${s.changePercent >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                                {s.changePercent >= 0 ? '+' : ''}{s.changePercent}%
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                </>
               )}
             </AnimatePresence>
-          </div>
+          </div>v>
 
           <div className="h-6 w-px bg-slate-800" />
 
