@@ -2,14 +2,31 @@ import rateLimit from 'express-rate-limit';
 import RedisStore from 'rate-limit-redis';
 import IORedis from 'ioredis';
 
-const redisClient = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379');
+const redisUrl = process.env.REDIS_URL;
+let redisClient;
+let store;
 
-// Helper to create a Redis-backed limiter
+if (redisUrl) {
+  redisClient = new IORedis(redisUrl, {
+    maxRetriesPerRequest: null,
+    enableReadyCheck: false,
+    retryStrategy: (times) => Math.min(times * 100, 10000)
+  });
+  
+  redisClient.on('error', (err) => {
+    if (err.code === 'ECONNREFUSED') return;
+    console.error('RateLimiter Redis Error:', err.message);
+  });
+
+  store = new RedisStore({
+    sendCommand: (...args) => redisClient.call(...args),
+  });
+}
+
+// Helper to create a Redis-backed limiter with memory fallback
 const createLimiter = (options) => rateLimit({
   ...options,
-  store: new RedisStore({
-    sendCommand: (...args) => redisClient.call(...args),
-  }),
+  store: store || undefined, // Fallback to memory store if store is null
   standardHeaders: true,
   legacyHeaders: false,
   validate: false,

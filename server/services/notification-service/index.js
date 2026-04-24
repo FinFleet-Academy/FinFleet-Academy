@@ -11,10 +11,23 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5007;
-const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
+const REDIS_URL = process.env.REDIS_URL;
+let connection = null;
 
-// Redis Connection
-const connection = new IORedis(REDIS_URL, { maxRetriesPerRequest: null });
+if (REDIS_URL) {
+  connection = new IORedis(REDIS_URL, {
+    maxRetriesPerRequest: null,
+    enableReadyCheck: false,
+    retryStrategy: (times) => Math.min(times * 100, 10000)
+  });
+
+  connection.on('error', (err) => {
+    if (err.code === 'ECONNREFUSED') return;
+    console.error('Notification Service Redis Error:', err.message);
+  });
+} else {
+  console.warn('🔔 Notification Service: REDIS_URL not set. Queue processing disabled.');
+}
 
 // Email Transporter
 const transporter = nodemailer.createTransport({
