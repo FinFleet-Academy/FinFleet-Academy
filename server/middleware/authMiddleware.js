@@ -40,3 +40,30 @@ export const admin = (req, res, next) => {
     res.status(403).json({ message: 'Administrator privileges required' });
   }
 };
+
+/**
+ * 🔓 Optional Auth Middleware
+ * Attaches user context if present, but allows guest access.
+ */
+export const optionalProtect = async (req, res, next) => {
+  const gatewayUserId = req.headers['x-user-id'];
+  const gatewayUserRole = req.headers['x-user-role'];
+
+  if (gatewayUserId) {
+    req.user = { id: gatewayUserId, role: gatewayUserRole, isAdmin: gatewayUserRole === 'admin' };
+    return next();
+  }
+
+  let token;
+  if (req.headers.authorization?.startsWith('Bearer')) {
+    try {
+      token = req.headers.authorization.split(' ')[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'finfleet_super_secret_key_123!');
+      req.user = { id: decoded.id, role: decoded.role, isAdmin: decoded.role === 'admin' };
+    } catch (error) {
+      // Ignore errors for optional auth
+    }
+  }
+  
+  next();
+};
