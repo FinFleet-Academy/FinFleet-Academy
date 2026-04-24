@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   TrendingUp, BarChart2, DollarSign, Target, Award, BrainCircuit, 
   ArrowRight, ShieldCheck, Zap, PieChart, Activity, Crosshair, ArrowUpRight, ArrowDownRight,
-  Calculator, ChevronRight, Lock, Search, Filter, Globe, Eye, Trash2, Info
+  Calculator, ChevronRight, Lock, Search, Filter, Globe, Eye, Trash2, Info, Maximize2
 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
@@ -213,6 +213,10 @@ const TradingDashboard = () => {
            </div>
            
            <div className="flex items-center gap-4">
+              <Link to="/pro-chart" className="hidden md:flex items-center space-x-2 bg-brand-500 hover:bg-brand-600 text-white px-6 py-4 rounded-[2rem] shadow-xl shadow-brand-500/20 transition-all group">
+                 <Maximize2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                 <span className="text-[10px] font-black uppercase tracking-widest">Pro Chart</span>
+              </Link>
               <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-[2rem] shadow-sm flex items-center space-x-4">
                  <div className="w-10 h-10 bg-brand-50 dark:bg-brand-900/20 rounded-xl flex items-center justify-center">
                     <Award className="w-5 h-5 text-brand-600" />

@@ -30,6 +30,7 @@ const CommunityPage = lazy(() => import('./pages/CommunityPage'));
 const PublicProfilePage = lazy(() => import('./pages/PublicProfilePage'));
 const CourseDetailPage = lazy(() => import('./pages/CourseDetailPage'));
 const TradingDashboard = lazy(() => import('./pages/TradingDashboard'));
+const ProTradingChart = lazy(() => import('./pages/ProTradingChart'));
 const LiveClasses = lazy(() => import('./pages/LiveClasses'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
@@ -103,6 +104,7 @@ function App() {
                   <Route path="/help" element={<HelpPage />} />
                   <Route path="/tools" element={<ToolsPage />} />
                   <Route path="/trading" element={<TradingDashboard />} />
+                  <Route path="/pro-chart" element={<ProTradingChart />} />
                   <Route path="/community" element={<CommunityPage />} />
                   <Route path="/user/:userId" element={<PublicProfilePage />} />
                   <Route path="/live-classes" element={<LiveClasses />} />
