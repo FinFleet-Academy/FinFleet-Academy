@@ -47,6 +47,7 @@ import { requestTracer } from './utils/logger.js';
 import { cacheService } from './services/cacheService.js';
 import { cacheMiddleware } from './middleware/cacheMiddleware.js';
 import { createAdapter } from '@socket.io/redis-adapter';
+import { Server } from 'socket.io';
 
 dotenv.config();
 
