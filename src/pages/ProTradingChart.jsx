@@ -20,12 +20,35 @@ const ProTradingChart = () => {
   const [isStockSelectorOpen, setIsStockSelectorOpen] = useState(false);
   const [chartData, setChartData] = useState([]);
   const [watchlist, setWatchlist] = useState([
-    { symbol: 'RELIANCE', price: 2542.45, change: 2.4 },
-    { symbol: 'TCS', price: 3412.10, change: -1.2 },
-    { symbol: 'INFY', price: 1567.80, change: 0.8 },
-    { symbol: 'AAPL', price: 189.45, change: 1.5 },
-    { symbol: 'TSLA', price: 172.60, change: -3.2 },
+    { symbol: 'RELIANCE', currentPrice: 2542.45, changePercent: 2.4 },
+    { symbol: 'TCS', currentPrice: 3412.10, changePercent: -1.2 },
+    { symbol: 'INFY', currentPrice: 1567.80, changePercent: 0.8 },
+    { symbol: 'AAPL', currentPrice: 189.45, changePercent: 1.5 },
+    { symbol: 'TSLA', currentPrice: 172.60, changePercent: -3.2 },
   ]);
+
+  // Fetch all stocks from API
+  useEffect(() => {
+    const fetchStocks = async () => {
+      try {
+        const { data } = await axios.get('/api/stocks');
+        if (data && data.length > 0) {
+          setWatchlist(data);
+          // Set initial active stock to the first one if current not in list
+          if (!data.find(s => s.symbol === activeStock.symbol)) {
+            setActiveStock({ 
+              symbol: data[0].symbol, 
+              name: data[0].name, 
+              price: data[0].currentPrice 
+            });
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching stocks:", err);
+      }
+    };
+    fetchStocks();
+  }, []);
   const [orders, setOrders] = useState([]);
   const [markers, setMarkers] = useState([]);
   const [isLive, setIsLive] = useState(true);
@@ -160,11 +183,11 @@ const ProTradingChart = () => {
                     {watchlist.map(s => (
                       <div 
                         key={s.symbol}
-                        onClick={() => selectStock({ symbol: s.symbol, name: s.symbol, price: s.price })}
+                        onClick={() => selectStock({ symbol: s.symbol, name: s.symbol, price: s.currentPrice })}
                         className="flex items-center justify-between p-3 hover:bg-white/5 rounded-xl cursor-pointer transition-colors"
                       >
                         <span className="text-[10px] font-black text-white">{s.symbol}</span>
-                        <span className={`text-[10px] font-bold ${s.change >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>{s.change}%</span>
+                        <span className={`text-[10px] font-bold ${s.changePercent >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>{s.changePercent}%</span>
                       </div>
                     ))}
                   </div>
@@ -316,17 +339,17 @@ const ProTradingChart = () => {
               {watchlist.map(item => (
                 <div 
                   key={item.symbol} 
-                  onClick={() => setActiveStock({ ...activeStock, symbol: item.symbol, price: item.price })}
+                  onClick={() => selectStock({ symbol: item.symbol, name: item.symbol, price: item.currentPrice })}
                   className={`p-4 border-b border-slate-800/30 cursor-pointer hover:bg-white/5 transition-all group ${activeStock.symbol === item.symbol ? 'bg-brand-500/5 border-l-2 border-l-brand-500' : ''}`}
                 >
                    <div className="flex justify-between items-center mb-1">
                       <span className="text-xs font-black text-white group-hover:text-brand-400 transition-colors">{item.symbol}</span>
-                      <span className="text-xs font-black text-white">₹{item.price.toLocaleString()}</span>
+                      <span className="text-xs font-black text-white">₹{item.currentPrice?.toLocaleString()}</span>
                    </div>
                    <div className="flex justify-between items-center">
                       <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest">NSE</span>
-                      <span className={`text-[10px] font-bold ${item.change >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                         {item.change >= 0 ? '+' : ''}{item.change}%
+                      <span className={`text-[10px] font-bold ${item.changePercent >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                         {item.changePercent >= 0 ? '+' : ''}{item.changePercent}%
                       </span>
                    </div>
                 </div>
