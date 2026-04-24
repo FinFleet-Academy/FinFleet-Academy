@@ -7,6 +7,7 @@ const ToolsDashboard = () => {
   const navigate = useNavigate();
   
   const tools = [
+    { id: 'financial', name: 'Intelligence Hub', desc: 'Credit cards & Loan eligibility', icon: ShieldCheck, color: 'brand', isExternal: true },
     { id: 'sip', name: 'SIP Calculator', desc: 'Project your mutual fund wealth growth', icon: TrendingUp, color: 'emerald' },
     { id: 'emi', name: 'EMI Calculator', desc: 'Plan your loan repayments and interest', icon: Calculator, color: 'indigo' },
     { id: 'compound', name: 'Compound Interest', desc: 'Visualize the power of compounding', icon: BarChart2, color: 'brand' },
@@ -50,7 +51,10 @@ const ToolsDashboard = () => {
               key={tool.id} 
               {...fadeInUp} 
               transition={{ delay: i * 0.05 }}
-              onClick={() => navigate(`/tools/${tool.id}`)}
+              onClick={() => {
+                if (tool.id === 'financial') navigate('/financial');
+                else navigate(`/tools/${tool.id}`);
+              }}
               className="bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-2xl transition-all group cursor-pointer relative overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500 rounded-full blur-[80px] opacity-0 group-hover:opacity-10 transition-opacity" />

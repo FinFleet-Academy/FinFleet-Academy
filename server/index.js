@@ -41,6 +41,7 @@ import analyticsRoutes from './routes/analyticsRoutes.js';
 import liveClassRoutes from './routes/liveClassRoutes.js';
 import stockRoutes from './routes/stockRoutes.js';
 import auditRoutes from './routes/auditRoutes.js';
+import financialRoutes from './routes/financialRoutes.js';
 import stockSimulator from './services/stockSimulator.js';
 import MarketStreamer from './services/intelligence-service/marketStreamer.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
@@ -155,6 +156,7 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/live-classes', liveClassRoutes);
 app.use('/api/stocks', stockRoutes);
 app.use('/api/audit', auditRoutes);
+app.use('/api/financial', financialRoutes);
 
 // Static Asset Caching & Serving (Production)
 if (process.env.NODE_ENV === 'production') {
