@@ -34,6 +34,7 @@ const CourseDetailPage = lazy(() => import('./pages/CourseDetailPage'));
 const TradingDashboard = lazy(() => import('./pages/TradingDashboard'));
 const ProTradingChart = lazy(() => import('./pages/ProTradingChart'));
 const LiveClasses = lazy(() => import('./pages/LiveClasses'));
+const QuizPage = lazy(() => import('./pages/QuizPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 // Premium Loading Fallback
@@ -106,7 +107,6 @@ function App() {
                       <Route path="/pro-chart" element={<ProTradingChart />} />
                       <Route path="/community" element={<CommunityPage />} />
                       <Route path="/quizzes" element={<QuizPage />} />
-                      <Route path="/payment" element={<PaymentPage />} />
                       <Route path="/user/:userId" element={<PublicProfilePage />} />
                       <Route path="/live-classes" element={<LiveClasses />} />
                       <Route path="*" element={<NotFoundPage />} />
