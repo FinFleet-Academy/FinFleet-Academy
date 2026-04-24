@@ -15,8 +15,7 @@ import {
   deleteCourse,
   updateCourse,
   getAllContacts,
-  deleteContact,
-  getAdminStats
+  deleteContact
 } from '../controllers/adminController.js';
 import { getPlatformHealth } from '../controllers/healthController.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
