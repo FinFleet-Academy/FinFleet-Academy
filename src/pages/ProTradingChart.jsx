@@ -54,14 +54,17 @@ const ProTradingChart = () => {
     const fetchHistory = async () => {
       try {
         const res = await axios.get(`/api/stocks/${activeStock.symbol}`);
-        if (res.data.history) {
-          const formatted = res.data.history.map(h => ({
-            time: Math.floor(new Date(h.timestamp).getTime() / 1000),
-            open: h.price,
-            high: h.price,
-            low: h.price,
-            close: h.price
-          })).sort((a, b) => a.time - b.time);
+        if (res.data && res.data.history) {
+          const formatted = res.data.history
+            .filter(h => h.timestamp && !isNaN(new Date(h.timestamp).getTime()))
+            .map(h => ({
+              time: Math.floor(new Date(h.timestamp).getTime() / 1000),
+              open: h.price,
+              high: h.price,
+              low: h.price,
+              close: h.price
+            }))
+            .sort((a, b) => a.time - b.time);
           
           // Filter duplicates for lightweight-charts
           const uniqueData = [];
