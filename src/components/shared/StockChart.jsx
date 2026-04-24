@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { createChart, ColorType, SeriesType } from 'lightweight-charts';
+import * as LightweightCharts from 'lightweight-charts';
 
 const StockChart = ({ data, symbol, colors = {} }) => {
   const chartContainerRef = useRef();
@@ -13,9 +13,9 @@ const StockChart = ({ data, symbol, colors = {} }) => {
     const initChart = () => {
       if (!chartContainerRef.current) return;
 
-      chart = createChart(chartContainerRef.current, {
+      chart = LightweightCharts.createChart(chartContainerRef.current, {
         layout: {
-          background: { type: ColorType.Solid, color: colors.backgroundColor || 'transparent' },
+          background: { type: LightweightCharts.ColorType.Solid, color: colors.backgroundColor || 'transparent' },
           textColor: colors.textColor || '#d1d5db',
         },
         grid: {
@@ -34,7 +34,7 @@ const StockChart = ({ data, symbol, colors = {} }) => {
         },
       });
 
-      const series = chart.addSeries(SeriesType.Area, {
+      const series = chart.addSeries(LightweightCharts.SeriesType.Area, {
         lineColor: colors.lineColor || '#22c55e',
         topColor: colors.topColor || 'rgba(34, 197, 94, 0.2)',
         bottomColor: colors.bottomColor || 'rgba(34, 197, 94, 0)',

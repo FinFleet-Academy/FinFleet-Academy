@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { createChart, ColorType, SeriesType } from 'lightweight-charts';
+import * as LightweightCharts from 'lightweight-charts';
 import { motion } from 'framer-motion';
 import { TrendingUp, ArrowRight, Activity, Users, Zap, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -10,6 +10,7 @@ const LiveChartHero = () => {
   const [change, setChange] = useState(2.4);
 
   useEffect(() => {
+    console.log("🚀 Chart Engine Initializing... LW Version:", LightweightCharts.version);
     if (!chartContainerRef.current) return;
 
     let chart;
@@ -19,9 +20,9 @@ const LiveChartHero = () => {
     const initChart = () => {
       if (!chartContainerRef.current) return;
       
-      chart = createChart(chartContainerRef.current, {
+      chart = LightweightCharts.createChart(chartContainerRef.current, {
         layout: {
-          background: { type: ColorType.Solid, color: 'transparent' },
+          background: { type: LightweightCharts.ColorType.Solid, color: 'transparent' },
           textColor: '#94a3b8',
         },
         grid: {
@@ -37,7 +38,7 @@ const LiveChartHero = () => {
       });
 
       // Using addSeries with explicit SeriesType for maximum compatibility
-      const series = chart.addSeries(SeriesType.Area, {
+      const series = chart.addSeries(LightweightCharts.SeriesType.Area, {
         lineColor: '#22c55e',
         topColor: 'rgba(34, 197, 94, 0.2)',
         bottomColor: 'rgba(34, 197, 94, 0)',
