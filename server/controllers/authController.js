@@ -72,6 +72,10 @@ export const registerUser = async (req, res) => {
       });
     }
   } catch (error) {
+    console.error(`[Registration Error]: ${error.message}`, {
+      stack: error.stack,
+      body: { ...req.body, password: '***' }
+    });
     res.status(500).json({ message: error.message });
   }
 };
