@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import CreditCardComparison from './components/CreditCardComparison';
 import LoanEligibility from './components/LoanEligibility';
+import FinancialTracker from './components/FinancialTracker';
 import { useNavigate } from 'react-router-dom';
 
 const FinancialDashboard = () => {
@@ -20,6 +21,7 @@ const FinancialDashboard = () => {
 
   const tabs = [
     { id: 'overview', name: 'Intelligence Hub', icon: Landmark },
+    { id: 'tracker', name: 'Wealth Tracker', icon: Activity },
     { id: 'cards', name: 'Card Comparison', icon: CreditCard },
     { id: 'loans', name: 'Loan Eligibility', icon: Zap },
   ];
@@ -82,8 +84,28 @@ const FinancialDashboard = () => {
               {/* Featured Section */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div 
+                  onClick={() => setActiveTab('tracker')}
+                  className="bg-slate-900 dark:bg-white rounded-[3rem] p-10 shadow-2xl group cursor-pointer relative overflow-hidden flex flex-col justify-between"
+                >
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-brand-500 rounded-full blur-[100px] opacity-20 -mr-32 -mt-32" />
+                  <div className="relative z-10">
+                    <div className="w-16 h-16 rounded-3xl bg-brand-600 text-white flex items-center justify-center mb-8">
+                      <Activity className="w-8 h-8" />
+                    </div>
+                    <h3 className="text-3xl font-black text-white dark:text-slate-900 mb-4">Wealth Tracker</h3>
+                    <p className="text-sm font-bold text-slate-400 dark:text-slate-500">Master your cashflow with automated health scoring and AI optimization.</p>
+                  </div>
+                  <div className="relative z-10 flex items-center justify-between mt-12">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Open Dashboard</span>
+                    <div className="w-10 h-10 rounded-full bg-brand-600 text-white flex items-center justify-center">
+                      <ArrowRight className="w-5 h-5" />
+                    </div>
+                  </div>
+                </div>
+
+                <div 
                   onClick={() => setActiveTab('cards')}
-                  className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-[3rem] p-10 border border-slate-200 dark:border-slate-800 shadow-sm group cursor-pointer relative overflow-hidden"
+                  className="bg-white dark:bg-slate-900 rounded-[3rem] p-10 border border-slate-200 dark:border-slate-800 shadow-sm group cursor-pointer relative overflow-hidden"
                 >
                   <div className="absolute top-0 right-0 w-64 h-64 bg-brand-500 rounded-full blur-[100px] opacity-0 group-hover:opacity-10 transition-all" />
                   <div className="flex flex-col h-full justify-between relative z-10">
@@ -149,6 +171,12 @@ const FinancialDashboard = () => {
                   ))}
                 </div>
               </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'tracker' && (
+            <motion.div key="tracker" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+              <FinancialTracker />
             </motion.div>
           )}
 

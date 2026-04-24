@@ -15,4 +15,9 @@ router.post('/eligibility', protect, eligibilityLimiter, financialController.che
 router.get('/offers', protect, financialController.getOffers);
 router.post('/track-click', protect, financialController.logAffiliateClick);
 
+// Tracker Routes
+router.get('/summary', protect, financialController.getFinancialSummary);
+router.post('/transaction', protect, financialController.addTransaction);
+router.put('/profile', protect, financialController.updateProfile);
+
 export default router;
