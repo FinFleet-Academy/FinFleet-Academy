@@ -118,6 +118,16 @@ const TradingDashboard = () => {
     setLeaderboard(res.data);
   };
 
+  const handleSelectStock = async (stock) => {
+    try {
+      setSelectedStock(stock); // Set immediately for UI responsiveness
+      const res = await axios.get(`/api/stocks/${stock.symbol}`);
+      setSelectedStock(prev => ({ ...prev, ...res.data })); // Merge full history
+    } catch (err) {
+      console.error("Failed to fetch full stock details", err);
+    }
+  };
+
   // 4. Trading Actions
   const handleTrade = async (e) => {
     e.preventDefault();
@@ -369,7 +379,7 @@ const TradingDashboard = () => {
                      <div className="space-y-3 max-h-[600px] overflow-y-auto custom-scrollbar pr-2 mb-6">
                         {stocks.map(stock => (
                           <div 
-                            key={stock.symbol} onClick={() => setSelectedStock(stock)}
+                            key={stock.symbol} onClick={() => handleSelectStock(stock)}
                             className={`p-5 rounded-2xl border transition-all cursor-pointer flex justify-between items-center group ${selectedStock?.symbol === stock.symbol ? 'bg-brand-50 dark:bg-brand-900/10 border-brand-500/30' : 'bg-slate-50 dark:bg-slate-950 border-slate-100 dark:border-slate-800 hover:border-brand-500/20'}`}
                           >
                              <div>
