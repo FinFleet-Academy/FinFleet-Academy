@@ -7,7 +7,8 @@ const AdvancedChart = ({
   timeframe, 
   markers = [],
   type = 'candlestick',
-  showIndicators = false
+  showIndicators = false,
+  config = { showGrid: true, showLabels: true }
 }) => {
   if (!data || data.length === 0) return null;
 
@@ -79,16 +80,17 @@ const AdvancedChart = ({
     },
     xaxis: {
       type: 'datetime',
-      labels: { style: { colors: '#94a3b8', fontSize: '10px' } },
-      axisBorder: { color: '#1e293b' },
-      axisTicks: { color: '#1e293b' }
+      labels: { show: config.showLabels, style: { colors: '#94a3b8', fontSize: '10px' } },
+      axisBorder: { show: config.showLabels, color: '#1e293b' },
+      axisTicks: { show: config.showLabels, color: '#1e293b' }
     },
     yaxis: {
       tooltip: { enabled: true },
-      labels: { style: { colors: '#94a3b8', fontSize: '10px' }, formatter: (val) => val.toFixed(2) },
+      labels: { show: config.showLabels, style: { colors: '#94a3b8', fontSize: '10px' }, formatter: (val) => val.toFixed(2) },
       opposite: true
     },
     grid: {
+      show: config.showGrid,
       borderColor: 'rgba(255, 255, 255, 0.03)',
     },
     colors: type === 'candlestick' ? ['#10b981'] : ['#22c55e', '#6366f1'],
