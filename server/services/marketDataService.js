@@ -6,25 +6,40 @@ class MarketDataService extends EventEmitter {
     super();
     this.binanceWs = null;
     this.symbols = new Set();
-    this.lastPrices = new Map();
     this.isBlocked = false;
+    this.reconnectTimeout = null;
   }
 
   connect() {
-    if (this.isBlocked) {
-      console.warn('MarketDataService: Connection skipped due to previous 451 (Regional Block) error.');
+    // Prevent multiple connections or connections when blocked
+    if (this.isBlocked || (this.binanceWs && this.binanceWs.readyState === WebSocket.CONNECTING)) {
       return;
     }
 
     try {
-      this.binanceWs = new WebSocket('wss://stream.binance.com:9443/ws');
+      console.log('MarketDataService: Attempting to connect to Binance...');
+      
+      const ws = new WebSocket('wss://stream.binance.com:9443/ws');
+      this.binanceWs = ws;
 
-      this.binanceWs.on('open', () => {
-        console.log('Connected to Binance WebSocket');
+      // Attach error listener IMMEDIATELY
+      ws.on('error', (err) => {
+        const errMsg = err?.message || '';
+        console.error(`MarketDataService WebSocket Error: ${errMsg}`);
+        
+        if (errMsg.includes('451')) {
+          console.error('CRITICAL: Binance Regional Block (451) detected. Disabling real-time crypto feed to prevent server crashes.');
+          this.isBlocked = true;
+          ws.terminate();
+        }
+      });
+
+      ws.on('open', () => {
+        console.log('MarketDataService: Successfully connected to Binance.');
         this.subscribeAll();
       });
 
-      this.binanceWs.on('message', (data) => {
+      ws.on('message', (data) => {
         try {
           const msg = JSON.parse(data);
           if (msg.e === 'kline') {
@@ -42,27 +57,20 @@ class MarketDataService extends EventEmitter {
             this.emit('update', normalized);
           }
         } catch (e) {
-          console.error('Error parsing Binance message:', e);
+          // Ignore parse errors
         }
       });
 
-      this.binanceWs.on('error', (err) => {
-        console.error('Binance WebSocket Error:', err.message);
-        if (err.message.includes('451')) {
-          console.error('CRITICAL: Binance has blocked this IP address (Error 451 - Unavailable For Legal Reasons). Real-time crypto data will be disabled.');
-          this.isBlocked = true;
-          this.binanceWs.terminate();
-        }
-      });
-
-      this.binanceWs.on('close', () => {
+      ws.on('close', (code, reason) => {
         if (!this.isBlocked) {
-          console.log('Binance WebSocket disconnected. Reconnecting in 10s...');
-          setTimeout(() => this.connect(), 10000);
+          console.log(`MarketDataService: Connection closed (${code}). Retrying in 30s...`);
+          if (this.reconnectTimeout) clearTimeout(this.reconnectTimeout);
+          this.reconnectTimeout = setTimeout(() => this.connect(), 30000);
         }
       });
+
     } catch (e) {
-      console.error('Failed to initialize Binance WebSocket:', e);
+      console.error('MarketDataService: Failed to initialize WebSocket:', e.message);
     }
   }
 
@@ -70,31 +78,27 @@ class MarketDataService extends EventEmitter {
     const formattedSymbol = symbol.toLowerCase();
     if (!this.symbols.has(formattedSymbol)) {
       this.symbols.add(formattedSymbol);
-      if (this.binanceWs && this.binanceWs.readyState === WebSocket.OPEN) {
-        try {
-          this.binanceWs.send(JSON.stringify({
-            method: 'SUBSCRIBE',
-            params: [`${formattedSymbol}@kline_1m`],
-            id: 1
-          }));
-        } catch (e) {
-          console.error('Error sending subscribe message:', e);
-        }
-      }
+      this.sendSubscription([`${formattedSymbol}@kline_1m`]);
     }
   }
 
   subscribeAll() {
-    if (this.symbols.size > 0 && this.binanceWs && this.binanceWs.readyState === WebSocket.OPEN) {
+    if (this.symbols.size > 0) {
+      const params = Array.from(this.symbols).map(s => `${s}@kline_1m`);
+      this.sendSubscription(params);
+    }
+  }
+
+  sendSubscription(params) {
+    if (this.binanceWs && this.binanceWs.readyState === WebSocket.OPEN) {
       try {
-        const params = Array.from(this.symbols).map(s => `${s}@kline_1m`);
         this.binanceWs.send(JSON.stringify({
           method: 'SUBSCRIBE',
-          params: params,
-          id: 1
+          params,
+          id: Date.now()
         }));
       } catch (e) {
-        console.error('Error sending subscribeAll message:', e);
+        console.error('MarketDataService: Error sending subscription:', e.message);
       }
     }
   }
