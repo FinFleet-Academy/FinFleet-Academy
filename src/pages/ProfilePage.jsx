@@ -56,7 +56,7 @@ const ProfilePage = () => {
     if (user) {
       setForm({ name: user.name || '', mobile: user.mobile || '', bio: user.bio || '', profileImage: user.profileImage || '' });
       if (user.privacy) setPrivacy({ ...privacy, ...user.privacy });
-      if (user.certificates) setCerts(user.certificates);
+      setCerts(user.certificates || []);
       fetchSocialData();
     }
   }, [user]);
@@ -270,7 +270,7 @@ const ProfilePage = () => {
                 <motion.div key="certs" {...fadeInUp} className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 p-8 md:p-12 shadow-sm h-full">
                   <h2 className="text-xl font-black dark:text-white mb-10 uppercase tracking-widest">Achievements</h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                     {certs.length === 0 ? (
+                     {!certs || certs.length === 0 ? (
                         <div className="col-span-full py-20 text-center opacity-40">
                            <Award className="w-16 h-16 mx-auto mb-4" />
                            <p className="text-sm font-black uppercase tracking-widest">No certifications earned</p>
