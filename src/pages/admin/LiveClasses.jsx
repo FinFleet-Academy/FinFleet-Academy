@@ -269,4 +269,4 @@ const AdminLiveClasses = ({ classes = [], loadData }) => {
   );
 };
 
-export default AdminLiveClasses;
+export default React.memo(AdminLiveClasses);

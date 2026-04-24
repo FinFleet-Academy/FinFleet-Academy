@@ -1,15 +1,24 @@
 import { Server } from 'socket.io';
 import marketDataService from '../services/marketDataService.js';
 
-export const initMarketSocket = (server) => {
-  const io = new Server(server, {
-    cors: {
-      origin: "*",
-      methods: ["GET", "POST"]
-    }
+export const initMarketSocket = (io) => {
+  const marketNamespace = io.of('/market');
+  const adminNamespace = io.of('/admin');
+
+  // Admin Telemetry & Real-time Alerts
+  adminNamespace.on('connection', (socket) => {
+    console.log('Admin connected to telemetry socket:', socket.id);
+    // Join room for real-time analytics updates
+    socket.join('analytics');
+    
+    socket.on('disconnect', () => {
+      console.log('Admin disconnected from telemetry socket');
+    });
   });
 
-  const marketNamespace = io.of('/market');
+  // Export namespaces for service-layer usage
+  io.adminNamespace = adminNamespace;
+  io.marketNamespace = marketNamespace;
 
   marketNamespace.on('connection', (socket) => {
     console.log('Client connected to market socket:', socket.id);

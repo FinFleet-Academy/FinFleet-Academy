@@ -163,4 +163,4 @@ const AdminPayments = ({ payments = [] }) => {
   );
 };
 
-export default AdminPayments;
+export default React.memo(AdminPayments);

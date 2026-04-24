@@ -1,3 +1,4 @@
+import adminService from '../services/adminService.js';
 import User from '../models/User.js';
 import Coupon from '../models/Coupon.js';
 import Notification from '../models/Notification.js';
@@ -9,23 +10,8 @@ import Transaction from '../models/Transaction.js';
 
 export const getAdminStats = async (req, res) => {
   try {
-    const [totalUsers, totalSubscribers, totalCourses, transactions] = await Promise.all([
-      User.countDocuments(),
-      Subscriber.countDocuments(),
-      Course.countDocuments(),
-      Transaction.find({})
-    ]);
-
-    const totalRevenue = transactions.reduce((acc, curr) => acc + (curr.amount || 0), 0);
-
-    res.json({
-      summary: {
-        totalUsers,
-        totalSubscribers,
-        totalCourses,
-        totalRevenue
-      }
-    });
+    const stats = await adminService.getDashboardStats();
+    res.json(stats);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -47,8 +33,16 @@ export const broadcastNotification = async (req, res) => {
 
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({}).select('-password');
-    res.json(users);
+    const { search, page, limit } = req.query;
+    const query = search ? {
+      $or: [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } }
+      ]
+    } : {};
+
+    const data = await adminService.getPaginatedUsers(query, parseInt(page) || 1, parseInt(limit) || 20);
+    res.json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

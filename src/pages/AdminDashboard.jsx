@@ -11,14 +11,19 @@ import AdminOverview from './admin/Overview';
 import AdminLiveClasses from './admin/LiveClasses';
 import AdminUsers from './admin/Users';
 import AdminPayments from './admin/Payments';
-import AdminAnalytics from './admin/Analytics';
 import AdminSettings from './admin/Settings';
 import AdminAuditLogs from './admin/AuditLogs';
+import SystemHealth from './admin/SystemHealth';
+import { useAdminSocket } from '../hooks/useAdminSocket';
+import { StatCardSkeleton, ChartSkeleton, TableSkeleton } from '../components/admin/AdminSkeleton';
+
+import { Routes, Route, useLocation } from 'react-router-dom';
+import AdminAnalytics from './admin/Analytics';
 
 const AdminDashboard = () => {
   const { isAdmin, fetchUsers, upgradePlan } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('overview');
+  const { pathname } = useLocation();
   const [loading, setLoading] = useState(true);
   
   // Data State
@@ -42,7 +47,6 @@ const AdminDashboard = () => {
       setAnalyticsData(allAnalytics.data);
     } catch (error) {
       console.error("Admin Load Error:", error);
-      toast.error("Failed to sync dashboard data");
     } finally {
       setLoading(false);
     }
@@ -58,43 +62,33 @@ const AdminDashboard = () => {
         <ShieldAlert className="w-20 h-20 text-red-500 mb-8" />
         <h2 className="text-4xl font-black text-white mb-4 uppercase tracking-tighter">Access Denied.</h2>
         <p className="text-slate-500 font-bold max-w-sm uppercase tracking-widest text-[10px]">Administrator privileges required.</p>
-        <button onClick={() => navigate('/')} className="mt-10 px-10 py-5 bg-indigo-600 text-white text-[10px] uppercase tracking-[0.3em] font-black rounded-2xl shadow-xl shadow-indigo-600/20">Return Home</button>
+        <Button onClick={() => navigate('/')} className="mt-10">Return Home</Button>
       </div>
     );
   }
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'overview':
-        return <AdminOverview stats={analyticsData} />;
-      case 'live_classes':
-        return <AdminLiveClasses classes={liveClassesList} loadData={loadData} />;
-      case 'users':
-        return <AdminUsers users={usersList} upgradePlan={upgradePlan} />;
-      case 'payments':
-        return <AdminPayments />;
-      case 'analytics':
-        return <AdminAnalytics />;
-      case 'audit_logs':
-        return <AdminAuditLogs />;
-      case 'settings':
-        return <AdminSettings />;
-      default:
-        return <AdminOverview />;
-    }
-  };
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh]">
+         <div className="w-12 h-12 border-4 border-indigo-500/10 border-t-indigo-600 rounded-full animate-spin mb-4" />
+         <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 animate-pulse">Syncing SaaS Core</p>
+      </div>
+    );
+  }
 
   return (
-    <AdminLayout activeTab={activeTab} setActiveTab={setActiveTab}>
-      {loading ? (
-        <div className="flex flex-col items-center justify-center min-h-[60vh]">
-           <div className="w-12 h-12 border-4 border-indigo-500/10 border-t-indigo-600 rounded-full animate-spin mb-4" />
-           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 animate-pulse">Syncing SaaS Core</p>
-        </div>
-      ) : (
-        renderContent()
-      )}
-    </AdminLayout>
+    <div className="admin-container">
+      <Routes>
+        <Route index element={<AdminOverview stats={analyticsData} />} />
+        <Route path="classes" element={<AdminLiveClasses classes={liveClassesList} loadData={loadData} />} />
+        <Route path="users" element={<AdminUsers users={usersList} upgradePlan={upgradePlan} />} />
+        <Route path="payments" element={<AdminPayments />} />
+        <Route path="analytics" element={<AdminAnalytics />} />
+        <Route path="audit" element={<AdminAuditLogs />} />
+        <Route path="health" element={<SystemHealth />} />
+        <Route path="settings" element={<AdminSettings />} />
+      </Routes>
+    </div>
   );
 };
 

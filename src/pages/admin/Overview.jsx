@@ -188,4 +188,4 @@ const AdminOverview = ({ stats }) => {
   );
 };
 
-export default AdminOverview;
+export default React.memo(AdminOverview);

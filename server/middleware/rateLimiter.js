@@ -1,50 +1,45 @@
 import rateLimit from 'express-rate-limit';
+import RedisStore from 'rate-limit-redis';
+import IORedis from 'ioredis';
 
-// Standard API limiter (Per IP)
-export const apiLimiter = rateLimit({
+const redisClient = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379');
+
+// Helper to create a Redis-backed limiter
+const createLimiter = (options) => rateLimit({
+  ...options,
+  store: new RedisStore({
+    sendCommand: (...args) => redisClient.call(...args),
+  }),
+  standardHeaders: true,
+  legacyHeaders: false,
+  validate: false,
+});
+
+/**
+ * 🛡️ FinFleet Distributed Rate Limiting
+ * Synchronized across all pods via Redis.
+ */
+export const apiLimiter = createLimiter({
   windowMs: 15 * 60 * 1000, 
   max: 200, 
-  standardHeaders: true,
-  legacyHeaders: false,
-  validate: false, // Completely disable validation to prevent startup crashes
-  message: {
-    message: 'Too many requests from this IP, please try again later.'
-  }
+  message: { message: 'Api frequency threshold reached.' }
 });
 
-// Strict limiter for authentication (Login/Signup - Per IP)
-export const authLimiter = rateLimit({
+export const authLimiter = createLimiter({
   windowMs: 60 * 60 * 1000, 
   max: 15, 
-  standardHeaders: true,
-  legacyHeaders: false,
-  validate: false,
-  message: {
-    message: 'Too many authentication attempts, please try again after an hour.'
-  },
-  skipSuccessfulRequests: false
+  message: { message: 'Security threshold: excessive login attempts. Try later.' }
 });
 
-// Per-User Limiter (Sensitive Actions)
-export const userLimiter = rateLimit({
+export const userLimiter = createLimiter({
   windowMs: 15 * 60 * 1000, 
   max: 50, 
-  validate: false,
-  // Avoid using 'req.ip' directly to bypass internal IPv6 validation checks
-  keyGenerator: (req) => {
-    return req.user?.id || req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'anonymous';
-  }, 
-  message: {
-    message: 'Action frequency limit exceeded for your account.'
-  }
+  keyGenerator: (req) => req.user?.id || req.ip,
+  message: { message: 'Action frequency limit exceeded.' }
 });
 
-// Specialized limiter for Admin actions
-export const adminLimiter = rateLimit({
+export const adminLimiter = createLimiter({
   windowMs: 15 * 60 * 1000,
   max: 100,
-  validate: false,
-  message: {
-    message: 'Excessive admin actions detected.'
-  }
+  message: { message: 'High-frequency administrative load detected.' }
 });

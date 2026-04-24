@@ -117,4 +117,4 @@ const AdminAuditLogs = () => {
   );
 };
 
-export default AdminAuditLogs;
+export default React.memo(AdminAuditLogs);

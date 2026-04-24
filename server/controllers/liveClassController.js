@@ -1,8 +1,8 @@
-import LiveClass from '../models/LiveClass.js';
-import Enrollment from '../models/Enrollment.js';
+import liveClassService from '../services/liveClassService.js';
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
 import logger from '../utils/logger.js';
+import LiveClass from '../models/LiveClass.js';
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_mock_id',
@@ -13,19 +13,10 @@ const razorpay = new Razorpay({
 export const createLiveClass = async (req, res) => {
   try {
     const { title, description, instructor, scheduledTime, duration, platform, classType, price, meetingLink } = req.body;
-    
-    const newClass = await LiveClass.create({
-      title,
-      description,
-      instructor,
-      scheduledTime,
-      duration,
-      platform,
-      classType,
-      price: classType === 'paid' ? price : 0,
-      meetingLink,
+    const newClass = await liveClassService.createClass({
+      title, description, instructor, scheduledTime, duration, platform, classType, 
+      price: classType === 'paid' ? price : 0, meetingLink
     });
-
     res.status(201).json(newClass);
   } catch (error) {
     logger.error('Error creating live class:', error);
@@ -36,9 +27,7 @@ export const createLiveClass = async (req, res) => {
 // User: Get All Live Classes
 export const getLiveClasses = async (req, res) => {
   try {
-    const classes = await LiveClass.find({ status: { $ne: 'cancelled' } })
-      .sort({ scheduledTime: 1 })
-      .select('-meetingLink'); // Hide link initially
+    const classes = await liveClassService.getAllClasses();
     res.json(classes);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -49,40 +38,19 @@ export const getLiveClasses = async (req, res) => {
 export const joinLiveClass = async (req, res) => {
   try {
     const { id } = req.params;
-    const liveClass = await LiveClass.findById(id);
+    const { allowed, liveClass, message, requiresPayment } = await liveClassService.checkAccess(req.user._id, id);
 
-    if (!liveClass) return res.status(404).json({ message: 'Class not found' });
-
-    // 1. If Free, anyone can join
-    if (liveClass.classType === 'free') {
-      return res.json({ 
-        platform: liveClass.platform, 
-        joinUrl: liveClass.meetingLink 
-      });
+    if (!allowed) {
+      return res.status(requiresPayment ? 403 : 404).json({ message, requiresPayment, price: liveClass?.price });
     }
 
-    // 2. If Paid, check enrollment
-    const enrollment = await Enrollment.findOne({ 
-      user: req.user._id, 
-      class: id, 
-      paymentStatus: 'completed' 
-    });
-
-    if (!enrollment) {
-      return res.status(403).json({ 
-        message: 'Payment required to join this class', 
-        requiresPayment: true,
-        price: liveClass.price 
-      });
-    }
-
-    // Mark Attendance
-    enrollment.attendanceStatus = 'present';
-    await enrollment.save();
+    // Generate Secure Session Token for the join link
+    const { token } = liveClassService.generateJoinToken(req.user._id, id, req.ip);
 
     res.json({ 
       platform: liveClass.platform, 
-      joinUrl: liveClass.meetingLink 
+      joinUrl: `${liveClass.meetingLink}?session_token=${token}`,
+      expiresIn: '10m'
     });
 
   } catch (error) {

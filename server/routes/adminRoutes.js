@@ -15,14 +15,26 @@ import {
   deleteCourse,
   updateCourse,
   getAllContacts,
-  deleteContact
+  deleteContact,
+  getAdminStats
 } from '../controllers/adminController.js';
+import { getPlatformHealth } from '../controllers/healthController.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
+import { validateSignature } from '../middleware/signatureMiddleware.js';
 
 const router = express.Router();
 
-// Stats
+// Apply signature validation to all mutating admin routes in production
+router.use(['/users/:id/plan', '/coupons', '/notify', '/news', '/courses', '/contacts/:id'], (req, res, next) => {
+  if (req.method !== 'GET') {
+    return validateSignature(req, res, next);
+  }
+  next();
+});
+
+// Stats & Health
 router.get('/stats', protect, admin, getAdminStats);
+router.get('/health', protect, admin, getPlatformHealth);
 
 // User Management
 router.get('/users', protect, admin, getAllUsers);

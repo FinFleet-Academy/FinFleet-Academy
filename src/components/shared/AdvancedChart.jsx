@@ -1,129 +1,134 @@
-import React from 'react';
-import ReactApexChart from 'react-apexcharts';
+import React, { useEffect, useRef, useState } from 'react';
+import { createChart, ColorType } from 'lightweight-charts';
 
+/**
+ * 📊 FinFleet Pro: Advanced Intelligence Chart
+ * High-performance chart engine with WebGL/Canvas overlays for predictive intelligence.
+ */
 const AdvancedChart = ({ 
   data, 
   symbol, 
-  timeframe, 
+  intelligence = {},
   markers = [],
   type = 'candlestick',
-  showIndicators = false,
-  config = { showGrid: true, showLabels: true }
+  config = { showGrid: true, showLabels: true },
 }) => {
-  if (!data || data.length === 0) return null;
+  const chartContainerRef = useRef();
+  const overlayRef = useRef();
+  const chartRef = useRef();
+  const seriesRef = useRef();
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
-  // 1. Format Data based on Type
-  const series = [];
+  useEffect(() => {
+    if (!chartContainerRef.current) return;
 
-  if (type === 'candlestick') {
-    series.push({
-      name: symbol,
-      type: 'candlestick',
-      data: data.map(item => ({
-        x: new Date(item.time * 1000),
-        y: [item.open, item.high, item.low, item.close]
-      }))
+    // 1. Initialize Lightweight Chart (Canvas-based)
+    const chart = createChart(chartContainerRef.current, {
+      layout: {
+        background: { type: ColorType.Solid, color: '#020617' },
+        textColor: '#94a3b8',
+        fontSize: 10,
+      },
+      grid: {
+        vertLines: { color: 'rgba(255, 255, 255, 0.03)' },
+        horzLines: { color: 'rgba(255, 255, 255, 0.03)' },
+      },
+      rightPriceScale: { borderColor: '#1e293b' },
+      timeScale: { borderColor: '#1e293b', timeVisible: true },
+      crosshair: {
+        mode: 0,
+        vertLine: { color: '#6366f1', width: 1, style: 3 },
+        horzLine: { color: '#6366f1', width: 1, style: 3 },
+      },
     });
-  } else {
-    series.push({
-      name: symbol,
-      type: 'area',
-      data: data.map(item => ({
-        x: new Date(item.time * 1000),
-        y: item.close
-      }))
-    });
-  }
 
-  // 2. Add EMA Indicator (Simple Calculation)
-  if (showIndicators) {
-    const emaData = data.map((item, index, arr) => {
-      if (index < 9) return null;
-      const period = 9;
-      const k = 2 / (period + 1);
-      let ema = arr[index].close;
-      if (index > period) {
-        // Simple approximation for demo
-        ema = arr[index].close * k + arr[index - 1].close * (1 - k);
-      }
-      return { x: new Date(item.time * 1000), y: parseFloat(ema.toFixed(2)) };
-    }).filter(d => d !== null);
+    chartRef.current = chart;
+    
+    // 2. Add Main Series
+    seriesRef.current = type === 'candlestick' 
+      ? chart.addCandlestickSeries({ upColor: '#10b981', downColor: '#ef4444', borderVisible: false })
+      : chart.addAreaSeries({ lineColor: '#6366f1', topColor: 'rgba(99, 102, 241, 0.3)', bottomColor: 'rgba(99, 102, 241, 0.05)' });
 
-    series.push({
-      name: 'EMA 9',
-      type: 'line',
-      data: emaData
-    });
-  }
+    const handleResize = () => {
+      const width = chartContainerRef.current.clientWidth;
+      const height = chartContainerRef.current.clientHeight;
+      chart.applyOptions({ width, height });
+      setDimensions({ width, height });
+    };
 
-  const options = {
-    chart: {
-      type: type === 'candlestick' ? 'candlestick' : 'area',
-      height: '100%',
-      toolbar: { show: true, tools: { download: false, selection: true, zoom: true, zoomin: true, zoomout: true, pan: true } },
-      background: '#020617',
-      animations: { enabled: false },
-      fontFamily: 'Inter, sans-serif'
-    },
-    stroke: {
-      width: type === 'candlestick' ? 1 : [3, 2],
-      curve: 'smooth',
-    },
-    fill: {
-      type: type === 'area' ? 'gradient' : 'solid',
-      gradient: {
-        shadeIntensity: 1,
-        opacityFrom: 0.3,
-        opacityTo: 0.05,
-        stops: [0, 90, 100]
-      }
-    },
-    xaxis: {
-      type: 'datetime',
-      labels: { show: config.showLabels, style: { colors: '#94a3b8', fontSize: '10px' } },
-      axisBorder: { show: config.showLabels, color: '#1e293b' },
-      axisTicks: { show: config.showLabels, color: '#1e293b' }
-    },
-    yaxis: {
-      tooltip: { enabled: true },
-      labels: { show: config.showLabels, style: { colors: '#94a3b8', fontSize: '10px' }, formatter: (val) => val.toFixed(2) },
-      opposite: true
-    },
-    grid: {
-      show: config.showGrid,
-      borderColor: 'rgba(255, 255, 255, 0.03)',
-    },
-    colors: type === 'candlestick' ? ['#10b981'] : ['#22c55e', '#6366f1'],
-    plotOptions: {
-      candlestick: {
-        colors: {
-          profitable: '#10b981',
-          unprofitable: '#ef4444'
-        }
-      }
-    },
-    tooltip: {
-      theme: 'dark',
-      style: { fontSize: '10px' }
-    },
-    annotations: {
-      points: markers.map(m => ({
-        x: m.time * 1000,
-        y: m.price,
-        marker: { size: 6, fillColor: m.color, strokeColor: '#fff', radius: 2 },
-        label: {
-          borderColor: m.color,
-          offsetY: m.position === 'aboveBar' ? -40 : 40,
-          style: { color: '#fff', background: m.color, fontSize: '10px', fontWeight: '900' },
-          text: m.text.split(' @')[0]
-        }
-      }))
+    window.addEventListener('resize', handleResize);
+    handleResize();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      chart.remove();
+    };
+  }, [type]);
+
+  // 3. Data Sync
+  useEffect(() => {
+    if (seriesRef.current && data.length > 0) {
+      seriesRef.current.setData(data);
     }
-  };
+  }, [data]);
+
+  // 4. Intelligence Overlay: Liquidity Zones & Predictive Heatmaps
+  useEffect(() => {
+    if (!overlayRef.current || !intelligence) return;
+    const ctx = overlayRef.current.getContext('2d');
+    ctx.clearRect(0, 0, dimensions.width, dimensions.height);
+
+    // 🎨 Render Liquidity Zones
+    if (intelligence.liquidityZones) {
+      intelligence.liquidityZones.forEach(zone => {
+        const y = seriesRef.current.priceToCoordinate(zone.price);
+        if (y === null) return;
+        
+        ctx.fillStyle = `rgba(99, 102, 241, ${Math.min(zone.strength / 50000, 0.15)})`;
+        ctx.fillRect(0, y - 10, dimensions.width, 20);
+        
+        ctx.strokeStyle = 'rgba(99, 102, 241, 0.3)';
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(dimensions.width, y);
+        ctx.stroke();
+      });
+    }
+
+    // 🔥 Render Probabilistic Future Heatmaps
+    if (intelligence.probabilities) {
+      intelligence.probabilities.forEach(prob => {
+        const y = seriesRef.current.priceToCoordinate(prob.level);
+        if (y === null) return;
+
+        const gradient = ctx.createLinearGradient(dimensions.width - 200, y, dimensions.width, y);
+        const color = prob.type.includes('UPPER') ? '16, 185, 129' : '239, 68, 68';
+        gradient.addColorStop(0, `rgba(${color}, 0)`);
+        gradient.addColorStop(1, `rgba(${color}, ${prob.prob * 0.2})`);
+        
+        ctx.fillStyle = gradient;
+        ctx.fillRect(dimensions.width - 200, y - 30, 200, 60);
+      });
+    }
+  }, [intelligence, dimensions, data]);
+
+  // 5. Update Markers
+  useEffect(() => {
+    if (seriesRef.current) {
+      seriesRef.current.setMarkers(markers);
+    }
+  }, [markers]);
 
   return (
-    <div className="w-full h-full bg-[#020617]">
-      <ReactApexChart options={options} series={series} type="candlestick" height="100%" />
+    <div className="relative w-full h-full bg-[#020617] overflow-hidden">
+      <div ref={chartContainerRef} className="w-full h-full" />
+      <canvas 
+        ref={overlayRef}
+        width={dimensions.width}
+        height={dimensions.height}
+        className="absolute inset-0 pointer-events-none z-10"
+      />
     </div>
   );
 };

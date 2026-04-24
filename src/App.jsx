@@ -4,11 +4,10 @@ import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { CookieProvider } from './context/CookieContext';
 import { AnimatePresence, motion } from 'framer-motion';
-import Navbar from './components/layout/Navbar';
-import Footer from './components/layout/Footer';
 import FloatingChatButton from './components/layout/FloatingChatButton';
 import SplashScreen from './components/layout/SplashScreen';
 import CookieConsent from './components/cookies/CookieConsent';
+import AppLayout from './components/layout/AppLayout';
 
 // Lazy Load Pages for performance
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -39,10 +38,13 @@ const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 // Premium Loading Fallback
 const PageLoader = () => (
   <div className="min-h-[60vh] flex flex-col items-center justify-center">
-    <div className="w-12 h-12 border-4 border-brand-500/20 border-t-brand-600 rounded-full animate-spin mb-4" />
+    <div className="w-12 h-12 border-4 border-indigo-500/10 border-t-indigo-600 rounded-full animate-spin mb-4" />
     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 animate-pulse">FinFleet Loading</p>
   </div>
 );
+
+import { useLocation } from 'react-router-dom';
+import ToastContainer from './components/feedback/Toast';
 
 // Show splash only once per browser session
 const shouldShowSplash = !sessionStorage.getItem('finfleet_intro_seen');
@@ -50,6 +52,7 @@ const shouldShowSplash = !sessionStorage.getItem('finfleet_intro_seen');
 function App() {
   const [showSplash, setShowSplash] = useState(shouldShowSplash);
   const [appReady, setAppReady] = useState(!shouldShowSplash);
+  const location = useLocation();
 
   const handleSplashComplete = useCallback(() => {
     sessionStorage.setItem('finfleet_intro_seen', 'true');
@@ -61,65 +64,56 @@ function App() {
     <ThemeProvider>
       <AuthProvider>
         <CookieProvider>
-          {/* Splash Screen — renders above everything */}
-          <AnimatePresence>
+          {/* Splash Screen */}
+          <AnimatePresence mode="wait">
             {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
           </AnimatePresence>
 
-          {/* Main App — staggered entry once splash exits */}
           {appReady && (
-            <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col">
-
-              {/* Navbar slides down */}
-              <motion.div
-                initial={shouldShowSplash ? { y: -64, opacity: 0 } : false}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
-              >
-                <Navbar />
-              </motion.div>
-
-              {/* Page content fades in with Suspense for Lazy Loading */}
-              <motion.main
-                className="flex-grow"
-                initial={shouldShowSplash ? { opacity: 0, y: 12 } : false}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.15, ease: 'easeOut' }}
-              >
-                <Suspense fallback={<PageLoader />}>
-                  <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/courses" element={<CoursesPage />} />
-                    <Route path="/courses/:courseId" element={<CourseDetailPage />} />
-                    <Route path="/pricing" element={<PricingPage />} />
-                    <Route path="/finor/about" element={<AboutFinorPage />} />
-                    <Route path="/finor" element={<FinorPage />} />
-                    <Route path="/finor/:slug" element={<NewsDetailPage />} />
-                    <Route path="/chatbot" element={<ChatPage />} />
-                    <Route path="/contact" element={<ContactPage />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/admin" element={<AdminDashboard />} />
-                    <Route path="/about" element={<AboutPage />} />
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/signup" element={<SignupPage />} />
-                    <Route path="/profile" element={<ProfilePage />} />
-                    <Route path="/feedback" element={<FeedbackPage />} />
-                    <Route path="/help" element={<HelpPage />} />
-                    <Route path="/tools" element={<ToolsPage />} />
-                    <Route path="/trading" element={<TradingDashboard />} />
-                    <Route path="/pro-chart" element={<ProTradingChart />} />
-                    <Route path="/community" element={<CommunityPage />} />
-                    <Route path="/user/:userId" element={<PublicProfilePage />} />
-                    <Route path="/live-classes" element={<LiveClasses />} />
-                    <Route path="*" element={<NotFoundPage />} />
-                  </Routes>
-                </Suspense>
-              </motion.main>
-
-              <Footer />
+            <AppLayout>
+              <ToastContainer />
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={location.pathname}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Suspense fallback={<PageLoader />}>
+                    <Routes location={location}>
+                      <Route path="/" element={<HomePage />} />
+                      <Route path="/courses" element={<CoursesPage />} />
+                      <Route path="/courses/:courseId" element={<CourseDetailPage />} />
+                      <Route path="/pricing" element={<PricingPage />} />
+                      <Route path="/finor/about" element={<AboutFinorPage />} />
+                      <Route path="/finor" element={<FinorPage />} />
+                      <Route path="/finor/:slug" element={<NewsDetailPage />} />
+                      <Route path="/chatbot" element={<ChatPage />} />
+                      <Route path="/contact" element={<ContactPage />} />
+                      <Route path="/dashboard" element={<Dashboard />} />
+                      <Route path="/admin/*" element={<AdminDashboard />} />
+                      <Route path="/about" element={<AboutPage />} />
+                      <Route path="/login" element={<LoginPage />} />
+                      <Route path="/signup" element={<SignupPage />} />
+                      <Route path="/profile" element={<ProfilePage />} />
+                      <Route path="/feedback" element={<FeedbackPage />} />
+                      <Route path="/help" element={<HelpPage />} />
+                      <Route path="/tools" element={<ToolsPage />} />
+                      <Route path="/trading" element={<TradingDashboard />} />
+                      <Route path="/pro-chart" element={<ProTradingChart />} />
+                      <Route path="/community" element={<CommunityPage />} />
+                      <Route path="/user/:userId" element={<PublicProfilePage />} />
+                      <Route path="/live-classes" element={<LiveClasses />} />
+                      <Route path="*" element={<NotFoundPage />} />
+                    </Routes>
+                  </Suspense>
+                </motion.div>
+              </AnimatePresence>
+              
               <FloatingChatButton />
               <CookieConsent />
-            </div>
+            </AppLayout>
           )}
         </CookieProvider>
       </AuthProvider>

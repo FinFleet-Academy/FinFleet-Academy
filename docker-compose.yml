@@ -1,25 +1,51 @@
 version: '3.8'
 
 services:
-  backend:
+  gateway:
     build:
-      context: ./server
-      dockerfile: Dockerfile
+      context: ./server/gateway
+      dockerfile: ../Dockerfile.generic
     ports:
-      - "5005:5000"
+      - "5000:5000"
     environment:
-      - MONGO_URI=mongodb://mongo:27017/finfleet
-      - JWT_SECRET=development_secret_only
-      - NODE_ENV=development
-    depends_on:
-      - mongo
+      - GATEWAY_PORT=5000
+      - AUTH_SERVICE_URL=http://auth-service:5001
+      - USER_SERVICE_URL=http://user-service:5002
+    networks:
+      - finfleet-network
 
-  mongo:
-    image: mongo:latest
+  auth-service:
+    build:
+      context: ./server/services/auth-service
+      dockerfile: ../../Dockerfile.generic
     ports:
-      - "27018:27017"
-    volumes:
-      - mongo-data:/data/db
+      - "5001:5001"
+    environment:
+      - PORT=5001
+      - MONGO_URI=${MONGO_URI}
+      - JWT_SECRET=${JWT_SECRET}
+    networks:
+      - finfleet-network
 
-volumes:
-  mongo-data:
+  user-service:
+    build:
+      context: ./server/services/user-service
+      dockerfile: ../../Dockerfile.generic
+    ports:
+      - "5002:5002"
+    environment:
+      - PORT=5002
+      - MONGO_URI=${MONGO_URI}
+    networks:
+      - finfleet-network
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - finfleet-network
+
+networks:
+  finfleet-network:
+    driver: bridge

@@ -8,9 +8,25 @@ class MarketDataService extends EventEmitter {
     this.symbols = new Set();
     this.isBlocked = false;
     this.reconnectTimeout = null;
+    this.isCircuitOpen = false;
+    this.failureCount = 0;
+    this.lastFailureTime = 0;
+    this.COOLDOWN_PERIOD = 60000;
   }
 
   connect() {
+    if (this.isCircuitOpen) {
+      const now = Date.now();
+      if (now - this.lastFailureTime > this.COOLDOWN_PERIOD) {
+        console.log('MarketDataService: Cooldown finished, attempting to close circuit...');
+        this.isCircuitOpen = false;
+        this.failureCount = 0;
+      } else {
+        console.warn('MarketDataService: Circuit is OPEN. Skipping connection attempt.');
+        return;
+      }
+    }
+    
     // Prevent multiple connections or connections when blocked
     if (this.isBlocked || (this.binanceWs && this.binanceWs.readyState === WebSocket.CONNECTING)) {
       return;
@@ -24,18 +40,26 @@ class MarketDataService extends EventEmitter {
 
       // Attach error listener IMMEDIATELY
       ws.on('error', (err) => {
-        const errMsg = err?.message || '';
-        console.error(`MarketDataService WebSocket Error: ${errMsg}`);
+        console.error('MarketDataService: WebSocket Error:', err.message);
         
-        if (errMsg.includes('451')) {
-          console.error('CRITICAL: Binance Regional Block (451) detected. Disabling real-time crypto feed to prevent server crashes.');
+        this.failureCount++;
+        if (this.failureCount >= 5) {
+          console.error('MarketDataService: CRITICAL FAILURE THRESHOLD REACHED. OPENING CIRCUIT.');
+          this.isCircuitOpen = true;
+          this.lastFailureTime = Date.now();
+        }
+
+        if (err.message.includes('451')) {
+          console.error('MarketDataService: Regional Block (451) detected. Suspending Binance connection.');
           this.isBlocked = true;
           ws.terminate();
         }
       });
 
       ws.on('open', () => {
-        console.log('MarketDataService: Successfully connected to Binance.');
+        console.log('MarketDataService: Connected to Binance WebSocket');
+        this.reconnectAttempts = 0;
+        this.isBlocked = false;
         this.subscribeAll();
       });
 
@@ -63,9 +87,11 @@ class MarketDataService extends EventEmitter {
 
       ws.on('close', (code, reason) => {
         if (!this.isBlocked) {
-          console.log(`MarketDataService: Connection closed (${code}). Retrying in 30s...`);
+          const delay = Math.min(30000, 1000 * Math.pow(2, this.reconnectAttempts++));
+          console.log(`MarketDataService: Connection closed (${code}). Retrying in ${delay}ms (Attempt ${this.reconnectAttempts})...`);
+          
           if (this.reconnectTimeout) clearTimeout(this.reconnectTimeout);
-          this.reconnectTimeout = setTimeout(() => this.connect(), 30000);
+          this.reconnectTimeout = setTimeout(() => this.connect(), delay);
         }
       });
 

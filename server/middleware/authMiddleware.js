@@ -1,45 +1,42 @@
 import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
 
+/**
+ * 🔐 FinFleet Distributed Auth Middleware
+ * Optimized for Microservices: Prioritizes Gateway-injected headers to reduce DB load.
+ */
 export const protect = async (req, res, next) => {
-  let token;
+  // 1. Check for Gateway Headers (Injected by API Gateway after JWT verification)
+  const gatewayUserId = req.headers['x-user-id'];
+  const gatewayUserRole = req.headers['x-user-role'];
 
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+  if (gatewayUserId) {
+    req.user = { id: gatewayUserId, role: gatewayUserRole, isAdmin: gatewayUserRole === 'admin' };
+    return next();
+  }
+
+  // 2. Fallback: Direct JWT verification (for local development or direct service access)
+  let token;
+  if (req.headers.authorization?.startsWith('Bearer')) {
     try {
       token = req.headers.authorization.split(' ')[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET || 'finfleet_super_secret_key_123!');
-      req.user = await User.findById(decoded.id).select('-password');
+      
+      // Note: In a true microservice, we avoid importing models from other services.
+      // We assume the user info is either in the JWT or the Gateway headers.
+      req.user = { id: decoded.id, role: decoded.role, isAdmin: decoded.role === 'admin' };
       return next();
     } catch (error) {
-      console.error(error);
-      return res.status(401).json({ message: 'Not authorized, token failed' });
+      return res.status(401).json({ message: 'Session expired or invalid' });
     }
   }
 
-  if (!token) {
-    return res.status(401).json({ message: 'Not authorized, no token' });
-  }
-};
-
-// Optional auth — attaches user if token exists, but doesn't block if absent
-export const optionalProtect = async (req, res, next) => {
-  try {
-    const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.startsWith('Bearer')) {
-      const token = authHeader.split(' ')[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'finfleet_super_secret_key_123!');
-      req.user = await User.findById(decoded.id).select('-password');
-    }
-  } catch (_) {
-    // ignore invalid tokens – treat as unauthenticated
-  }
-  next();
+  return res.status(401).json({ message: 'Authentication required' });
 };
 
 export const admin = (req, res, next) => {
   if (req.user && req.user.isAdmin) {
     next();
   } else {
-    res.status(401).json({ message: 'Not authorized as an admin' });
+    res.status(403).json({ message: 'Administrator privileges required' });
   }
 };

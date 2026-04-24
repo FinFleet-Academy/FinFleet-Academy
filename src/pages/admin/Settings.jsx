@@ -152,4 +152,4 @@ const AdminSettings = () => {
   );
 };
 
-export default AdminSettings;
+export default React.memo(AdminSettings);

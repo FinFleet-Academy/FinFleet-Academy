@@ -43,12 +43,15 @@ import stockRoutes from './routes/stockRoutes.js';
 import auditRoutes from './routes/auditRoutes.js';
 import stockSimulator from './services/stockSimulator.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
-import { logResponseTime } from './utils/logger.js';
+import { requestTracer } from './utils/logger.js';
+import { cacheService } from './services/cacheService.js';
+import { cacheMiddleware } from './middleware/cacheMiddleware.js';
+import { createAdapter } from '@socket.io/redis-adapter';
 
 dotenv.config();
 
 const app = express();
-app.use(logResponseTime);
+app.use(requestTracer);
 const PORT = process.env.PORT || 5000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -98,6 +101,9 @@ app.use(express.json({ limit: '10kb' }));
 
 // Global API Limiter
 app.use('/api', apiLimiter);
+
+// Selective Caching (Analytics, Classes, Market)
+app.use('/api', cacheMiddleware);
 
 // Health Check
 app.get('/api/health', (req, res) => {
@@ -171,7 +177,25 @@ app.use(errorHandler);
 
 // MongoDB Connection
 const httpServer = createServer(app);
-initMarketSocket(httpServer);
+
+// Horizontal Socket Scaling with Redis
+const initSocketServer = async () => {
+  const io = new Server(httpServer, {
+    cors: { origin: "*", methods: ["GET", "POST"] }
+  });
+
+  if (cacheService.isConnected) {
+    const pubClient = await cacheService.createPublisher();
+    const subClient = await cacheService.createSubscriber();
+    io.adapter(createAdapter(pubClient, subClient));
+    console.log('Socket.io: Redis Adapter enabled for horizontal scaling.');
+  }
+
+  initMarketSocket(io);
+};
+
+await cacheService.connect();
+initSocketServer();
 
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/finfleet')
   .then(() => {

@@ -160,4 +160,4 @@ const AdminAnalytics = () => {
   );
 };
 
-export default AdminAnalytics;
+export default React.memo(AdminAnalytics);

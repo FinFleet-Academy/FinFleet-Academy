@@ -136,4 +136,4 @@ const AdminUsers = ({ users = [], upgradePlan }) => {
   );
 };
 
-export default AdminUsers;
+export default React.memo(AdminUsers);
