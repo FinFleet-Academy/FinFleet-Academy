@@ -83,13 +83,13 @@ const FinancialTracker = () => {
           
           <div className="text-center md:text-left z-10">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Financial Health Score</p>
-            <h2 className="text-6xl font-black dark:text-white tracking-tighter mb-4">{data.health.score}<span className="text-2xl text-slate-300">/100</span></h2>
+            <h2 className="text-6xl font-black dark:text-white tracking-tighter mb-4">{data?.health?.score || 0}<span className="text-2xl text-slate-300">/100</span></h2>
             <div className={`inline-flex items-center space-x-2 px-4 py-2 rounded-full font-black text-[10px] uppercase tracking-widest ${
-              data.health.status === 'Excellent' ? 'bg-emerald-100 text-emerald-700' : 
-              data.health.status === 'Good' ? 'bg-indigo-100 text-indigo-700' : 'bg-amber-100 text-amber-700'
+              data?.health?.status === 'Excellent' ? 'bg-emerald-100 text-emerald-700' : 
+              data?.health?.status === 'Good' ? 'bg-indigo-100 text-indigo-700' : 'bg-amber-100 text-amber-700'
             }`}>
               <Activity className="w-3 h-3" />
-              <span>Status: {data.health.status}</span>
+              <span>Status: {data?.health?.status || 'Calculating...'}</span>
             </div>
           </div>
 
@@ -97,19 +97,19 @@ const FinancialTracker = () => {
             <div className="space-y-2">
               <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-slate-400">
                 <span>Savings Rate</span>
-                <span>{data.health.metrics.savingsRate.toFixed(0)}%</span>
+                <span>{(data?.health?.metrics?.savingsRate || 0).toFixed(0)}%</span>
               </div>
               <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                <motion.div initial={{ width: 0 }} animate={{ width: `${data.health.metrics.savingsRate}%` }} className="h-full bg-emerald-500" />
+                <motion.div initial={{ width: 0 }} animate={{ width: `${data?.health?.metrics?.savingsRate || 0}%` }} className="h-full bg-emerald-500" />
               </div>
             </div>
             <div className="space-y-2">
               <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-slate-400">
                 <span>EMI Ratio</span>
-                <span>{data.health.metrics.emiRatio.toFixed(0)}%</span>
+                <span>{(data?.health?.metrics?.emiRatio || 0).toFixed(0)}%</span>
               </div>
               <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                <motion.div initial={{ width: 0 }} animate={{ width: `${data.health.metrics.emiRatio}%` }} className="h-full bg-indigo-500" />
+                <motion.div initial={{ width: 0 }} animate={{ width: `${data?.health?.metrics?.emiRatio || 0}%` }} className="h-full bg-indigo-500" />
               </div>
             </div>
           </div>
@@ -133,8 +133,8 @@ const FinancialTracker = () => {
           <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-8">Monthly Cashflow Profile</h3>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={[
-              { name: 'Income', amount: data.transactions.filter(t => t.type === 'Income').reduce((a,b)=>a+b.amount,0) },
-              { name: 'Expense', amount: data.transactions.filter(t => t.type === 'Expense').reduce((a,b)=>a+b.amount,0) }
+              { name: 'Income', amount: (data?.transactions || []).filter(t => t.type === 'Income').reduce((a,b)=>a+b.amount,0) },
+              { name: 'Expense', amount: (data?.transactions || []).filter(t => t.type === 'Expense').reduce((a,b)=>a+b.amount,0) }
             ]}>
               <XAxis dataKey="name" stroke="#94a3b8" fontSize={10} axisLine={false} tickLine={false} />
               <YAxis hide />
@@ -153,10 +153,10 @@ const FinancialTracker = () => {
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie 
-                    data={data.profile.investments.map(i => ({ name: i.type, value: i.investedAmount }))} 
+                    data={(data?.profile?.investments || []).map(i => ({ name: i.type, value: i.investedAmount }))} 
                     innerRadius={70} outerRadius={100} paddingAngle={5} dataKey="value"
                   >
-                    {data.profile.investments.map((entry, index) => <Cell key={index} fill={COLORS[index % COLORS.length]} />)}
+                    {(data?.profile?.investments || []).map((entry, index) => <Cell key={index} fill={COLORS[index % COLORS.length]} />)}
                   </Pie>
                   <Tooltip />
                 </PieChart>
@@ -164,13 +164,13 @@ const FinancialTracker = () => {
            </div>
            <div className="w-full md:w-1/2 space-y-4">
               <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Portfolio Allocation</h3>
-              {data.profile.investments.map((inv, i) => (
+              {(data?.profile?.investments || []).map((inv, i) => (
                 <div key={i} className="flex items-center justify-between border-b border-slate-50 dark:border-slate-800 pb-3">
                   <div className="flex items-center">
                     <div className="w-2 h-2 rounded-full mr-3" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
                     <span className="text-xs font-bold dark:text-slate-300">{inv.type}</span>
                   </div>
-                  <span className="text-xs font-black dark:text-white">₹{inv.investedAmount.toLocaleString('en-IN')}</span>
+                  <span className="text-xs font-black dark:text-white">₹{inv?.investedAmount?.toLocaleString('en-IN') || 0}</span>
                 </div>
               ))}
            </div>
@@ -189,7 +189,7 @@ const FinancialTracker = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {data.health.insights.map((insight, i) => (
+          {(data?.health?.insights || []).map((insight, i) => (
             <div key={i} className="flex items-start space-x-4 bg-white/5 rounded-2xl p-6 border border-white/10">
               {insight.type === 'warning' ? <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0" /> : 
                insight.type === 'danger' ? <TrendingDown className="w-5 h-5 text-rose-500 shrink-0" /> :
