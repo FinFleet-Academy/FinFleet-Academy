@@ -12,6 +12,8 @@ class MetricsService {
    */
   async trackRequest(method, path, statusCode, duration) {
     try {
+      if (!cacheService.isConnected) return;
+      
       const timestamp = Math.floor(Date.now() / 1000);
       const key = `${this.prefix}requests:${timestamp}`;
 

@@ -20,16 +20,20 @@ if (REDIS_URL) {
   logger.warn('QueueService: REDIS_URL not set. Queues will not be functional.');
 }
 
-// Initialize Queues
-export const emailQueue = new Queue('email', { connection });
-export const paymentQueue = new Queue('payments', { connection });
-export const analyticsQueue = new Queue('analytics', { connection });
-export const notificationQueue = new Queue('notifications', { connection });
+// Initialize Queues — only if connection is available
+export const emailQueue = connection ? new Queue('email', { connection }) : null;
+export const paymentQueue = connection ? new Queue('payments', { connection }) : null;
+export const analyticsQueue = connection ? new Queue('analytics', { connection }) : null;
+export const notificationQueue = connection ? new Queue('notifications', { connection }) : null;
 
 /**
  * Add job to queue with consistent error handling
  */
 export const addJob = async (queue, name, data, opts = {}) => {
+  if (!queue) {
+    logger.warn(`Skipping job '${name}': Queue is disabled (No Redis)`);
+    return null;
+  }
   try {
     const job = await queue.add(name, data, {
       attempts: 3,
