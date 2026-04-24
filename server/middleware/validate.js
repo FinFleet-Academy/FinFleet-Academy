@@ -9,18 +9,21 @@ export const validate = (schema) => (req, res, next) => {
     });
     next();
   } catch (error) {
+    const errorDetails = error.errors?.map(err => ({
+      path: err.path.join('.'),
+      message: err.message
+    })) || [{ path: 'unknown', message: error.message }];
+
     console.error(`[Validation Error] Path: ${req.path}`, {
       body: req.body,
-      errors: error.errors.map(err => ({
-        path: err.path.join('.'),
-        message: err.message
-      }))
+      errors: errorDetails
     });
+
     return res.status(400).json({
       status: 'fail',
       message: 'Validation failed',
-      errors: error.errors.map(err => ({
-        field: err.path.join('.'),
+      errors: errorDetails.map(err => ({
+        field: err.path,
         message: err.message
       }))
     });
