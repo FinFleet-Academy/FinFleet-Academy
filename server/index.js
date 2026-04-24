@@ -10,6 +10,9 @@ import compression from 'compression';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import { fileURLToPath } from 'url';
+import { createServer } from 'http';
+import { initMarketSocket } from './socket/marketSocket.js';
+import marketDataService from './services/marketDataService.js';
 import { apiLimiter, authLimiter } from './middleware/rateLimiter.js';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
@@ -165,13 +168,17 @@ app.use(notFound);
 app.use(errorHandler);
 
 // MongoDB Connection
+const httpServer = createServer(app);
+initMarketSocket(httpServer);
+
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/finfleet')
   .then(() => {
     console.log('Connected to MongoDB');
-    app.listen(PORT, () => {
+    httpServer.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
       // Start Simulation Engines
       stockSimulator.startSimulation();
+      marketDataService.connect();
     });
   })
   .catch((err) => {
