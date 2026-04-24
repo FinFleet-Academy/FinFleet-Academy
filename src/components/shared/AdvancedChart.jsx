@@ -1,140 +1,89 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react';
-import * as LightweightCharts from 'lightweight-charts';
+import React from 'react';
+import ReactApexChart from 'react-apexcharts';
 
 const AdvancedChart = ({ 
   data, 
   symbol, 
   timeframe, 
-  markers = [], 
-  onPriceUpdate,
-  isLive = true 
+  markers = [] 
 }) => {
-  const chartContainerRef = useRef();
-  const chartRef = useRef();
-  const seriesRef = useRef();
+  if (!data || data.length === 0) return null;
 
-  useEffect(() => {
-    if (!data || data.length === 0) return;
+  // Format OHLC data for ApexCharts
+  const formattedData = data.map(item => ({
+    x: new Date(item.time * 1000),
+    y: [
+      parseFloat(item.open.toFixed(2)), 
+      parseFloat(item.high.toFixed(2)), 
+      parseFloat(item.low.toFixed(2)), 
+      parseFloat(item.close.toFixed(2))
+    ]
+  }));
 
-    let handleResize;
+  const series = [{
+    name: symbol,
+    data: formattedData
+  }];
 
-    const initChart = () => {
-      if (!chartContainerRef.current) return;
-
-      // Create Chart
-      const chart = LightweightCharts.createChart(chartContainerRef.current, {
-        layout: {
-          background: { type: 'Solid', color: '#020617' },
-          textColor: '#94a3b8',
-          fontSize: 11,
-          fontFamily: 'Inter, sans-serif',
+  const options = {
+    chart: {
+      type: 'candlestick',
+      height: '100%',
+      toolbar: { show: true, tools: { download: false, selection: true, zoom: true, zoomin: true, zoomout: true, pan: true } },
+      background: '#020617',
+      animations: { enabled: false } // Disabled for performance on large datasets
+    },
+    title: { show: false },
+    xaxis: {
+      type: 'datetime',
+      labels: { style: { colors: '#94a3b8', fontSize: '10px' } },
+      axisBorder: { color: '#1e293b' },
+      axisTicks: { color: '#1e293b' }
+    },
+    yaxis: {
+      tooltip: { enabled: true },
+      labels: { style: { colors: '#94a3b8', fontSize: '10px' }, formatter: (val) => val.toFixed(2) },
+      opposite: true
+    },
+    grid: {
+      borderColor: 'rgba(255, 255, 255, 0.03)',
+    },
+    plotOptions: {
+      candlestick: {
+        colors: {
+          profitable: '#10b981',
+          unprofitable: '#ef4444'
         },
-        grid: {
-          vertLines: { color: 'rgba(255, 255, 255, 0.03)' },
-          horzLines: { color: 'rgba(255, 255, 255, 0.03)' },
+        wick: { useFillColor: true }
+      }
+    },
+    tooltip: {
+      theme: 'dark',
+      style: { fontSize: '10px' }
+    },
+    annotations: {
+      points: markers.map(m => ({
+        x: m.time * 1000,
+        y: parseFloat(m.text.split('@ ')[1]), // Extract price from marker text
+        marker: {
+          size: 6,
+          fillColor: m.color,
+          strokeColor: '#fff',
+          radius: 2,
         },
-        crosshair: {
-          mode: 0, // Normal
-          vertLine: {
-            width: 1,
-            color: 'rgba(255, 255, 255, 0.2)',
-            style: 3, // Dashed
-          },
-          horzLine: {
-            width: 1,
-            color: 'rgba(255, 255, 255, 0.2)',
-            style: 3, // Dashed
-          },
-        },
-        timeScale: {
-          borderColor: 'rgba(255, 255, 255, 0.1)',
-          timeVisible: true,
-          secondsVisible: false,
-        },
-        rightPriceScale: {
-          borderColor: 'rgba(255, 255, 255, 0.1)',
-          autoScale: true,
-        },
-        handleScroll: true,
-        handleScale: true,
-      });
-
-      // Add Candlestick Series
-      let series;
-      const seriesOptions = {
-        upColor: '#10b981',
-        downColor: '#ef4444',
-        borderVisible: false,
-        wickUpColor: '#10b981',
-        wickDownColor: '#ef4444',
-      };
-
-      try {
-        if (typeof chart.addCandlestickSeries === 'function') {
-          series = chart.addCandlestickSeries(seriesOptions);
-        } else if (typeof chart.addSeries === 'function') {
-          try { series = chart.addSeries('Candlestick', seriesOptions); }
-          catch (e) { series = chart.addSeries('candlestick', seriesOptions); }
+        label: {
+          borderColor: m.color,
+          offsetY: m.position === 'aboveBar' ? -40 : 40,
+          style: { color: '#fff', background: m.color, fontSize: '10px', fontWeight: '900' },
+          text: m.text.split(' @')[0] // Just 'BUY' or 'SELL'
         }
-      } catch (err) {
-        console.error("❌ Candlestick series failed:", err);
-      }
-
-      if (!series) return;
-
-      series.setData(data);
-      
-      // Add Markers (Trades)
-      if (markers.length > 0) {
-        series.setMarkers(markers);
-      }
-
-      chart.timeScale().fitContent();
-
-      chartRef.current = chart;
-      seriesRef.current = series;
-
-      handleResize = () => {
-        if (chart && chartContainerRef.current) {
-          chart.applyOptions({ 
-            width: chartContainerRef.current.clientWidth,
-            height: chartContainerRef.current.clientHeight 
-          });
-        }
-      };
-
-      window.addEventListener('resize', handleResize);
-    };
-
-    const timer = setTimeout(initChart, 100);
-
-    return () => {
-      clearTimeout(timer);
-      if (handleResize) window.removeEventListener('resize', handleResize);
-      if (chartRef.current) {
-        chartRef.current.remove();
-        chartRef.current = null;
-      }
-    };
-  }, [symbol, timeframe]); // Re-init on stock/timeframe change
-
-  // Update Data when prop changes (without full re-init)
-  useEffect(() => {
-    if (seriesRef.current && data && data.length > 0) {
-      seriesRef.current.setData(data);
+      }))
     }
-  }, [data]);
-
-  // Update Markers
-  useEffect(() => {
-    if (seriesRef.current && markers) {
-      seriesRef.current.setMarkers(markers);
-    }
-  }, [markers]);
+  };
 
   return (
-    <div className="w-full h-full relative group">
-      <div ref={chartContainerRef} className="w-full h-full" />
+    <div className="w-full h-full bg-[#020617]">
+      <ReactApexChart options={options} series={series} type="candlestick" height="100%" />
     </div>
   );
 };
