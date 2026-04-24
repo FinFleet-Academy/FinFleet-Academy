@@ -69,10 +69,15 @@ const AdvancedChart = ({
         wickDownColor: '#ef4444',
       };
 
-      if (typeof chart.addCandlestickSeries === 'function') {
-        series = chart.addCandlestickSeries(seriesOptions);
-      } else if (typeof chart.addSeries === 'function') {
-        series = chart.addSeries('Candlestick', seriesOptions);
+      try {
+        if (typeof chart.addCandlestickSeries === 'function') {
+          series = chart.addCandlestickSeries(seriesOptions);
+        } else if (typeof chart.addSeries === 'function') {
+          try { series = chart.addSeries('Candlestick', seriesOptions); }
+          catch (e) { series = chart.addSeries('candlestick', seriesOptions); }
+        }
+      } catch (err) {
+        console.error("❌ Candlestick series failed:", err);
       }
 
       if (!series) return;

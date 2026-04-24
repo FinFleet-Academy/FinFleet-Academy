@@ -5,6 +5,7 @@ import {
   ArrowRight, ShieldCheck, Zap, PieChart, Activity, Crosshair, ArrowUpRight, ArrowDownRight,
   Calculator, ChevronRight, Lock, Search, Filter, Globe, Eye, Trash2, Info, Maximize2
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';

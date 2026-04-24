@@ -39,28 +39,30 @@ const PremiumLiveChart = () => {
 
       console.log("🚀 Chart created. Methods:", Object.keys(chart));
 
-      // Attempt to add series using both common patterns for maximum resilience
+      // Resilient Series Creation
       let series;
-      if (typeof chart.addAreaSeries === 'function') {
-        series = chart.addAreaSeries({
-          lineColor: '#22c55e',
-          topColor: 'rgba(34, 197, 94, 0.2)',
-          bottomColor: 'rgba(34, 197, 94, 0)',
-          lineWidth: 2,
-          crosshairMarkerVisible: false,
-        });
-      } else if (typeof chart.addSeries === 'function') {
-        series = chart.addSeries('Area', {
-          lineColor: '#22c55e',
-          topColor: 'rgba(34, 197, 94, 0.2)',
-          bottomColor: 'rgba(34, 197, 94, 0)',
-          lineWidth: 2,
-          crosshairMarkerVisible: false,
-        });
+      const seriesOptions = {
+        lineColor: '#22c55e',
+        topColor: 'rgba(34, 197, 94, 0.2)',
+        bottomColor: 'rgba(34, 197, 94, 0)',
+        lineWidth: 2,
+        crosshairMarkerVisible: false,
+      };
+
+      try {
+        if (typeof chart.addAreaSeries === 'function') {
+          series = chart.addAreaSeries(seriesOptions);
+        } else if (typeof chart.addSeries === 'function') {
+          // Try 'Area' and 'area' strings as fallbacks
+          try { series = chart.addSeries('Area', seriesOptions); } 
+          catch (e) { series = chart.addSeries('area', seriesOptions); }
+        }
+      } catch (err) {
+        console.error("❌ Series creation failed:", err);
       }
 
       if (!series) {
-        console.error("❌ Failed to create series. Chart might be incompatible.");
+        console.error("❌ Critical: Could not create chart series.");
         return;
       }
 
