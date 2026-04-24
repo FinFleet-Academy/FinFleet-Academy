@@ -80,4 +80,11 @@
   ::-webkit-scrollbar-thumb {
     @apply bg-slate-200 dark:bg-slate-800 rounded-full hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors;
   }
+
+  /* Hide TradingView Attribution */
+  div[id^="tv-"] {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
 }
