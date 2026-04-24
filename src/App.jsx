@@ -26,7 +26,7 @@ const AboutFinorPage = lazy(() => import('./pages/AboutFinorPage'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const FeedbackPage = lazy(() => import('./pages/FeedbackPage'));
 const HelpPage = lazy(() => import('./pages/HelpPage'));
-const ToolsPage = lazy(() => import('./pages/ToolsPage'));
+const ToolsRouter = lazy(() => import('./pages/tools/ToolsRouter'));
 const CommunityPage = lazy(() => import('./pages/CommunityPage'));
 const PublicProfilePage = lazy(() => import('./pages/PublicProfilePage'));
 const CourseDetailPage = lazy(() => import('./pages/CourseDetailPage'));
@@ -99,7 +99,7 @@ function App() {
                       <Route path="/profile" element={<ProfilePage />} />
                       <Route path="/feedback" element={<FeedbackPage />} />
                       <Route path="/help" element={<HelpPage />} />
-                      <Route path="/tools" element={<ToolsPage />} />
+                      <Route path="/tools/*" element={<ToolsRouter />} />
                       <Route path="/trading" element={<TradingDashboard />} />
                       <Route path="/pro-chart" element={<ProTradingChart />} />
                       <Route path="/community" element={<CommunityPage />} />
