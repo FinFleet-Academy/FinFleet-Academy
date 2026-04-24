@@ -18,9 +18,18 @@ const SignupPage = () => {
     try {
       await registerUser(formData.name, formData.email, formData.password, selectedPlan, formData.referralCode);
       toast.success(`Welcome to FinFleet, ${formData.name}! Your account is ready.`);
-      navigate('/');
+      navigate('/trading'); // Send to trading dashboard after signup
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Could not create your account. Please try again.');
+      const serverMessage = err.response?.data?.message;
+      const validationErrors = err.response?.data?.errors;
+      
+      if (validationErrors && Array.isArray(validationErrors)) {
+        validationErrors.forEach(error => {
+          toast.error(`${error.field.replace('body.', '')}: ${error.message}`);
+        });
+      } else {
+        toast.error(serverMessage || 'Could not create your account. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
