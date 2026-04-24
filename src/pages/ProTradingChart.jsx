@@ -198,7 +198,9 @@ const ProTradingChart = () => {
                 </div>
                 <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest leading-none">NSE India</p>
               </div>
-            </div>            {/* Dropdown Menu */}
+            </div>
+
+            {/* Dropdown Menu */}
             <AnimatePresence>
               {isStockSelectorOpen && (
                 <>
@@ -249,7 +251,7 @@ const ProTradingChart = () => {
                 </>
               )}
             </AnimatePresence>
-          </div>v>
+          </div>
 
           <div className="h-6 w-px bg-slate-800" />
 
