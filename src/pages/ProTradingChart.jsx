@@ -461,7 +461,6 @@ const ProTradingChart = () => {
         </div>
       </div>
 
-
         {/* 7. AI INSIGHTS SIDEBAR (BEGINNER MODE) */}
         <AnimatePresence>
           {isBeginnerMode && marketAnalysis && (
@@ -515,7 +514,6 @@ const ProTradingChart = () => {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
 
       <div className="flex-grow flex overflow-hidden">
         
