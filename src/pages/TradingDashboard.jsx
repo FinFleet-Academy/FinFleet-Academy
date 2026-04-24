@@ -299,10 +299,3 @@ const TradingDashboard = () => {
 };
 
 export default TradingDashboard;
-tePresence>
-      </div>
-    </div>
-  );
-};
-
-export default TradingDashboard;
