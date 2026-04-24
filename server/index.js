@@ -40,6 +40,7 @@ import quizRoutes from './routes/quizRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
 import liveClassRoutes from './routes/liveClassRoutes.js';
 import stockRoutes from './routes/stockRoutes.js';
+import auditRoutes from './routes/auditRoutes.js';
 import stockSimulator from './services/stockSimulator.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 import { logResponseTime } from './utils/logger.js';
@@ -140,6 +141,7 @@ app.use('/api/quizzes', quizRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/live-classes', liveClassRoutes);
 app.use('/api/stocks', stockRoutes);
+app.use('/api/audit', auditRoutes);
 
 // Static Asset Caching & Serving (Production)
 if (process.env.NODE_ENV === 'production') {
