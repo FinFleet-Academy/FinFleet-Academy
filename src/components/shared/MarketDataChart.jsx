@@ -15,7 +15,7 @@ const MarketDataChart = ({ data, symbol, colors = {} }) => {
 
       chart = LightweightCharts.createChart(chartContainerRef.current, {
         layout: {
-          background: { type: LightweightCharts.ColorType.Solid, color: colors.backgroundColor || 'transparent' },
+          background: { type: 'Solid', color: colors.backgroundColor || 'transparent' },
           textColor: colors.textColor || '#d1d5db',
         },
         grid: {
@@ -34,12 +34,24 @@ const MarketDataChart = ({ data, symbol, colors = {} }) => {
         },
       });
 
-      const series = chart.addSeries(LightweightCharts.SeriesType.Area, {
-        lineColor: colors.lineColor || '#22c55e',
-        topColor: colors.topColor || 'rgba(34, 197, 94, 0.2)',
-        bottomColor: colors.bottomColor || 'rgba(34, 197, 94, 0)',
-        lineWidth: 2,
-      });
+      let series;
+      if (typeof chart.addAreaSeries === 'function') {
+        series = chart.addAreaSeries({
+          lineColor: colors.lineColor || '#22c55e',
+          topColor: colors.topColor || 'rgba(34, 197, 94, 0.2)',
+          bottomColor: colors.bottomColor || 'rgba(34, 197, 94, 0)',
+          lineWidth: 2,
+        });
+      } else if (typeof chart.addSeries === 'function') {
+        series = chart.addSeries('Area', {
+          lineColor: colors.lineColor || '#22c55e',
+          topColor: colors.topColor || 'rgba(34, 197, 94, 0.2)',
+          bottomColor: colors.bottomColor || 'rgba(34, 197, 94, 0)',
+          lineWidth: 2,
+        });
+      }
+
+      if (!series) return;
 
       // Format data for lightweight-charts (needs time as unix timestamp and value)
       const formattedData = data.map(item => ({

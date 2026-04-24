@@ -22,7 +22,7 @@ const PremiumLiveChart = () => {
       
       chart = LightweightCharts.createChart(chartContainerRef.current, {
         layout: {
-          background: { type: LightweightCharts.ColorType.Solid, color: 'transparent' },
+          background: { type: 'Solid', color: 'transparent' },
           textColor: '#94a3b8',
         },
         grid: {
@@ -37,14 +37,32 @@ const PremiumLiveChart = () => {
         handleScale: false,
       });
 
-      // Using addSeries with explicit SeriesType for maximum compatibility
-      const series = chart.addSeries(LightweightCharts.SeriesType.Area, {
-        lineColor: '#22c55e',
-        topColor: 'rgba(34, 197, 94, 0.2)',
-        bottomColor: 'rgba(34, 197, 94, 0)',
-        lineWidth: 2,
-        crosshairMarkerVisible: false,
-      });
+      console.log("🚀 Chart created. Methods:", Object.keys(chart));
+
+      // Attempt to add series using both common patterns for maximum resilience
+      let series;
+      if (typeof chart.addAreaSeries === 'function') {
+        series = chart.addAreaSeries({
+          lineColor: '#22c55e',
+          topColor: 'rgba(34, 197, 94, 0.2)',
+          bottomColor: 'rgba(34, 197, 94, 0)',
+          lineWidth: 2,
+          crosshairMarkerVisible: false,
+        });
+      } else if (typeof chart.addSeries === 'function') {
+        series = chart.addSeries('Area', {
+          lineColor: '#22c55e',
+          topColor: 'rgba(34, 197, 94, 0.2)',
+          bottomColor: 'rgba(34, 197, 94, 0)',
+          lineWidth: 2,
+          crosshairMarkerVisible: false,
+        });
+      }
+
+      if (!series) {
+        console.error("❌ Failed to create series. Chart might be incompatible.");
+        return;
+      }
 
       // Initial Data
       let data = [];
