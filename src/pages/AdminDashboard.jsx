@@ -48,7 +48,7 @@ const AdminDashboard = () => {
     title: '', description: '', content: '', videoUrl: '', icon: 'BookOpen', category: 'Trading', isPremium: true
   });
   const [liveClassForm, setLiveClassForm] = useState({
-    title: '', description: '', instructor: '', dateTime: '', duration: '60 mins', meetLink: '', status: 'upcoming'
+    title: '', description: '', instructor: '', scheduledTime: '', duration: 60, platform: 'google_meet', classType: 'free', price: 0, meetingLink: ''
   });
 
   const loadData = async () => {
@@ -175,10 +175,10 @@ const AdminDashboard = () => {
       await axios.post('/api/live-classes', liveClassForm, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-      toast.success("Live class scheduled.");
-      setLiveClassForm({ title: '', description: '', instructor: '', dateTime: '', duration: '60 mins', meetLink: '', status: 'upcoming' });
+      toast.success("Live class scheduled successfully.");
+      setLiveClassForm({ title: '', description: '', instructor: '', scheduledTime: '', duration: 60, platform: 'google_meet', classType: 'free', price: 0, meetingLink: '' });
       loadData();
-    } catch (error) { toast.error("Failed to create live class"); }
+    } catch (error) { toast.error(error.response?.data?.message || "Failed to create live class"); }
   };
 
   const handleDeleteLiveClass = async (id) => {
@@ -518,42 +518,60 @@ const AdminDashboard = () => {
                       className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl px-6 py-4 text-sm font-bold dark:text-white outline-none focus:ring-4 focus:ring-brand-500/5 transition-all resize-none"
                       value={liveClassForm.description} onChange={e => setLiveClassForm({...liveClassForm, description: e.target.value})}
                     />
-                    <input 
-                      placeholder="Instructor Name" required 
-                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl px-6 py-4 text-sm font-bold dark:text-white outline-none focus:ring-4 focus:ring-brand-500/5 transition-all"
-                      value={liveClassForm.instructor} onChange={e => setLiveClassForm({...liveClassForm, instructor: e.target.value})}
-                    />
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Date & Time</label>
-                        <input 
-                          type="datetime-local" required 
-                          className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl px-4 py-4 text-[10px] font-black uppercase dark:text-white outline-none"
-                          value={liveClassForm.dateTime} onChange={e => setLiveClassForm({...liveClassForm, dateTime: e.target.value})}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Duration</label>
-                        <input 
-                          placeholder="e.g. 60 mins" required 
-                          className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl px-4 py-4 text-[10px] font-black uppercase dark:text-white outline-none"
-                          value={liveClassForm.duration} onChange={e => setLiveClassForm({...liveClassForm, duration: e.target.value})}
-                        />
-                      </div>
+                       <input 
+                         placeholder="Instructor" required 
+                         className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl px-6 py-4 text-sm font-bold dark:text-white outline-none"
+                         value={liveClassForm.instructor} onChange={e => setLiveClassForm({...liveClassForm, instructor: e.target.value})}
+                       />
+                       <input 
+                         type="number" placeholder="Duration (min)" required 
+                         className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl px-6 py-4 text-sm font-bold dark:text-white outline-none"
+                         value={liveClassForm.duration} onChange={e => setLiveClassForm({...liveClassForm, duration: parseInt(e.target.value)})}
+                       />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                       <div className="space-y-2">
+                         <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Platform</label>
+                         <select 
+                           className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl px-4 py-4 text-[10px] font-black uppercase dark:text-white outline-none"
+                           value={liveClassForm.platform} onChange={e => setLiveClassForm({...liveClassForm, platform: e.target.value})}
+                         >
+                           <option value="google_meet">Google Meet</option>
+                           <option value="zoom">Zoom API</option>
+                         </select>
+                       </div>
+                       <div className="space-y-2">
+                         <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Type</label>
+                         <select 
+                           className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl px-4 py-4 text-[10px] font-black uppercase dark:text-white outline-none"
+                           value={liveClassForm.classType} onChange={e => setLiveClassForm({...liveClassForm, classType: e.target.value})}
+                         >
+                           <option value="free">Free Class</option>
+                           <option value="paid">Paid (SaaS)</option>
+                         </select>
+                       </div>
+                    </div>
+                    {liveClassForm.classType === 'paid' && (
+                      <input 
+                        type="number" placeholder="Price (INR)" required 
+                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl px-6 py-4 text-sm font-bold dark:text-white outline-none"
+                        value={liveClassForm.price} onChange={e => setLiveClassForm({...liveClassForm, price: parseInt(e.target.value)})}
+                      />
+                    )}
+                    <div className="space-y-2">
+                       <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Scheduled Time</label>
+                       <input 
+                         type="datetime-local" required 
+                         className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl px-6 py-4 text-[10px] font-black uppercase dark:text-white outline-none"
+                         value={liveClassForm.scheduledTime} onChange={e => setLiveClassForm({...liveClassForm, scheduledTime: e.target.value})}
+                       />
                     </div>
                     <input 
-                      placeholder="Google Meet Link" required 
+                      placeholder="Meeting Link (Manual/API)" required 
                       className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl px-6 py-4 text-sm font-bold dark:text-white outline-none focus:ring-4 focus:ring-brand-500/5 transition-all"
-                      value={liveClassForm.meetLink} onChange={e => setLiveClassForm({...liveClassForm, meetLink: e.target.value})}
+                      value={liveClassForm.meetingLink} onChange={e => setLiveClassForm({...liveClassForm, meetingLink: e.target.value})}
                     />
-                    <select 
-                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl px-6 py-4 text-[10px] font-black uppercase tracking-widest dark:text-white outline-none"
-                      value={liveClassForm.status} onChange={e => setLiveClassForm({...liveClassForm, status: e.target.value})}
-                    >
-                      <option value="upcoming">Upcoming</option>
-                      <option value="live">Live</option>
-                      <option value="completed">Completed</option>
-                    </select>
                     <button type="submit" className="w-full btn-brand py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.25em] shadow-xl shadow-brand-500/20 active:scale-95 transition-all">Schedule Class</button>
                   </form>
                 </div>
@@ -562,11 +580,6 @@ const AdminDashboard = () => {
               <div className="lg:col-span-8 space-y-6">
                 <div className="flex items-center justify-between px-4">
                    <h3 className="text-xs font-black dark:text-white uppercase tracking-[0.3em]">Class Schedule</h3>
-                   <div className="flex items-center space-x-4">
-                      <div className="flex items-center space-x-2 text-[9px] font-black text-slate-400 uppercase">
-                         <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" /> Live Sessions: {liveClassesList.filter(c => c.status === 'live').length}
-                      </div>
-                   </div>
                 </div>
                 <div className="space-y-4 max-h-[1000px] overflow-y-auto pr-4 custom-scrollbar">
                   {liveClassesList.map(c => (
@@ -574,22 +587,31 @@ const AdminDashboard = () => {
                       <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500 rounded-full blur-[100px] opacity-0 group-hover:opacity-10 -mr-16 -mt-16 transition-opacity" />
                       <div className="flex flex-col md:flex-row justify-between items-start gap-8">
                         <div className="flex-grow">
-                          <div className="flex items-center space-x-3 mb-4">
+                          <div className="flex flex-wrap items-center gap-3 mb-4">
                             <span className={`px-4 py-1 text-[9px] font-black rounded-lg uppercase tracking-widest border ${
                               c.status === 'live' ? 'bg-red-500 text-white border-red-500 shadow-lg shadow-red-500/20' : 
                               c.status === 'upcoming' ? 'bg-brand-50 dark:bg-brand-900/20 text-brand-600 border-brand-100 dark:border-brand-800' :
                               'bg-slate-50 dark:bg-slate-950 text-slate-400 border-slate-100 dark:border-slate-800'
                             }`}>{c.status}</span>
+                            <span className={`px-4 py-1 text-[9px] font-black rounded-lg uppercase tracking-widest border ${
+                              c.classType === 'paid' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' : 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
+                            }`}>{c.classType} {c.classType === 'paid' && `(₹${c.price})`}</span>
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                               {new Date(c.dateTime).toLocaleString()}
+                               {new Date(c.scheduledTime).toLocaleString()}
                             </span>
                           </div>
                           <h4 className="text-xl font-black dark:text-white uppercase tracking-tighter mb-2 group-hover:text-brand-600 transition-colors leading-tight">{c.title}</h4>
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Instructor: {c.instructor}</p>
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center">
+                             <User className="w-3.5 h-3.5 mr-2" /> {c.instructor} 
+                             <span className="mx-3 opacity-20">|</span> 
+                             <Video className="w-3.5 h-3.5 mr-2" /> {c.platform === 'zoom' ? 'Zoom API' : 'Google Meet'}
+                          </p>
                           <div className="flex items-center space-x-4">
-                             <a href={c.meetLink} target="_blank" rel="noreferrer" className="text-[9px] font-black text-brand-600 uppercase tracking-widest flex items-center hover:underline">
-                                <ExternalLink className="w-3.5 h-3.5 mr-2" /> Google Meet Link
+                             <a href={c.meetingLink} target="_blank" rel="noreferrer" className="text-[9px] font-black text-brand-600 uppercase tracking-widest flex items-center hover:underline">
+                                <ExternalLink className="w-3.5 h-3.5 mr-2" /> Open Link
                              </a>
+                             <div className="w-1 h-1 rounded-full bg-slate-200" />
+                             <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Enrollments: {c.enrolledUsers?.length || 0}</span>
                           </div>
                         </div>
                         <div className="flex items-center space-x-2 shrink-0">

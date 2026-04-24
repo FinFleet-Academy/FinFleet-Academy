@@ -1,62 +1,37 @@
 import express from 'express';
-import LiveClass from '../models/LiveClass.js';
+import { 
+  createLiveClass, 
+  getLiveClasses, 
+  joinLiveClass, 
+  createPaymentOrder 
+} from '../controllers/liveClassController.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
+import { validate } from '../middleware/validate.js';
+import { z } from 'zod';
 
 const router = express.Router();
 
-// Get all live classes
-router.get('/', async (req, res) => {
-  try {
-    const classes = await LiveClass.find().sort({ dateTime: 1 });
-    res.json(classes);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+// Validation Schemas
+const createClassSchema = z.object({
+  body: z.object({
+    title: z.string().min(5),
+    description: z.string().min(10),
+    instructor: z.string(),
+    scheduledTime: z.string(),
+    duration: z.number().optional(),
+    platform: z.enum(['google_meet', 'zoom']),
+    classType: z.enum(['free', 'paid']),
+    price: z.number().nonnegative(),
+    meetingLink: z.string().url(),
+  }),
 });
 
-// Admin: Create a class
-router.post('/', protect, admin, async (req, res) => {
-  try {
-    const newClass = new LiveClass(req.body);
-    await newClass.save();
-    res.status(201).json(newClass);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
+// Admin Routes
+router.post('/', protect, admin, validate(createClassSchema), createLiveClass);
 
-// Admin: Update a class
-router.put('/:id', protect, admin, async (req, res) => {
-  try {
-    const updatedClass = await LiveClass.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(updatedClass);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
-
-// Admin: Delete a class
-router.delete('/:id', protect, admin, async (req, res) => {
-  try {
-    await LiveClass.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Class deleted' });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-// User: Express interest (Remind me)
-router.post('/:id/interest', protect, async (req, res) => {
-  try {
-    const liveClass = await LiveClass.findById(req.params.id);
-    if (!liveClass.interestedUsers.includes(req.user.id)) {
-      liveClass.interestedUsers.push(req.user.id);
-      await liveClass.save();
-    }
-    res.json({ message: 'Interest logged' });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+// Public/User Routes
+router.get('/', getLiveClasses);
+router.post('/:id/join', protect, joinLiveClass);
+router.post('/:id/pay', protect, createPaymentOrder);
 
 export default router;
