@@ -49,6 +49,39 @@ const ProTradingChart = () => {
     }
   };
 
+  // Fetch initial history
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const res = await axios.get(`/api/stocks/${activeStock.symbol}`);
+        if (res.data.history) {
+          const formatted = res.data.history.map(h => ({
+            time: Math.floor(new Date(h.timestamp).getTime() / 1000),
+            open: h.price,
+            high: h.price,
+            low: h.price,
+            close: h.price
+          })).sort((a, b) => a.time - b.time);
+          
+          // Filter duplicates for lightweight-charts
+          const uniqueData = [];
+          const seenTimes = new Set();
+          formatted.forEach(p => {
+            if (!seenTimes.has(p.time)) {
+              uniqueData.push(p);
+              seenTimes.add(p.time);
+            }
+          });
+          
+          setChartData(uniqueData);
+        }
+      } catch (err) {
+        console.error("History fetch failed", err);
+      }
+    };
+    fetchHistory();
+  }, [activeStock.symbol]);
+
   // 2. BINARY STREAM CONNECTOR (The Engine Backbone)
   useEffect(() => {
     if (!isLive || !user) return;
@@ -81,7 +114,12 @@ const ProTradingChart = () => {
         // 📈 Update Price Data
         setChartData(prev => {
           const lastBar = prev[prev.length - 1];
-          const tickTime = Math.floor(payload.ts / 1000);
+          let tickTime = Math.floor(payload.ts / 1000);
+          
+          // Safety: lightweight-charts requires strictly ascending or equal time
+          if (lastBar && tickTime < lastBar.time) {
+            tickTime = lastBar.time;
+          }
           
           if (lastBar && lastBar.time === tickTime) {
             // Update current bar

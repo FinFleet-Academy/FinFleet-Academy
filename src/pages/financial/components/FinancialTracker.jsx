@@ -116,14 +116,92 @@ const FinancialTracker = () => {
         </motion.div>
 
         {/* Add Transaction Button */}
-        <motion.div {...fadeInUp} transition={{ delay: 0.1 }} className="bg-slate-900 dark:bg-white rounded-[3rem] p-10 flex flex-col items-center justify-center text-center cursor-pointer hover:scale-[1.02] transition-transform group shadow-2xl">
-           <div className="w-16 h-16 rounded-full bg-brand-600 flex items-center justify-center mb-6 shadow-xl shadow-brand-500/40">
+        <motion.div 
+          {...fadeInUp} 
+          transition={{ delay: 0.1 }} 
+          onClick={() => setShowAddTransaction(true)}
+          className="bg-slate-900 dark:bg-white rounded-[3rem] p-10 flex flex-col items-center justify-center text-center cursor-pointer hover:scale-[1.02] transition-transform group shadow-2xl"
+        >
+           <div className="w-16 h-16 rounded-full bg-brand-600 flex items-center justify-center mb-6 shadow-xl shadow-brand-500/40 group-hover:scale-110 transition-transform">
              <Plus className="w-8 h-8 text-white" />
            </div>
            <h3 className="text-xl font-black text-white dark:text-slate-900 mb-2">Track Activity</h3>
            <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Update Cashflow & Assets</p>
         </motion.div>
       </div>
+
+      {/* Tracker Hub Modal */}
+      <AnimatePresence>
+        {showAddTransaction && (
+          <div className="fixed inset-0 z-[1000] flex items-center justify-center px-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowAddTransaction(false)} className="absolute inset-0 bg-slate-950/80 backdrop-blur-xl" />
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="w-full max-w-2xl bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-3xl relative z-10 overflow-hidden"
+            >
+               <div className="p-10">
+                 <div className="flex items-center justify-between mb-8">
+                   <div>
+                     <h2 className="text-2xl font-black dark:text-white uppercase tracking-tighter">Wealth Tracker Hub</h2>
+                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Update your financial profile</p>
+                   </div>
+                   <button onClick={() => setShowAddTransaction(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
+                     <Plus className="w-6 h-6 rotate-45 text-slate-400" />
+                   </button>
+                 </div>
+
+                 <form className="space-y-6" onSubmit={async (e) => {
+                   e.preventDefault();
+                   const formData = new FormData(e.target);
+                   const payload = {
+                     type: formData.get('type'),
+                     category: formData.get('category'),
+                     amount: parseFloat(formData.get('amount')),
+                     description: formData.get('description'),
+                     date: new Date()
+                   };
+                   
+                   try {
+                     await axios.post('/api/financial/transaction', payload);
+                     setShowAddTransaction(false);
+                     fetchSummary();
+                   } catch (err) {
+                     console.error(err);
+                   }
+                 }}>
+                    <div className="grid grid-cols-2 gap-4">
+                       <div className="space-y-2">
+                         <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Activity Type</label>
+                         <select name="type" className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl px-5 py-4 font-bold dark:text-white focus:ring-2 focus:ring-brand-500">
+                           <option value="Income">Income</option>
+                           <option value="Expense">Expense</option>
+                         </select>
+                       </div>
+                       <div className="space-y-2">
+                         <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Amount (₹)</label>
+                         <input required name="amount" type="number" placeholder="50,000" className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl px-5 py-4 font-bold dark:text-white focus:ring-2 focus:ring-brand-500" />
+                       </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Category</label>
+                      <input required name="category" type="text" placeholder="Salary, Rent, Investments..." className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl px-5 py-4 font-bold dark:text-white focus:ring-2 focus:ring-brand-500" />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Memo</label>
+                      <textarea name="description" rows="2" placeholder="Note to self..." className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl px-5 py-4 font-bold dark:text-white focus:ring-2 focus:ring-brand-500" />
+                    </div>
+
+                    <button type="submit" className="w-full py-5 bg-brand-600 text-white rounded-3xl font-black uppercase tracking-widest shadow-xl shadow-brand-500/20 hover:scale-[1.02] transition-transform">
+                      Update Ledger
+                    </button>
+                 </form>
+               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Analytics Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

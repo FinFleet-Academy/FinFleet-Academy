@@ -63,21 +63,22 @@ const AdvancedChart = ({
       chartRef.current = chart;
     }
 
+    // 2. Responsive Engine
     const handleResize = () => {
-      if (!chartContainerRef.current || !chartRef.current) return;
-      const newWidth = chartContainerRef.current.clientWidth;
-      const newHeight = chartContainerRef.current.clientHeight;
-      if (newWidth > 0 && newHeight > 0) {
-        chartRef.current.applyOptions({ width: newWidth, height: newHeight });
-        setDimensions({ width: newWidth, height: newHeight });
+      if (chartRef.current && chartContainerRef.current) {
+        const { clientWidth, clientHeight } = chartContainerRef.current;
+        if (clientWidth > 0 && clientHeight > 0) {
+          chartRef.current.applyOptions({ width: clientWidth, height: clientHeight });
+          setDimensions({ width: clientWidth, height: clientHeight });
+        }
       }
     };
 
-    window.addEventListener('resize', handleResize);
-    handleResize();
+    const resizeObserver = new ResizeObserver(handleResize);
+    resizeObserver.observe(chartContainerRef.current);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      resizeObserver.disconnect();
       if (chartRef.current) {
         chartRef.current.remove();
         chartRef.current = null;

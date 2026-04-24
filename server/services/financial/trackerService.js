@@ -8,7 +8,12 @@ export const calculateFinancialHealth = (income, expenses, investments, loans) =
   const totalInvested = investments.reduce((acc, curr) => acc + curr.investedAmount, 0);
   const totalEmi = loans.reduce((acc, curr) => acc + curr.monthlyEmi, 0);
 
-  if (totalIncome === 0) return { score: 0, status: 'N/A', insights: ["Please add your income to see your health score."] };
+  if (totalIncome === 0) return { 
+    score: 0, 
+    status: 'N/A', 
+    metrics: { savingsRate: 0, emiRatio: 0, investmentRatio: 0 },
+    insights: ["Please add your monthly income to activate your Neural Health Score."] 
+  };
 
   // 1. Savings Rate Factor (Max 30 points)
   const savings = totalIncome - totalExpenses;
