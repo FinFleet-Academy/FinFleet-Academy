@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Wallet, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import FinorToolInsight from '../../components/shared/FinorToolInsight';
+import FinorToolInsight from '../../../components/shared/FinorToolInsight';
 
 const SwpCalculator = () => {
   const navigate = useNavigate();

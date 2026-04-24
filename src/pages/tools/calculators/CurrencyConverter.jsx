@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { DollarSign, ArrowLeft, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import FinorToolInsight from '../../components/shared/FinorToolInsight';
+import FinorToolInsight from '../../../components/shared/FinorToolInsight';
 
 // Popular currency pairs
 const CURRENCIES = [

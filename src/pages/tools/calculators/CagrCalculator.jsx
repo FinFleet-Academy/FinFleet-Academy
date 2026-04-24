@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { PieChart, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import FinorToolInsight from '../../components/shared/FinorToolInsight';
+import FinorToolInsight from '../../../components/shared/FinorToolInsight';
 
 const CagrCalculator = () => {
   const navigate = useNavigate();

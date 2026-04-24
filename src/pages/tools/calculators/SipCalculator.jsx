@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { TrendingUp, ArrowLeft, Download } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import FinorToolInsight from '../../components/shared/FinorToolInsight';
+import FinorToolInsight from '../../../components/shared/FinorToolInsight';
 
 const SipCalculator = () => {
   const navigate = useNavigate();

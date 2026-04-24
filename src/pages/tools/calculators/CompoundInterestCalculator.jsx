@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { BarChart2, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import FinorToolInsight from '../../components/shared/FinorToolInsight';
+import FinorToolInsight from '../../../components/shared/FinorToolInsight';
 
 const CompoundInterestCalculator = () => {
   const navigate = useNavigate();

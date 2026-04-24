@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Calculator, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
-import FinorToolInsight from '../../components/shared/FinorToolInsight';
+import FinorToolInsight from '../../../components/shared/FinorToolInsight';
 
 const EmiCalculator = () => {
   const navigate = useNavigate();

@@ -305,6 +305,7 @@ const TradingDashboard = () => {
               )}
             </div>
           </motion.div>
+        )}
         {activeTab === 'sip' && (
           <motion.div key="sip" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
             <Card padding="p-10" className="border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden relative">
