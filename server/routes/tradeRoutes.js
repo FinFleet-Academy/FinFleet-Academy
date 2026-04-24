@@ -16,7 +16,7 @@ router.post('/execute', protect, async (req, res) => {
       return res.status(400).json({ message: 'Invalid trade parameters. Quantity must be greater than zero.' });
     }
     
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user.id);
     
     // If Indian market, use our simulated price instead of client-side price
     if (market === 'INDIA') {
@@ -34,18 +34,18 @@ router.post('/execute', protect, async (req, res) => {
       }
       user.virtualBalance -= total;
       
-      let portfolioItem = await PortfolioItem.findOne({ user: user._id, symbol });
+      let portfolioItem = await PortfolioItem.findOne({ user: user.id, symbol });
       if (portfolioItem) {
         const newTotalValue = (portfolioItem.quantity * portfolioItem.averagePrice) + total;
         const newQuantity = portfolioItem.quantity + quantity;
         portfolioItem.averagePrice = newTotalValue / newQuantity;
         portfolioItem.quantity = newQuantity;
       } else {
-        portfolioItem = new PortfolioItem({ user: user._id, symbol, quantity, averagePrice: price });
+        portfolioItem = new PortfolioItem({ user: user.id, symbol, quantity, averagePrice: price });
       }
       await portfolioItem.save();
     } else if (type === 'SELL') {
-      const portfolioItem = await PortfolioItem.findOne({ user: user._id, symbol });
+      const portfolioItem = await PortfolioItem.findOne({ user: user.id, symbol });
       if (!portfolioItem || portfolioItem.quantity < quantity) {
         return res.status(400).json({ message: 'Insufficient shares to sell' });
       }
@@ -61,13 +61,13 @@ router.post('/execute', protect, async (req, res) => {
 
     await user.save();
 
-    const trade = new Trade({ user: user._id, symbol, type, quantity, price, total });
+    const trade = new Trade({ user: user.id, symbol, type, quantity, price, total });
     await trade.save();
 
     // Log activity
     const UserActivity = (await import('../models/UserActivity.js')).default;
     await UserActivity.create({
-      user: user._id,
+      user: user.id,
       action: 'TRADE_EXECUTED',
       metadata: { symbol, type, quantity, price, total, market }
     });
@@ -80,8 +80,8 @@ router.post('/execute', protect, async (req, res) => {
 
 router.get('/portfolio', protect, async (req, res) => {
   try {
-    const portfolio = await PortfolioItem.find({ user: req.user._id });
-    const user = await User.findById(req.user._id).select('virtualBalance points');
+    const portfolio = await PortfolioItem.find({ user: req.user.id });
+    const user = await User.findById(req.user.id).select('virtualBalance points');
     res.json({ portfolio, balance: user.virtualBalance, points: user.points });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -90,7 +90,7 @@ router.get('/portfolio', protect, async (req, res) => {
 
 router.get('/history', protect, async (req, res) => {
   try {
-    const trades = await Trade.find({ user: req.user._id }).sort({ createdAt: -1 }).limit(50);
+    const trades = await Trade.find({ user: req.user.id }).sort({ createdAt: -1 }).limit(50);
     res.json(trades);
   } catch (error) {
     res.status(500).json({ message: error.message });
