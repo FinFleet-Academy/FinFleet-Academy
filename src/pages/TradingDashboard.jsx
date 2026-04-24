@@ -33,6 +33,11 @@ const TradingDashboard = () => {
   const [selectedSector, setSelectedSector] = useState('All');
   const [selectedStock, setSelectedStock] = useState(null);
   const [tradeForm, setTradeForm] = useState({ type: 'BUY', quantity: 1 });
+  
+  // SIP Calculator State
+  const [sipInvestment, setSipInvestment] = useState(5000);
+  const [sipRate, setSipRate] = useState(12);
+  const [sipYears, setSipYears] = useState(10);
 
   useEffect(() => {
     if (!user && !localStorage.getItem('token')) {
@@ -299,6 +304,97 @@ const TradingDashboard = () => {
                 </Card>
               )}
             </div>
+          </motion.div>
+        {activeTab === 'sip' && (
+          <motion.div key="sip" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
+            <Card padding="p-10" className="border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden relative">
+              <div className="absolute top-0 right-0 w-80 h-80 bg-brand-500 rounded-full blur-[120px] opacity-10 -mr-40 -mt-40 pointer-events-none" />
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 relative">
+                <div className="space-y-10">
+                  <div className="flex items-center space-x-3 mb-6">
+                     <Calculator className="w-8 h-8 text-brand-600" />
+                     <h3 className="text-2xl font-black dark:text-white uppercase tracking-tighter">SIP Simulator</h3>
+                  </div>
+                  
+                  <div className="space-y-10">
+                    {/* SIP Investment Slider */}
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center px-1">
+                         <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Monthly Investment</label>
+                         <span className="text-xl font-black dark:text-white">₹{sipInvestment.toLocaleString('en-IN')}</span>
+                      </div>
+                      <input 
+                        type="range" min={500} max={100000} step={500} value={sipInvestment} 
+                        onChange={(e) => setSipInvestment(Number(e.target.value))}
+                        className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full appearance-none cursor-pointer accent-brand-600"
+                      />
+                      <div className="flex justify-between text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                        <span>₹500</span><span>₹1,00,000</span>
+                      </div>
+                    </div>
+
+                    {/* Expected Return Slider */}
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center px-1">
+                         <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Expected Return (p.a)</label>
+                         <span className="text-xl font-black dark:text-white">{sipRate}%</span>
+                      </div>
+                      <input 
+                        type="range" min={1} max={30} step={1} value={sipRate} 
+                        onChange={(e) => setSipRate(Number(e.target.value))}
+                        className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full appearance-none cursor-pointer accent-brand-600"
+                      />
+                      <div className="flex justify-between text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                        <span>1%</span><span>30%</span>
+                      </div>
+                    </div>
+
+                    {/* Time Period Slider */}
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center px-1">
+                         <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Time Period</label>
+                         <span className="text-xl font-black dark:text-white">{sipYears} Years</span>
+                      </div>
+                      <input 
+                        type="range" min={1} max={40} step={1} value={sipYears} 
+                        onChange={(e) => setSipYears(Number(e.target.value))}
+                        className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full appearance-none cursor-pointer accent-brand-600"
+                      />
+                      <div className="flex justify-between text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                        <span>1 Yr</span><span>40 Yrs</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-[#020617] rounded-[2.5rem] p-10 text-white flex flex-col justify-between shadow-2xl relative overflow-hidden border border-slate-800">
+                  <div className="absolute top-0 right-0 p-6 opacity-10"><TrendingUp className="w-24 h-24 text-brand-500" /></div>
+                  
+                  <div>
+                     <h3 className="text-[10px] font-black text-brand-500 uppercase tracking-[0.3em] mb-12">Projected Maturity Value</h3>
+                     <div className="space-y-2">
+                       <p className="text-6xl lg:text-7xl font-black tracking-tighter leading-none text-white">
+                         ₹{((sipInvestment * (((Math.pow(1 + (sipRate/12/100), sipYears * 12)) - 1) / (sipRate/12/100)) * (1 + (sipRate/12/100)))).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                       </p>
+                     </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-8 mt-16 pt-10 border-t border-white/10">
+                    <div>
+                      <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Total Invested</p>
+                      <p className="text-2xl font-black">₹{(sipInvestment * sipYears * 12).toLocaleString('en-IN')}</p>
+                    </div>
+                    <div>
+                      <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Est. Wealth Gain</p>
+                      <p className="text-2xl font-black text-emerald-400">
+                        ₹{(((sipInvestment * (((Math.pow(1 + (sipRate/12/100), sipYears * 12)) - 1) / (sipRate/12/100)) * (1 + (sipRate/12/100)))) - (sipInvestment * sipYears * 12)).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Card>
           </motion.div>
         )}
       </AnimatePresence>

@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, MessageSquare, Megaphone, Search, Send, Heart, 
   MessageCircle, Trash2, UserPlus, UserCheck, ChevronRight, 
-  X, MessageSquareQuote, Star, ShieldCheck, Zap
+  X, MessageSquareQuote, Star, ShieldCheck, Zap, Award, Trophy, Medal
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import LikeButton from '../components/shared/LikeButton';
@@ -233,6 +233,89 @@ const AnnouncementsTab = ({ currentUser, isAdmin }) => {
   );
 };
 
+// ─── LEADERBOARD TAB ────────────────────────────────────────────────────────
+const LeaderboardTab = ({ currentUser }) => {
+  const [leaders, setLeaders] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchLeaderboard = async () => {
+      try {
+        const { data } = await axios.get('/api/quizzes/leaderboard');
+        setLeaders(data);
+      } catch {
+        toast.error('Failed to load leaderboard');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLeaderboard();
+  }, []);
+
+  return (
+    <motion.div variants={staggerContainer} initial="initial" animate="animate" className="space-y-6">
+      <div className="bg-gradient-to-r from-brand-600 to-indigo-600 rounded-[2.5rem] p-10 text-white shadow-2xl relative overflow-hidden mb-8">
+         <div className="absolute top-0 right-0 p-8 opacity-20"><Trophy className="w-32 h-32" /></div>
+         <h2 className="text-3xl md:text-5xl font-black tracking-tighter mb-4">Global Rankings</h2>
+         <p className="text-sm font-bold text-white/80 max-w-md">Earn Skill Points by completing quizzes, courses, and profitable trades to climb the ranks.</p>
+      </div>
+
+      {loading ? (
+        <div className="space-y-4">
+          {[...Array(5)].map((_, i) => <div key={i} className="h-20 bg-slate-200 dark:bg-slate-800 rounded-2xl animate-pulse" />)}
+        </div>
+      ) : (
+        <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden p-4 md:p-8">
+           {leaders.length === 0 ? (
+             <div className="text-center py-20 opacity-50">
+                <Medal className="w-16 h-16 mx-auto mb-4" />
+                <p className="text-xs font-black uppercase tracking-widest">No rankings yet</p>
+             </div>
+           ) : (
+             <AnimatePresence mode="popLayout">
+               {leaders.map((user, index) => {
+                 const isTop3 = index < 3;
+                 let rankColor = "text-slate-400 bg-slate-100 dark:bg-slate-800";
+                 if (index === 0) rankColor = "text-amber-600 bg-amber-100 dark:bg-amber-900/30 ring-2 ring-amber-500/50 shadow-lg shadow-amber-500/20";
+                 if (index === 1) rankColor = "text-slate-500 bg-slate-200 dark:bg-slate-700 ring-2 ring-slate-400/50 shadow-lg shadow-slate-400/20";
+                 if (index === 2) rankColor = "text-orange-600 bg-orange-100 dark:bg-orange-900/30 ring-2 ring-orange-500/50 shadow-lg shadow-orange-500/20";
+
+                 return (
+                   <motion.div 
+                     key={user._id} variants={fadeInUp} layout
+                     className={`flex items-center justify-between p-4 md:p-6 mb-4 rounded-3xl transition-all ${user._id === currentUser?._id ? 'bg-brand-50 dark:bg-brand-900/10 border-2 border-brand-500' : 'bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800'}`}
+                   >
+                     <div className="flex items-center space-x-4 md:space-x-6">
+                        <div className={`w-10 h-10 md:w-14 md:h-14 rounded-2xl flex items-center justify-center font-black text-sm md:text-xl ${rankColor}`}>
+                           #{index + 1}
+                        </div>
+                        <Link to={`/user/${user._id}`} className="flex items-center space-x-4 group">
+                           <div className="w-12 h-12 rounded-2xl bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-black flex items-center justify-center text-lg overflow-hidden group-hover:scale-105 transition-transform">
+                              {user.profileImage ? <img src={user.profileImage} alt={user.name} className="w-full h-full object-cover" /> : user.name?.[0]?.toUpperCase()}
+                           </div>
+                           <div>
+                              <p className="text-base md:text-lg font-black dark:text-white flex items-center">
+                                {user.name}
+                                {user._id === currentUser?._id && <span className="ml-3 text-[9px] font-black uppercase tracking-widest bg-brand-600 text-white px-2 py-0.5 rounded-md">You</span>}
+                              </p>
+                           </div>
+                        </Link>
+                     </div>
+                     <div className="text-right">
+                        <p className="text-2xl font-black text-brand-600 dark:text-brand-400 leading-none">{user.points?.toLocaleString() || 0}</p>
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">Skill Points</p>
+                     </div>
+                   </motion.div>
+                 );
+               })}
+             </AnimatePresence>
+           )}
+        </div>
+      )}
+    </motion.div>
+  );
+};
+
 // ─── MAIN COMMUNITY PAGE ──────────────────────────────────────────────────────
 const CommunityPage = () => {
   const { user, isAdmin } = useAuth();
@@ -241,6 +324,7 @@ const CommunityPage = () => {
   const tabs = [
     { id: 'announcements', label: 'Broadcasts', icon: Megaphone },
     { id: 'people', label: 'Discover', icon: Users },
+    { id: 'leaderboard', label: 'Leaderboard', icon: Award },
   ];
 
   return (
@@ -283,6 +367,10 @@ const CommunityPage = () => {
             {tab === 'announcements' ? (
               <motion.div key="ann" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                 <AnnouncementsTab currentUser={user} isAdmin={isAdmin} />
+              </motion.div>
+            ) : tab === 'leaderboard' ? (
+              <motion.div key="leaderboard" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                <LeaderboardTab currentUser={user} />
               </motion.div>
             ) : (
               <motion.div key="people" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>

@@ -103,6 +103,8 @@ function App() {
                       <Route path="/trading" element={<TradingDashboard />} />
                       <Route path="/pro-chart" element={<ProTradingChart />} />
                       <Route path="/community" element={<CommunityPage />} />
+                      <Route path="/quizzes" element={<QuizPage />} />
+                      <Route path="/payment" element={<PaymentPage />} />
                       <Route path="/user/:userId" element={<PublicProfilePage />} />
                       <Route path="/live-classes" element={<LiveClasses />} />
                       <Route path="*" element={<NotFoundPage />} />

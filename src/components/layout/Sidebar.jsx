@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { 
   Home, BookOpen, TrendingUp, Video, MessageSquare, 
-  Settings, ShieldCheck, History, Menu, X, Bot, Zap, LayoutDashboard, Users
+  Settings, ShieldCheck, History, Menu, X, Bot, Zap, LayoutDashboard, Users, BrainCircuit
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppStore } from '../../store/useAppStore';
@@ -21,6 +21,7 @@ const Sidebar = ({ isMobile }) => {
     { label: uiContent.navigation.proTrading, icon: TrendingUp, path: '/trading' },
     { label: uiContent.navigation.courses, icon: BookOpen, path: '/courses' },
     { label: uiContent.navigation.liveClasses, icon: Video, path: '/live-classes' },
+    { label: 'Quizzes', icon: BrainCircuit, path: '/quizzes' },
     { label: uiContent.navigation.community, icon: MessageSquare, path: '/community' },
   ];
 
