@@ -108,6 +108,3 @@ JWT_SECRET=your_super_secret_key
 ```
 
 ---
-
-## 🧪 License
-Distributed under the MIT License. See `LICENSE` for more information.
