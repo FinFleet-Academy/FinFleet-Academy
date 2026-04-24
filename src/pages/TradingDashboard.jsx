@@ -112,6 +112,21 @@ const TradingDashboard = () => {
     }, 0);
   }, [portfolio, stocks]);
 
+  // Fetch full details when stock selected
+  useEffect(() => {
+    if (selectedStock && !selectedStock.history) {
+      const fetchDetails = async () => {
+        try {
+          const res = await axios.get(`/api/stocks/${selectedStock.symbol}`);
+          setSelectedStock(res.data);
+        } catch (err) {
+          console.error("Detail fetch failed", err);
+        }
+      };
+      fetchDetails();
+    }
+  }, [selectedStock?.symbol]);
+
   if (loading) return <div className="p-10"><TableSkeleton /></div>;
 
   return (

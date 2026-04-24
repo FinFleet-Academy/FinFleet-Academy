@@ -105,7 +105,40 @@ const Dashboard = () => {
         ))}
       </div>
 
-      {/* 3. AI Assistant & Referral */}
+      {/* 3. Featured Section: Financial Hub & Market */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <Card 
+          onClick={() => navigate('/financial')}
+          className="lg:col-span-5 bg-slate-900 dark:bg-white rounded-[3rem] p-10 shadow-2xl group cursor-pointer relative overflow-hidden flex flex-col justify-between min-h-[350px]"
+        >
+          <div className="absolute top-0 right-0 w-80 h-80 bg-brand-500 rounded-full blur-[100px] opacity-20 -mr-40 -mt-40 transition-all group-hover:opacity-30" />
+          <div className="relative z-10">
+            <div className="w-16 h-16 rounded-3xl bg-brand-600 text-white flex items-center justify-center mb-8 shadow-xl shadow-brand-500/20">
+              <Zap className="w-8 h-8" />
+            </div>
+            <h3 className="text-4xl font-black text-white dark:text-slate-900 mb-4 tracking-tighter uppercase leading-none">Financial Hub</h3>
+            <p className="text-sm font-bold text-slate-400 dark:text-slate-500 leading-relaxed max-w-xs mt-4">AI-powered tracking for your wealth, cards, and loans. Master your cashflow with neural insights.</p>
+          </div>
+          <div className="relative z-10 flex items-center justify-between mt-12">
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Initialize Hub</span>
+            <div className="w-12 h-12 rounded-full bg-brand-600 text-white flex items-center justify-center group-hover:scale-110 transition-transform">
+              <ChevronRight className="w-6 h-6" />
+            </div>
+          </div>
+        </Card>
+
+        <Card title="Live Portfolio Pulse" className="lg:col-span-7 h-full">
+           <div className="flex flex-col items-center justify-center h-full min-h-[300px] text-center space-y-6">
+             <Activity className="w-12 h-12 text-brand-600 opacity-20 animate-pulse" />
+             <div>
+               <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Real-Time Market Tracking Active</p>
+               <Button variant="ghost" size="sm" onClick={() => navigate('/trading')}>Open Trading Terminal</Button>
+             </div>
+           </div>
+        </Card>
+      </div>
+
+      {/* 4. AI Assistant & Referral */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <Card className="lg:col-span-2 overflow-hidden flex flex-col p-0">
           <div className="px-8 py-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/20">

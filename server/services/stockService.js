@@ -1,5 +1,6 @@
 import Stock from '../models/Stock.js';
 import cacheService from './cacheService.js';
+import axios from 'axios';
 
 class StockService {
   async getStocks(filters, page = 1, limit = 20) {
@@ -48,6 +49,24 @@ class StockService {
     
     await cacheService.set('stocks:sectors', result, 3600); // 1 hour TTL
     return result;
+  }
+
+  async getRealTimePrice(symbol) {
+    try {
+      const response = await axios.get(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbol}`);
+      const quote = response.data.quoteResponse.result[0];
+      if (quote) {
+        return {
+          price: quote.regularMarketPrice,
+          change: quote.regularMarketChange,
+          changePercent: quote.regularMarketChangePercent,
+          name: quote.shortName || quote.longName
+        };
+      }
+    } catch (err) {
+      console.warn(`Real-time fetch failed for ${symbol}:`, err.message);
+    }
+    return null;
   }
 }
 

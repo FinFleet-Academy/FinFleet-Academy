@@ -19,6 +19,7 @@ const Sidebar = ({ isMobile }) => {
     { label: uiContent.navigation.dashboard, icon: Home, path: '/dashboard' },
     { label: 'Finor Intel', icon: Bot, path: '/finor' },
     { label: uiContent.navigation.proTrading, icon: TrendingUp, path: '/trading' },
+    { label: 'Financial Hub', icon: Zap, path: '/financial' },
     { label: uiContent.navigation.courses, icon: BookOpen, path: '/courses' },
     { label: uiContent.navigation.liveClasses, icon: Video, path: '/live-classes' },
     { label: 'Quizzes', icon: BrainCircuit, path: '/quizzes' },
