@@ -4,14 +4,27 @@ import Subscriber from '../models/Subscriber.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
+const ACCESS_TOKEN_EXPIRY = '15m';
+const REFRESH_TOKEN_EXPIRY = '7d';
+
 const generateTokens = (id) => {
   const accessToken = jwt.sign({ id }, process.env.JWT_SECRET || 'finfleet_super_secret_key_123!', {
-    expiresIn: '15m',
+    expiresIn: ACCESS_TOKEN_EXPIRY,
   });
   const refreshToken = jwt.sign({ id }, process.env.REFRESH_TOKEN_SECRET || 'finfleet_refresh_secret_key_456!', {
-    expiresIn: '7d',
+    expiresIn: REFRESH_TOKEN_EXPIRY,
   });
   return { accessToken, refreshToken };
+};
+
+const sendRefreshTokenCookie = (res, token) => {
+  res.cookie('refreshToken', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'Strict',
+    path: '/',
+    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+  });
 };
 
 export const registerUser = async (req, res) => {
@@ -30,14 +43,6 @@ export const registerUser = async (req, res) => {
     const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
     const myReferralCode = `${baseCode}${randomStr}`;
 
-    let referredById = null;
-    if (inputReferral) {
-      const referrer = await User.findOne({ referralCode: inputReferral.toUpperCase() });
-      if (referrer) {
-        referredById = referrer._id;
-      }
-    }
-
     const user = await User.create({
       name,
       email,
@@ -49,33 +54,13 @@ export const registerUser = async (req, res) => {
     });
 
     if (user) {
-      if (referredById) {
-         await User.findByIdAndUpdate(referredById, {
-           $push: { referredUsers: user._id },
-           $inc: { chatCount: -10 }
-         });
-         
-         await Notification.create({
-           userEmail: (await User.findById(referredById)).email,
-           title: 'Referral Bonus',
-           message: `Someone just signed up using your referral code! We've added 10 bonus AI messages to your account.`
-         });
-      }
-
-      await Notification.create({
-        userEmail: user.email,
-        title: 'Welcome to FinFleet Academy',
-        message: `Welcome to FinFleet Academy, ${user.name}! We're excited to help you master the markets.`
-      });
-
       const { accessToken, refreshToken } = generateTokens(user._id);
+      
+      // Store refresh token in DB
+      user.refreshTokens.push(refreshToken);
+      await user.save();
 
-      res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-      });
+      sendRefreshTokenCookie(res, refreshToken);
 
       res.status(201).json({
         _id: user._id,
@@ -99,12 +84,12 @@ export const loginUser = async (req, res) => {
     if (user && (await bcrypt.compare(password, user.password))) {
       const { accessToken, refreshToken } = generateTokens(user._id);
 
-      res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000
-      });
+      // Add new refresh token and limit array size (optional, for security)
+      user.refreshTokens.push(refreshToken);
+      if (user.refreshTokens.length > 5) user.refreshTokens.shift();
+      await user.save();
+
+      sendRefreshTokenCookie(res, refreshToken);
 
       res.json({
         _id: user._id,
@@ -123,19 +108,60 @@ export const loginUser = async (req, res) => {
 };
 
 export const refreshAccessToken = async (req, res) => {
-  const refreshToken = req.cookies.refreshToken;
-  if (!refreshToken) return res.status(401).json({ message: 'No refresh token' });
+  const cookies = req.cookies;
+  if (!cookies?.refreshToken) return res.status(401).json({ message: 'No refresh token' });
+  
+  const oldRefreshToken = cookies.refreshToken;
 
   try {
-    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET || 'finfleet_refresh_secret_key_456!');
-    const { accessToken } = generateTokens(decoded.id);
+    const decoded = jwt.verify(oldRefreshToken, process.env.REFRESH_TOKEN_SECRET || 'finfleet_refresh_secret_key_456!');
+    const user = await User.findById(decoded.id);
+
+    if (!user || !user.refreshTokens.includes(oldRefreshToken)) {
+      // Detected reuse or invalid token! Clear all tokens for safety.
+      if (user) {
+        user.refreshTokens = [];
+        await user.save();
+      }
+      res.clearCookie('refreshToken');
+      return res.status(403).json({ message: 'Session expired or invalid. Please login again.' });
+    }
+
+    // Token is valid. Rotate it!
+    const { accessToken, refreshToken: newRefreshToken } = generateTokens(user._id);
+    
+    // Replace old token with new one in DB
+    user.refreshTokens = user.refreshTokens.filter(t => t !== oldRefreshToken);
+    user.refreshTokens.push(newRefreshToken);
+    await user.save();
+
+    sendRefreshTokenCookie(res, newRefreshToken);
     res.json({ token: accessToken });
+
   } catch (error) {
+    // If expired, remove it from DB if we can decode it
+    try {
+        const decoded = jwt.decode(oldRefreshToken);
+        if (decoded) {
+            await User.findByIdAndUpdate(decoded.id, { $pull: { refreshTokens: oldRefreshToken } });
+        }
+    } catch (e) {}
+    
+    res.clearCookie('refreshToken');
     res.status(403).json({ message: 'Invalid refresh token' });
   }
 };
 
 export const logoutUser = async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+  if (refreshToken) {
+    try {
+      const decoded = jwt.decode(refreshToken);
+      if (decoded) {
+        await User.findByIdAndUpdate(decoded.id, { $pull: { refreshTokens: refreshToken } });
+      }
+    } catch (e) {}
+  }
   res.clearCookie('refreshToken');
   res.json({ message: 'Logged out successfully' });
 };

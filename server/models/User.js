@@ -34,6 +34,7 @@ const userSchema = new mongoose.Schema({
     badge:       { type: String, enum: ['beginner', 'intermediate', 'advanced', 'expert'], default: 'beginner' },
     isVisible:   { type: Boolean, default: true },
   }],
+  refreshTokens: [String],
 }, { timestamps: true });
 
 userSchema.index({ plan: 1 });
