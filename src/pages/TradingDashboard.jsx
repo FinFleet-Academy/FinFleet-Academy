@@ -476,7 +476,7 @@ const TradingDashboard = () => {
           {/* QUIZZES TAB (Preserved) */}
           {activeTab === 'quizzes' && (
             <motion.div key="quizzes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-               {quizzes.map(quiz => (
+                {quizzes.map(quiz => (
                   <div key={quiz._id} className="bg-white dark:bg-slate-900 rounded-[2.5rem] p-10 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all group">
                      <div className="w-14 h-14 bg-brand-50 dark:bg-brand-900/20 rounded-2xl flex items-center justify-center mb-8"><Target className="w-8 h-8 text-brand-600" /></div>
                      <h4 className="text-xl font-black dark:text-white uppercase tracking-tighter mb-4">{quiz.title}</h4>
@@ -487,6 +487,12 @@ const TradingDashboard = () => {
                      </div>
                   </div>
                ))}
+               {quizzes.length === 0 && (
+                  <div className="col-span-full py-20 text-center">
+                     <BrainCircuit className="w-16 h-16 text-slate-300 dark:text-slate-800 mx-auto mb-6 opacity-20" />
+                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">No quizzes available at the moment</p>
+                  </div>
+               )}
             </motion.div>
           )}
 

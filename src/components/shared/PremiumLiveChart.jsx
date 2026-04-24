@@ -212,4 +212,4 @@ const PremiumLiveChart = () => {
   );
 };
 
-export default LiveChartHero;
+export default PremiumLiveChart;
