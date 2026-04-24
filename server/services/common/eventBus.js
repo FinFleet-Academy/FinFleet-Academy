@@ -6,18 +6,38 @@ import IORedis from 'ioredis';
  */
 class EventBus {
   constructor() {
-    this.redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
-    this.publisher = new IORedis(this.redisUrl, { retryStrategy: (times) => Math.min(times * 50, 2000) });
-    this.subscriber = new IORedis(this.redisUrl, { retryStrategy: (times) => Math.min(times * 50, 2000) });
+    this.isEnabled = !!process.env.REDIS_URL;
+    if (!this.isEnabled) {
+      console.warn('[EventBus]: REDIS_URL not set. Event-driven features are disabled.');
+      return;
+    }
+
+    this.redisUrl = process.env.REDIS_URL;
+    const redisOptions = {
+      maxRetriesPerRequest: null,
+      enableReadyCheck: false,
+      retryStrategy: (times) => Math.min(times * 100, 10000)
+    };
+
+    this.publisher = new IORedis(this.redisUrl, redisOptions);
+    this.subscriber = new IORedis(this.redisUrl, redisOptions);
     
-    this.publisher.on('error', (err) => console.error('[EventBus] Publisher Error:', err));
-    this.subscriber.on('error', (err) => console.error('[EventBus] Subscriber Error:', err));
+    this.publisher.on('error', (err) => {
+      if (err.code === 'ECONNREFUSED') return; // Silence connection noise
+      console.error('[EventBus] Publisher Error:', err.message);
+    });
+    
+    this.subscriber.on('error', (err) => {
+      if (err.code === 'ECONNREFUSED') return;
+      console.error('[EventBus] Subscriber Error:', err.message);
+    });
   }
 
   /**
    * 📤 Broadcasts an event to all listening services
    */
   async publish(event, data) {
+    if (!this.isEnabled) return;
     try {
       const payload = JSON.stringify({
         event,
@@ -38,6 +58,7 @@ class EventBus {
    * 📥 Subscribes to the platform-wide event stream
    */
   subscribe(callback) {
+    if (!this.isEnabled) return;
     this.subscriber.subscribe('finfleet:events');
     this.subscriber.on('message', (channel, message) => {
       if (channel === 'finfleet:events') {
