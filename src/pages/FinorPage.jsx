@@ -8,6 +8,7 @@ import {
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { Link } from 'react-router-dom';
+import { CardSkeleton } from '../components/shared/Skeleton';
 
 const FinorPage = () => {
   const [newsList, setNewsList] = useState([]);
@@ -156,9 +157,7 @@ const FinorPage = () => {
 
                   <div className="space-y-10">
                      {loading ? (
-                        [1,2,3].map(i => (
-                          <div key={i} className="animate-pulse bg-white dark:bg-slate-900 rounded-[2.5rem] p-10 h-64 border border-slate-100 dark:border-slate-800" />
-                        ))
+                        [1,2,3].map(i => <CardSkeleton key={i} />)
                      ) : (
                         newsList.map((news) => (
                            <motion.div 

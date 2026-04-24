@@ -18,4 +18,28 @@ const logger = winston.createLogger({
   ],
 });
 
+// Middleware for logging response time
+export const logResponseTime = (req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    if (duration > 500) {
+      logger.warn(`Slow Request: ${req.method} ${req.originalUrl} - ${duration}ms`, {
+        method: req.method,
+        url: req.originalUrl,
+        duration,
+        status: res.statusCode
+      });
+    } else {
+      logger.info(`${req.method} ${req.originalUrl} - ${duration}ms`, {
+        method: req.method,
+        url: req.originalUrl,
+        duration,
+        status: res.statusCode
+      });
+    }
+  });
+  next();
+};
+
 export default logger;

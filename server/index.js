@@ -39,10 +39,12 @@ import liveClassRoutes from './routes/liveClassRoutes.js';
 import stockRoutes from './routes/stockRoutes.js';
 import stockSimulator from './services/stockSimulator.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
+import { logResponseTime } from './utils/logger.js';
 
 dotenv.config();
 
 const app = express();
+app.use(logResponseTime);
 const PORT = process.env.PORT || 5000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -96,9 +98,11 @@ app.use('/api', apiLimiter);
 // Health Check
 app.get('/api/health', (req, res) => {
   res.status(200).json({ 
-    status: 'healthy', 
+    status: 'ok', 
     timestamp: new Date().toISOString(),
-    uptime: process.uptime()
+    uptime: `${Math.floor(process.uptime())}s`,
+    memoryUsage: process.memoryUsage().heapUsed,
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
