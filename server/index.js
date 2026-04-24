@@ -42,6 +42,7 @@ import liveClassRoutes from './routes/liveClassRoutes.js';
 import stockRoutes from './routes/stockRoutes.js';
 import auditRoutes from './routes/auditRoutes.js';
 import stockSimulator from './services/stockSimulator.js';
+import MarketStreamer from './services/intelligence-service/marketStreamer.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 import { requestTracer } from './utils/logger.js';
 import { cacheService } from './services/cacheService.js';
@@ -202,6 +203,15 @@ const initSocketServer = async () => {
 
 await cacheService.connect();
 initSocketServer();
+
+// Initialize Pro Intelligence Streamer
+const intelStreamer = new MarketStreamer();
+intelStreamer.init(httpServer);
+
+// Link Simulator to Intelligence Streamer
+stockSimulator.on('tick', (tick) => {
+  intelStreamer.injectTick(tick.symbol, tick);
+});
 
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/finfleet')
   .then(() => {

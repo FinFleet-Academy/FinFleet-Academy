@@ -50,8 +50,10 @@ const AdvancedChart = ({
       : chart.addAreaSeries({ lineColor: '#6366f1', topColor: 'rgba(99, 102, 241, 0.3)', bottomColor: 'rgba(99, 102, 241, 0.05)' });
 
     const handleResize = () => {
+      if (!chartContainerRef.current) return;
       const width = chartContainerRef.current.clientWidth;
       const height = chartContainerRef.current.clientHeight;
+      if (width === 0 || height === 0) return; // Guard against zero-size containers
       chart.applyOptions({ width, height });
       setDimensions({ width, height });
     };
