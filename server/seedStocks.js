@@ -4,74 +4,48 @@ import Stock from './models/Stock.js';
 
 dotenv.config();
 
-const nifty50Data = [
-  { symbol: "RELIANCE", name: "Reliance Industries Ltd", sector: "Energy", basePrice: 2500 },
-  { symbol: "TCS", name: "Tata Consultancy Services", sector: "IT", basePrice: 3500 },
-  { symbol: "INFY", name: "Infosys Ltd", sector: "IT", basePrice: 1500 },
-  { symbol: "HDFCBANK", name: "HDFC Bank Ltd", sector: "Banking", basePrice: 1600 },
-  { symbol: "ICICIBANK", name: "ICICI Bank Ltd", sector: "Banking", basePrice: 1000 },
-  { symbol: "SBIN", name: "State Bank of India", sector: "Banking", basePrice: 600 },
-  { symbol: "ITC", name: "ITC Ltd", sector: "FMCG", basePrice: 450 },
-  { symbol: "HINDUNILVR", name: "Hindustan Unilever Ltd", sector: "FMCG", basePrice: 2600 },
-  { symbol: "LT", name: "Larsen & Toubro", sector: "Infra", basePrice: 3200 },
-  { symbol: "MARUTI", name: "Maruti Suzuki India Ltd", sector: "Auto", basePrice: 10000 },
-  { symbol: "BHARTIARTL", name: "Bharti Airtel Ltd", sector: "Telecom", basePrice: 1100 },
-  { symbol: "KOTAKBANK", name: "Kotak Mahindra Bank", sector: "Banking", basePrice: 1800 },
-  { symbol: "AXISBANK", name: "Axis Bank Ltd", sector: "Banking", basePrice: 1050 },
-  { symbol: "ADANIENT", name: "Adani Enterprises Ltd", sector: "Metals", basePrice: 3100 },
-  { symbol: "ADANIPORTS", name: "Adani Ports & SEZ", sector: "Logistics", basePrice: 1250 },
-  { symbol: "ASIANPAINT", name: "Asian Paints Ltd", sector: "Consumer Durables", basePrice: 2900 },
-  { symbol: "BAJFINANCE", name: "Bajaj Finance Ltd", sector: "Banking", basePrice: 6500 },
-  { symbol: "BAJAJFINSV", name: "Bajaj Finserv Ltd", sector: "Banking", basePrice: 1600 },
-  { symbol: "COALINDIA", name: "Coal India Ltd", sector: "Energy", basePrice: 450 },
-  { symbol: "DRREDDY", name: "Dr. Reddy's Laboratories", sector: "Pharma", basePrice: 6200 },
-  { symbol: "EICHERMOT", name: "Eicher Motors Ltd", sector: "Auto", basePrice: 4000 },
-  { symbol: "GRASIM", name: "Grasim Industries Ltd", sector: "Cement", basePrice: 2200 },
-  { symbol: "HCLTECH", name: "HCL Technologies Ltd", sector: "IT", basePrice: 1450 },
-  { symbol: "HEROMOTOCO", name: "Hero MotoCorp Ltd", sector: "Auto", basePrice: 4600 },
-  { symbol: "HINDALCO", name: "Hindalco Industries Ltd", sector: "Metals", basePrice: 600 },
-  { symbol: "INDUSINDBK", name: "IndusInd Bank Ltd", sector: "Banking", basePrice: 1500 },
-  { symbol: "JSWSTEEL", name: "JSW Steel Ltd", sector: "Metals", basePrice: 850 },
-  { symbol: "M&M", name: "Mahindra & Mahindra Ltd", sector: "Auto", basePrice: 2000 },
-  { symbol: "NESTLEIND", name: "Nestle India Ltd", sector: "FMCG", basePrice: 2500 },
-  { symbol: "NTPC", name: "NTPC Ltd", sector: "Energy", basePrice: 350 },
-  { symbol: "ONGC", name: "Oil & Natural Gas Corp", sector: "Energy", basePrice: 280 },
-  { symbol: "POWERGRID", name: "Power Grid Corp", sector: "Energy", basePrice: 285 },
-  { symbol: "SUNPHARMA", name: "Sun Pharmaceutical Industries", sector: "Pharma", basePrice: 1600 },
-  { symbol: "TATAMOTORS", name: "Tata Motors Ltd", sector: "Auto", basePrice: 950 },
-  { symbol: "TATASTEEL", name: "Tata Steel Ltd", sector: "Metals", basePrice: 165 },
-  { symbol: "TECHM", name: "Tech Mahindra Ltd", sector: "IT", basePrice: 1250 },
-  { symbol: "TITAN", name: "Titan Company Ltd", sector: "Consumer Durables", basePrice: 3600 },
-  { symbol: "ULTRACEMCO", name: "UltraTech Cement Ltd", sector: "Cement", basePrice: 10000 },
-  { symbol: "WIPRO", name: "Wipro Ltd", sector: "IT", basePrice: 480 },
-  { symbol: "APOLLOHOSP", name: "Apollo Hospitals Enterprise", sector: "Pharma", basePrice: 6300 },
-  { symbol: "BRITANNIA", name: "Britannia Industries Ltd", sector: "FMCG", basePrice: 5000 },
-  { symbol: "CIPLA", name: "Cipla Ltd", sector: "Pharma", basePrice: 1450 },
-  { symbol: "DIVISLAB", name: "Divi's Laboratories Ltd", sector: "Pharma", basePrice: 3800 },
-  { symbol: "HDFCLIFE", name: "HDFC Life Insurance Co", sector: "Insurance", basePrice: 620 },
-  { symbol: "LTIM", name: "LTIMindtree Ltd", sector: "IT", basePrice: 5000 },
-  { symbol: "SBILIFE", name: "SBI Life Insurance Co", sector: "Insurance", basePrice: 1500 },
-  { symbol: "TATACONSUM", name: "Tata Consumer Products", sector: "FMCG", basePrice: 1150 },
-  { symbol: "UPL", name: "UPL Ltd", sector: "Chemicals", basePrice: 500 }
+const stocks = [
+  { symbol: 'RELIANCE', name: 'Reliance Industries', sector: 'Energy', basePrice: 2500, currentPrice: 2542.45 },
+  { symbol: 'TCS', name: 'Tata Consultancy Services', sector: 'IT', basePrice: 3400, currentPrice: 3412.10 },
+  { symbol: 'HDFCBANK', name: 'HDFC Bank', sector: 'Banking', basePrice: 1600, currentPrice: 1612.40 },
+  { symbol: 'INFY', name: 'Infosys', sector: 'IT', basePrice: 1500, currentPrice: 1567.80 },
+  { symbol: 'ICICIBANK', name: 'ICICI Bank', sector: 'Banking', basePrice: 900, currentPrice: 915.20 },
+  { symbol: 'HINDUNILVR', name: 'Hindustan Unilever', sector: 'FMCG', basePrice: 2500, currentPrice: 2534.50 },
+  { symbol: 'SBI', name: 'State Bank of India', sector: 'Banking', basePrice: 550, currentPrice: 567.90 },
+  { symbol: 'BHARTIARTL', name: 'Bharti Airtel', sector: 'Telecom', basePrice: 750, currentPrice: 789.20 },
+  { symbol: 'ITC', name: 'ITC Limited', sector: 'FMCG', basePrice: 380, currentPrice: 392.40 },
+  { symbol: 'KOTAKBANK', name: 'Kotak Mahindra Bank', sector: 'Banking', basePrice: 1800, currentPrice: 1845.60 },
+  { symbol: 'LT', name: 'Larsen & Toubro', sector: 'Construction', basePrice: 2200, currentPrice: 2256.70 },
+  { symbol: 'AXISBANK', name: 'Axis Bank', sector: 'Banking', basePrice: 850, currentPrice: 872.30 },
+  { symbol: 'ASIANPAINT', name: 'Asian Paints', sector: 'Consumer Goods', basePrice: 2800, currentPrice: 2845.90 },
+  { symbol: 'MARUTI', name: 'Maruti Suzuki', sector: 'Automobile', basePrice: 8500, currentPrice: 8678.40 },
+  { symbol: 'TITAN', name: 'Titan Company', sector: 'Consumer Goods', basePrice: 2500, currentPrice: 2567.20 },
+  { symbol: 'SUNPHARMA', name: 'Sun Pharmaceutical', sector: 'Pharma', basePrice: 950, currentPrice: 978.50 },
+  { symbol: 'ULTRACEMCO', name: 'UltraTech Cement', sector: 'Construction', basePrice: 7200, currentPrice: 7345.10 },
+  { symbol: 'BAJFINANCE', name: 'Bajaj Finance', sector: 'Finance', basePrice: 5800, currentPrice: 5912.30 },
+  { symbol: 'WIPRO', name: 'Wipro Limited', sector: 'IT', basePrice: 380, currentPrice: 395.60 },
+  { symbol: 'ADANIENT', name: 'Adani Enterprises', sector: 'Energy', basePrice: 1800, currentPrice: 1845.20 },
+  { symbol: 'AAPL', name: 'Apple Inc.', sector: 'Tech', market: 'US', basePrice: 180, currentPrice: 189.45 },
+  { symbol: 'TSLA', name: 'Tesla, Inc.', sector: 'Auto', market: 'US', basePrice: 160, currentPrice: 172.60 },
+  { symbol: 'MSFT', name: 'Microsoft Corp', sector: 'Tech', market: 'US', basePrice: 400, currentPrice: 412.30 },
+  { symbol: 'NVDA', name: 'Nvidia Corp', sector: 'Tech', market: 'US', basePrice: 800, currentPrice: 845.20 }
 ];
 
 const seedStocks = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log('Connected to MongoDB for seeding...');
+    await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/finfleet');
+    console.log('Connected to MongoDB');
 
-    // Clear existing stocks (optional, but good for resetting simulation)
-    await Stock.deleteMany({ market: 'INDIA' });
+    for (const stockData of stocks) {
+      await Stock.findOneAndUpdate(
+        { symbol: stockData.symbol },
+        { ...stockData, changePercent: ((stockData.currentPrice - stockData.basePrice) / stockData.basePrice * 100).toFixed(2) },
+        { upsert: true, new: true }
+      );
+    }
 
-    const stocksToInsert = nifty50Data.map(s => ({
-      ...s,
-      currentPrice: s.basePrice,
-      history: [{ price: s.basePrice, timestamp: new Date() }]
-    }));
-
-    await Stock.insertMany(stocksToInsert);
-    console.log('NIFTY 50 Stocks seeded successfully!');
-    process.exit();
+    console.log('Stocks seeded successfully');
+    process.exit(0);
   } catch (err) {
     console.error('Seeding error:', err);
     process.exit(1);

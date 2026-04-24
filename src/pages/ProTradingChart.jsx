@@ -21,35 +21,47 @@ const ProTradingChart = () => {
   const [showIndicators, setShowIndicators] = useState(false);
   const [isStockSelectorOpen, setIsStockSelectorOpen] = useState(false);
   const [chartData, setChartData] = useState([]);
-  const [watchlist, setWatchlist] = useState([
-    { symbol: 'RELIANCE', currentPrice: 2542.45, changePercent: 2.4 },
-    { symbol: 'TCS', currentPrice: 3412.10, changePercent: -1.2 },
-    { symbol: 'INFY', currentPrice: 1567.80, changePercent: 0.8 },
-    { symbol: 'AAPL', currentPrice: 189.45, changePercent: 1.5 },
-    { symbol: 'TSLA', currentPrice: 172.60, changePercent: -3.2 },
-  ]);
+  const [watchlist, setWatchlist] = useState([]);
+  const [sectors, setSectors] = useState(['All']);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedSector, setSelectedSector] = useState('All');
+  const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 });
 
-  // Fetch all stocks from API
-  useEffect(() => {
-    const fetchStocks = async () => {
-      try {
-        const { data } = await axios.get('/api/stocks');
-        if (data && data.length > 0) {
-          setWatchlist(data);
-          // Set initial active stock to the first one if current not in list
-          if (!data.find(s => s.symbol === activeStock.symbol)) {
-            setActiveStock({ 
-              symbol: data[0].symbol, 
-              name: data[0].name, 
-              price: data[0].currentPrice 
-            });
-          }
+  // Fetch stocks and sectors
+  const fetchStocks = useCallback(async (page = 1) => {
+    try {
+      const { data } = await axios.get('/api/stocks', {
+        params: { search: searchQuery, sector: selectedSector, page, limit: 15 }
+      });
+      if (data && data.stocks) {
+        setWatchlist(data.stocks);
+        setPagination({ page: data.page, pages: data.pages, total: data.total });
+        
+        // Update active stock price if found in current page
+        const current = data.stocks.find(s => s.symbol === activeStock.symbol);
+        if (current) {
+          setActiveStock(prev => ({ ...prev, price: current.currentPrice }));
         }
+      }
+    } catch (err) {
+      console.error("Error fetching stocks:", err);
+    }
+  }, [searchQuery, selectedSector, activeStock.symbol]);
+
+  useEffect(() => {
+    fetchStocks(pagination.page);
+  }, [fetchStocks, pagination.page]);
+
+  useEffect(() => {
+    const fetchSectors = async () => {
+      try {
+        const { data } = await axios.get('/api/stocks/sectors');
+        setSectors(data);
       } catch (err) {
-        console.error("Error fetching stocks:", err);
+        console.error("Error fetching sectors:", err);
       }
     };
-    fetchStocks();
+    fetchSectors();
   }, []);
   const [orders, setOrders] = useState([]);
   const [markers, setMarkers] = useState([]);
@@ -174,10 +186,10 @@ const ProTradingChart = () => {
   };
 
   return (
-    <div className="h-screen w-full bg-[#020617] text-slate-300 flex flex-col overflow-hidden font-sans">
+    <div className="h-screen w-full bg-[#020617] text-slate-300 flex flex-col font-sans">
       
       {/* 1. TOP CONTROL BAR */}
-      <div className="h-16 border-b border-slate-800 flex items-center justify-between px-6 bg-slate-900/50 backdrop-blur-md">
+      <div className="h-16 border-b border-slate-800 flex items-center justify-between px-6 bg-slate-900/50 backdrop-blur-md relative z-[100]">
         <div className="flex items-center space-x-6">
           <Link to="/trading" className="p-2 hover:bg-slate-800 rounded-lg transition-colors">
             <ArrowLeft className="w-5 h-5" />
@@ -212,29 +224,46 @@ const ProTradingChart = () => {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="fixed top-16 left-[120px] w-80 bg-[#0F172A] border border-slate-800 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-[300] overflow-hidden"
+                    className="absolute top-full left-0 mt-2 w-80 bg-[#0F172A] border border-slate-800 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-[300] overflow-hidden"
                   >
-                    <div className="p-4">
-                      <div className="relative mb-4">
+                    <div className="p-4 flex flex-col h-[500px]">
+                      <div className="relative mb-4 shrink-0">
                         <Search className="absolute left-3 top-3 w-4 h-4 text-slate-500" />
                         <input 
                           type="text" 
                           placeholder="Search 500+ stocks..." 
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
                           className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-brand-500 transition-colors"
                         />
                       </div>
-                      <div className="max-h-[400px] overflow-y-auto custom-scrollbar space-y-1">
+
+                      {/* Sector Filters */}
+                      <div className="flex overflow-x-auto space-x-2 mb-4 pb-2 custom-scrollbar shrink-0">
+                        {sectors.map(s => (
+                          <button 
+                            key={s}
+                            onClick={() => setSelectedSector(s)}
+                            className={`px-3 py-1.5 rounded-lg text-[8px] font-black uppercase tracking-widest whitespace-nowrap transition-all border ${selectedSector === s ? 'bg-brand-500 border-brand-500 text-white' : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-white'}`}
+                          >
+                            {s}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Stock List */}
+                      <div className="flex-grow overflow-y-auto custom-scrollbar space-y-1 mb-4">
                         {watchlist.map(s => (
                           <div 
                             key={s.symbol}
                             onClick={() => selectStock({ symbol: s.symbol, name: s.symbol, price: s.currentPrice })}
-                            className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all ${activeStock.symbol === s.symbol ? 'bg-brand-500/10 border border-brand-500/20' : 'hover:bg-white/5'}`}
+                            className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all ${activeStock.symbol === s.symbol ? 'bg-brand-500/10 border border-brand-500/20' : 'hover:bg-white/5 border border-transparent'}`}
                           >
                             <div className="flex items-center space-x-3">
                               <div className="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center text-[10px] font-black text-slate-400">{s.symbol[0]}</div>
                               <div>
                                 <p className="text-[11px] font-black text-white">{s.symbol}</p>
-                                <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">NSE India</p>
+                                <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">{s.sector || 'NSE India'}</p>
                               </div>
                             </div>
                             <div className="text-right">
@@ -245,6 +274,34 @@ const ProTradingChart = () => {
                             </div>
                           </div>
                         ))}
+                        {watchlist.length === 0 && (
+                          <div className="py-10 text-center">
+                            <Activity className="w-8 h-8 text-slate-700 mx-auto mb-2 opacity-20" />
+                            <p className="text-[10px] font-bold text-slate-500 uppercase">No stocks found</p>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Pagination */}
+                      <div className="shrink-0 flex items-center justify-between pt-4 border-t border-slate-800">
+                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{pagination.total} Assets</span>
+                        <div className="flex items-center space-x-2">
+                           <button 
+                             disabled={pagination.page === 1}
+                             onClick={() => setPagination(p => ({...p, page: p.page - 1}))}
+                             className="p-1.5 bg-slate-800 rounded-lg hover:bg-slate-700 disabled:opacity-20 transition-all"
+                           >
+                              <ArrowLeft className="w-3 h-3" />
+                           </button>
+                           <span className="text-[10px] font-black text-slate-400">{pagination.page} / {pagination.pages}</span>
+                           <button 
+                             disabled={pagination.page === pagination.pages}
+                             onClick={() => setPagination(p => ({...p, page: p.page + 1}))}
+                             className="p-1.5 bg-slate-800 rounded-lg hover:bg-slate-700 disabled:opacity-20 transition-all"
+                           >
+                              <ChevronRight className="w-3 h-3" />
+                           </button>
+                        </div>
                       </div>
                     </div>
                   </motion.div>
@@ -311,13 +368,62 @@ const ProTradingChart = () => {
             <button onClick={() => handleTrade('SELL')} className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition-all shadow-lg shadow-red-500/20 ml-1 active:scale-95">Sell</button>
           </div>
 
-          <button 
-            onClick={() => setIsExplainOpen(true)}
-            className="flex items-center space-x-2 px-4 py-1.5 bg-brand-500/10 hover:bg-brand-500/20 text-brand-500 border border-brand-500/30 rounded-lg transition-all group"
-          >
-            <Brain className="w-4 h-4 group-hover:scale-110 transition-transform" />
-            <span className="text-[10px] font-black uppercase tracking-widest">Explain Chart</span>
-          </button>
+          <div className="relative">
+            <button 
+              onClick={() => setIsExplainOpen(!isExplainOpen)}
+              className={`flex items-center space-x-2 px-4 py-1.5 transition-all group rounded-lg border ${isExplainOpen ? 'bg-brand-500 text-white border-brand-500' : 'bg-brand-500/10 hover:bg-brand-500/20 text-brand-500 border-brand-500/30'}`}
+            >
+              <Brain className="w-4 h-4 group-hover:scale-110 transition-transform" />
+              <span className="text-[10px] font-black uppercase tracking-widest">Explain Chart</span>
+            </button>
+
+            {/* AI EXPLAIN DROPDOWN */}
+            <AnimatePresence>
+              {isExplainOpen && (
+                <>
+                  <div className="fixed inset-0 z-[100]" onClick={() => setIsExplainOpen(false)} />
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute top-full right-0 mt-3 w-[450px] bg-[#0F172A] border border-slate-800 rounded-[2rem] p-8 shadow-[0_20px_60px_rgba(0,0,0,0.6)] z-[110]"
+                  >
+                    <div className="flex items-center space-x-4 mb-6">
+                      <div className="w-12 h-12 bg-brand-500/20 rounded-2xl flex items-center justify-center">
+                        <Sparkles className="w-6 h-6 text-brand-500" />
+                      </div>
+                      <div>
+                        <h2 className="text-xl font-black text-white">AI Analysis</h2>
+                        <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">{activeStock.symbol} Intelligence</p>
+                      </div>
+                    </div>
+
+                    <div className="bg-slate-950/50 border border-slate-800 rounded-2xl p-6 mb-6">
+                      <p className="text-slate-300 leading-relaxed italic text-sm">
+                        "{explainChart(activeStock.symbol, marketAnalysis)}"
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-slate-950 border border-slate-800 p-4 rounded-2xl">
+                        <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Trend</p>
+                        <div className="flex items-center space-x-3">
+                          <div className="flex-grow h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                            <div className="h-full bg-brand-500" style={{ width: `${marketAnalysis?.trendStrength * 10}%` }} />
+                          </div>
+                          <span className="text-xs font-black text-white">{marketAnalysis?.trendStrength}/10</span>
+                        </div>
+                      </div>
+                      <div className="bg-slate-950 border border-slate-800 p-4 rounded-2xl">
+                        <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Risk</p>
+                        <p className={`text-xs font-black ${marketAnalysis?.riskLevel === 'High' ? 'text-red-500' : 'text-emerald-500'}`}>{marketAnalysis?.riskLevel}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
+          </div>
 
           <div className="h-6 w-px bg-slate-800" />
 
@@ -353,65 +459,8 @@ const ProTradingChart = () => {
             <Maximize2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
           </button>
         </div>
+      </div>
 
-        {/* 6. AI EXPLAIN MODAL */}
-        <AnimatePresence>
-          {isExplainOpen && (
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-6"
-              onClick={() => setIsExplainOpen(false)}
-            >
-              <motion.div 
-                initial={{ scale: 0.9, y: 20 }}
-                animate={{ scale: 1, y: 0 }}
-                className="bg-slate-900 border border-slate-800 max-w-2xl w-full rounded-[2.5rem] p-10 shadow-2xl"
-                onClick={e => e.stopPropagation()}
-              >
-                <div className="flex items-center space-x-4 mb-8">
-                  <div className="w-14 h-14 bg-brand-500/20 rounded-2xl flex items-center justify-center">
-                    <Sparkles className="w-8 h-8 text-brand-500" />
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-black text-white">AI Market Explanation</h2>
-                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Analyzing {activeStock.symbol} chart patterns</p>
-                  </div>
-                </div>
-
-                <div className="bg-slate-950/50 border border-slate-800 rounded-3xl p-8 mb-8">
-                  <p className="text-slate-300 leading-relaxed italic text-lg">
-                    "{explainChart(activeStock.symbol, marketAnalysis)}"
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 mb-8">
-                  <div className="bg-slate-950 border border-slate-800 p-6 rounded-3xl">
-                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Trend Strength</p>
-                    <div className="flex items-center space-x-3">
-                      <div className="flex-grow h-2 bg-slate-800 rounded-full overflow-hidden">
-                        <div className="h-full bg-brand-500" style={{ width: `${marketAnalysis?.trendStrength * 10}%` }} />
-                      </div>
-                      <span className="text-lg font-black text-white">{marketAnalysis?.trendStrength}/10</span>
-                    </div>
-                  </div>
-                  <div className="bg-slate-950 border border-slate-800 p-6 rounded-3xl">
-                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Market Risk</p>
-                    <p className={`text-lg font-black ${marketAnalysis?.riskLevel === 'High' ? 'text-red-500' : 'text-emerald-500'}`}>{marketAnalysis?.riskLevel}</p>
-                  </div>
-                </div>
-
-                <button 
-                  onClick={() => setIsExplainOpen(false)}
-                  className="w-full py-4 bg-white text-slate-900 font-black uppercase tracking-widest rounded-2xl hover:bg-slate-200 transition-colors"
-                >
-                  Got it, thanks!
-                </button>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* 7. AI INSIGHTS SIDEBAR (BEGINNER MODE) */}
         <AnimatePresence>
