@@ -22,8 +22,19 @@ const AdvancedChart = ({
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
-    // 1. Initialize Lightweight Chart (Canvas-based)
+    // 1. Cleanup any existing chart
+    if (chartRef.current) {
+      chartRef.current.remove();
+      chartRef.current = null;
+    }
+
+    // 2. Initialize Lightweight Chart
+    const width = chartContainerRef.current.clientWidth || 600;
+    const height = chartContainerRef.current.clientHeight || 400;
+
     const chart = createChart(chartContainerRef.current, {
+      width,
+      height,
       layout: {
         background: { type: ColorType.Solid, color: '#020617' },
         textColor: '#94a3b8',
@@ -42,20 +53,23 @@ const AdvancedChart = ({
       },
     });
 
-    chartRef.current = chart;
-    
-    // 2. Add Main Series
-    seriesRef.current = type === 'candlestick' 
-      ? chart.addCandlestickSeries({ upColor: '#10b981', downColor: '#ef4444', borderVisible: false })
-      : chart.addAreaSeries({ lineColor: '#6366f1', topColor: 'rgba(99, 102, 241, 0.3)', bottomColor: 'rgba(99, 102, 241, 0.05)' });
+    // 3. Add Main Series (with safety check)
+    if (chart && typeof chart.addCandlestickSeries === 'function') {
+      seriesRef.current = type === 'candlestick' 
+        ? chart.addCandlestickSeries({ upColor: '#10b981', downColor: '#ef4444', borderVisible: false })
+        : chart.addAreaSeries({ lineColor: '#6366f1', topColor: 'rgba(99, 102, 241, 0.3)', bottomColor: 'rgba(99, 102, 241, 0.05)' });
+      
+      chartRef.current = chart;
+    }
 
     const handleResize = () => {
-      if (!chartContainerRef.current) return;
-      const width = chartContainerRef.current.clientWidth;
-      const height = chartContainerRef.current.clientHeight;
-      if (width === 0 || height === 0) return; // Guard against zero-size containers
-      chart.applyOptions({ width, height });
-      setDimensions({ width, height });
+      if (!chartContainerRef.current || !chartRef.current) return;
+      const newWidth = chartContainerRef.current.clientWidth;
+      const newHeight = chartContainerRef.current.clientHeight;
+      if (newWidth > 0 && newHeight > 0) {
+        chartRef.current.applyOptions({ width: newWidth, height: newHeight });
+        setDimensions({ width: newWidth, height: newHeight });
+      }
     };
 
     window.addEventListener('resize', handleResize);
@@ -63,7 +77,10 @@ const AdvancedChart = ({
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      chart.remove();
+      if (chartRef.current) {
+        chartRef.current.remove();
+        chartRef.current = null;
+      }
     };
   }, [type]);
 
