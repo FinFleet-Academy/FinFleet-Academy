@@ -1,6 +1,6 @@
 import Queue from 'bull';
 import summarizer from './summarizer.js';
-import { EventBus } from '../common/eventBus.js'; // Existing bus
+import EventBus from '../common/eventBus.js';
 
 /**
  * ⚡ FinFleet Pro: Global News Intelligence Pipeline
@@ -8,7 +8,13 @@ import { EventBus } from '../common/eventBus.js'; // Existing bus
  */
 class NewsPipeline {
   constructor() {
-    this.newsQueue = new Queue('news-processing', process.env.REDIS_URL || 'redis://localhost:6379');
+    this.isEnabled = !!process.env.REDIS_URL;
+    if (!this.isEnabled) {
+      console.warn('[NewsPipeline] REDIS_URL not set. Pipeline disabled.');
+      return;
+    }
+
+    this.newsQueue = new Queue('news-processing', process.env.REDIS_URL);
     
     // Process Queue
     this.newsQueue.process(async (job) => {
@@ -33,6 +39,7 @@ class NewsPipeline {
    * 📡 Ingest News from Global Sources
    */
   async ingest(article) {
+    if (!this.isEnabled) return;
     // Add to queue with deduplication key (fingerprint)
     const fingerprint = summarizer.generateFingerprint(article.content);
     

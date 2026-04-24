@@ -9,6 +9,13 @@ export const validate = (schema) => (req, res, next) => {
     });
     next();
   } catch (error) {
+    console.error(`[Validation Error] Path: ${req.path}`, {
+      body: req.body,
+      errors: error.errors.map(err => ({
+        path: err.path.join('.'),
+        message: err.message
+      }))
+    });
     return res.status(400).json({
       status: 'fail',
       message: 'Validation failed',
