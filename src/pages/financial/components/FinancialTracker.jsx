@@ -129,39 +129,41 @@ const FinancialTracker = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
         {/* Income vs Expense Chart */}
-        <motion.div {...fadeInUp} transition={{ delay: 0.2 }} className="bg-white dark:bg-slate-900 rounded-[3rem] p-8 md:p-10 border border-slate-200 dark:border-slate-800 shadow-sm h-[400px]">
+        <motion.div {...fadeInUp} transition={{ delay: 0.2 }} className="bg-white dark:bg-slate-900 rounded-[3rem] p-8 md:p-10 border border-slate-200 dark:border-slate-800 shadow-sm min-h-[400px]">
           <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-8">Monthly Cashflow Profile</h3>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={[
-              { name: 'Income', amount: (data?.transactions || []).filter(t => t.type === 'Income').reduce((a,b)=>a+b.amount,0) },
-              { name: 'Expense', amount: (data?.transactions || []).filter(t => t.type === 'Expense').reduce((a,b)=>a+b.amount,0) }
-            ]}>
-              <XAxis dataKey="name" stroke="#94a3b8" fontSize={10} axisLine={false} tickLine={false} />
-              <YAxis hide />
-              <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ borderRadius: '1rem', border: 'none' }} />
-              <Bar dataKey="amount" radius={[12, 12, 0, 0]}>
-                <Cell fill="#10b981" />
-                <Cell fill="#ef4444" />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%" debounce={100}>
+              <BarChart data={[
+                { name: 'Income', amount: (data?.transactions || []).filter(t => t.type === 'Income').reduce((a,b)=>a+b.amount,0) },
+                { name: 'Expense', amount: (data?.transactions || []).filter(t => t.type === 'Expense').reduce((a,b)=>a+b.amount,0) }
+              ]}>
+                <XAxis dataKey="name" stroke="#94a3b8" fontSize={10} axisLine={false} tickLine={false} />
+                <YAxis hide />
+                <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ borderRadius: '1rem', border: 'none' }} />
+                <Bar dataKey="amount" radius={[12, 12, 0, 0]}>
+                  <Cell fill="#10b981" />
+                  <Cell fill="#ef4444" />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </motion.div>
 
         {/* Investment Distribution */}
         <motion.div {...fadeInUp} transition={{ delay: 0.3 }} className="bg-white dark:bg-slate-900 rounded-[3rem] p-8 md:p-10 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col md:flex-row items-center">
-           <div className="w-full md:w-1/2 h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie 
-                    data={(data?.profile?.investments || []).map(i => ({ name: i.type, value: i.investedAmount }))} 
-                    innerRadius={70} outerRadius={100} paddingAngle={5} dataKey="value"
-                  >
-                    {(data?.profile?.investments || []).map((entry, index) => <Cell key={index} fill={COLORS[index % COLORS.length]} />)}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-           </div>
+            <div className="w-full md:w-1/2 h-[300px]">
+               <ResponsiveContainer width="100%" height="100%" debounce={100}>
+                 <PieChart>
+                   <Pie 
+                     data={(data?.profile?.investments || []).map(i => ({ name: i.type, value: i.investedAmount }))} 
+                     innerRadius={70} outerRadius={100} paddingAngle={5} dataKey="value"
+                   >
+                     {(data?.profile?.investments || []).map((entry, index) => <Cell key={index} fill={COLORS[index % COLORS.length]} />)}
+                   </Pie>
+                   <Tooltip />
+                 </PieChart>
+               </ResponsiveContainer>
+            </div>
            <div className="w-full md:w-1/2 space-y-4">
               <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Portfolio Allocation</h3>
               {(data?.profile?.investments || []).map((inv, i) => (
