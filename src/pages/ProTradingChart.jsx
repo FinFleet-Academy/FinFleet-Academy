@@ -4,12 +4,14 @@ import {
   TrendingUp, Activity, Search, Filter, Globe, Eye, 
   ArrowLeft, Maximize2, Settings, Download, Share2,
   ChevronDown, Layers, Crosshair, Zap, ShieldCheck,
-  Plus, Minus, Clock, Briefcase, History, TrendingDown
+  Plus, Minus, Clock, Briefcase, History, TrendingDown,
+  Sparkles, Brain, HelpCircle, ChevronRight
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import AdvancedChart from '../components/shared/AdvancedChart';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import { analyzeMarket, getTradeFeedback, explainChart } from '../services/aiEngine';
 
 const ProTradingChart = () => {
   // 1. STATE
@@ -53,6 +55,9 @@ const ProTradingChart = () => {
   const [markers, setMarkers] = useState([]);
   const [isLive, setIsLive] = useState(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isBeginnerMode, setIsBeginnerMode] = useState(true);
+  const [isExplainOpen, setIsExplainOpen] = useState(false);
+  const [marketAnalysis, setMarketAnalysis] = useState(null);
   const [chartConfig, setChartConfig] = useState({
     showGrid: true,
     showLabels: true,
@@ -61,6 +66,13 @@ const ProTradingChart = () => {
   });
 
   // 2. HANDLERS
+  useEffect(() => {
+    if (chartData.length > 20) {
+      const analysis = analyzeMarket(chartData);
+      setMarketAnalysis(analysis);
+    }
+  }, [chartData]);
+
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch(err => {
@@ -147,7 +159,13 @@ const ProTradingChart = () => {
 
     setOrders([newOrder, ...orders]);
     setMarkers([...markers, newMarker]);
-    toast.success(`${type} Order Executed at ₹${currentPrice.toFixed(2)}`);
+    
+    // AI FEEDBACK
+    const feedback = getTradeFeedback(type, marketAnalysis);
+    toast(feedback, {
+      icon: type === 'BUY' ? '🟢' : '🔴',
+      style: { background: '#0F172A', color: '#fff', border: '1px solid #1E293B', fontSize: '12px', fontWeight: 'bold' }
+    });
   };
 
   const selectStock = (stock) => {
@@ -292,6 +310,45 @@ const ProTradingChart = () => {
           </div>
 
           <button 
+            onClick={() => setIsExplainOpen(true)}
+            className="flex items-center space-x-2 px-4 py-1.5 bg-brand-500/10 hover:bg-brand-500/20 text-brand-500 border border-brand-500/30 rounded-lg transition-all group"
+          >
+            <Brain className="w-4 h-4 group-hover:scale-110 transition-transform" />
+            <span className="text-[10px] font-black uppercase tracking-widest">Explain Chart</span>
+          </button>
+
+          <div className="h-6 w-px bg-slate-800" />
+
+          {/* Beginner Mode Toggle */}
+          <div className="flex items-center space-x-3 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800">
+            <Sparkles className={`w-4 h-4 ${isBeginnerMode ? 'text-amber-400' : 'text-slate-600'}`} />
+            <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Beginner Mode</span>
+            <button 
+              onClick={() => setIsBeginnerMode(!isBeginnerMode)}
+              className={`w-8 h-4 rounded-full transition-colors relative ${isBeginnerMode ? 'bg-amber-500' : 'bg-slate-700'}`}
+            >
+              <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all ${isBeginnerMode ? 'left-4.5' : 'left-0.5'}`} />
+            </button>
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-4">
+          <button 
+            onClick={() => setIsLive(!isLive)}
+            className="flex items-center space-x-2 mr-4 group"
+          >
+            <div className={`w-2 h-2 rounded-full ${isLive ? 'bg-emerald-500 animate-pulse' : 'bg-slate-600'}`} />
+            <span className="text-[9px] font-black uppercase text-slate-400 group-hover:text-white transition-colors">
+              {isLive ? 'Live Connection' : 'Paused'}
+            </span>
+          </button>
+          
+          <div className="flex items-center bg-slate-950 rounded-xl p-1 border border-slate-800 mr-4">
+            <button onClick={() => handleTrade('BUY')} className="px-6 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition-all shadow-lg shadow-emerald-500/20 active:scale-95">Buy</button>
+            <button onClick={() => handleTrade('SELL')} className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition-all shadow-lg shadow-red-500/20 ml-1 active:scale-95">Sell</button>
+          </div>
+
+          <button 
             onClick={() => setIsSettingsOpen(!isSettingsOpen)}
             className={`p-2 rounded-lg transition-colors ${isSettingsOpen ? 'bg-brand-500 text-white shadow-lg' : 'hover:bg-slate-800'}`}
           >
@@ -305,6 +362,119 @@ const ProTradingChart = () => {
             <Maximize2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
           </button>
         </div>
+
+        {/* 6. AI EXPLAIN MODAL */}
+        <AnimatePresence>
+          {isExplainOpen && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/80 backdrop-blur-md z-[500] flex items-center justify-center p-6"
+              onClick={() => setIsExplainOpen(false)}
+            >
+              <motion.div 
+                initial={{ scale: 0.9, y: 20 }}
+                animate={{ scale: 1, y: 0 }}
+                className="bg-slate-900 border border-slate-800 max-w-2xl w-full rounded-[2.5rem] p-10 shadow-2xl"
+                onClick={e => e.stopPropagation()}
+              >
+                <div className="flex items-center space-x-4 mb-8">
+                  <div className="w-14 h-14 bg-brand-500/20 rounded-2xl flex items-center justify-center">
+                    <Sparkles className="w-8 h-8 text-brand-500" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-black text-white">AI Market Explanation</h2>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Analyzing {activeStock.symbol} chart patterns</p>
+                  </div>
+                </div>
+
+                <div className="bg-slate-950/50 border border-slate-800 rounded-3xl p-8 mb-8">
+                  <p className="text-slate-300 leading-relaxed italic text-lg">
+                    "{explainChart(activeStock.symbol, marketAnalysis)}"
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                  <div className="bg-slate-950 border border-slate-800 p-6 rounded-3xl">
+                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Trend Strength</p>
+                    <div className="flex items-center space-x-3">
+                      <div className="flex-grow h-2 bg-slate-800 rounded-full overflow-hidden">
+                        <div className="h-full bg-brand-500" style={{ width: `${marketAnalysis?.trendStrength * 10}%` }} />
+                      </div>
+                      <span className="text-lg font-black text-white">{marketAnalysis?.trendStrength}/10</span>
+                    </div>
+                  </div>
+                  <div className="bg-slate-950 border border-slate-800 p-6 rounded-3xl">
+                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Market Risk</p>
+                    <p className={`text-lg font-black ${marketAnalysis?.riskLevel === 'High' ? 'text-red-500' : 'text-emerald-500'}`}>{marketAnalysis?.riskLevel}</p>
+                  </div>
+                </div>
+
+                <button 
+                  onClick={() => setIsExplainOpen(false)}
+                  className="w-full py-4 bg-white text-slate-900 font-black uppercase tracking-widest rounded-2xl hover:bg-slate-200 transition-colors"
+                >
+                  Got it, thanks!
+                </button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* 7. AI INSIGHTS SIDEBAR (BEGINNER MODE) */}
+        <AnimatePresence>
+          {isBeginnerMode && marketAnalysis && (
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="absolute left-6 top-20 w-72 bg-slate-950/40 backdrop-blur-xl border border-white/5 rounded-[2rem] p-6 z-[40]"
+            >
+               <div className="flex items-center space-x-3 mb-6">
+                  <Sparkles className="w-5 h-5 text-amber-400" />
+                  <h3 className="text-[11px] font-black text-white uppercase tracking-widest">AI Market Insights</h3>
+               </div>
+               
+               <div className="space-y-4">
+                  {marketAnalysis.insights.map((insight, i) => (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.1 }}
+                      key={i}
+                      className="flex items-start space-x-3 p-3 bg-white/5 rounded-xl border border-white/5 group hover:bg-white/10 transition-colors"
+                    >
+                       <div className="mt-1 w-1 h-1 bg-amber-400 rounded-full shadow-[0_0_8px_#fbbf24]" />
+                       <p className="text-[10px] font-bold text-slate-300 leading-normal">{insight}</p>
+                    </motion.div>
+                  ))}
+               </div>
+
+               <div className="mt-8 pt-6 border-t border-white/5">
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Trend Strength</span>
+                    <span className="text-[10px] font-black text-white">{marketAnalysis.trendStrength}/10</span>
+                  </div>
+                  <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      animate={{ width: `${marketAnalysis.trendStrength * 10}%` }}
+                      className="h-full bg-gradient-to-r from-amber-500 to-brand-500" 
+                    />
+                  </div>
+               </div>
+
+               <div className="mt-6 flex items-center justify-between p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl">
+                  <div className="flex items-center space-x-2">
+                    <Brain className="w-3 h-3 text-amber-500" />
+                    <span className="text-[8px] font-black text-amber-500 uppercase">Pattern Detected</span>
+                  </div>
+                  <ChevronRight className="w-3 h-3 text-amber-500" />
+               </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       <div className="flex-grow flex overflow-hidden">
@@ -316,7 +486,13 @@ const ProTradingChart = () => {
                 symbol={activeStock.symbol} 
                 data={chartData} 
                 timeframe={timeframe} 
-                markers={markers}
+                markers={[
+                  ...markers,
+                  ...(isBeginnerMode && marketAnalysis ? [
+                    { time: chartData[chartData.length - 10].time, price: marketAnalysis.resistance, position: 'aboveBar', color: '#6366f1', text: 'Resistance Level' },
+                    { time: chartData[chartData.length - 10].time, price: marketAnalysis.support, position: 'belowBar', color: '#6366f1', text: 'Support Level' }
+                  ] : [])
+                ]}
                 type={chartType}
                 showIndicators={showIndicators}
                 config={chartConfig}
