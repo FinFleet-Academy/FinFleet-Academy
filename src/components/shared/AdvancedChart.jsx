@@ -93,13 +93,14 @@ const AdvancedChart = ({
 
   // 4. Intelligence Overlay: Liquidity Zones & Predictive Heatmaps
   useEffect(() => {
-    if (!overlayRef.current || !intelligence) return;
+    if (!overlayRef.current || !intelligence || !seriesRef.current) return;
     const ctx = overlayRef.current.getContext('2d');
     ctx.clearRect(0, 0, dimensions.width, dimensions.height);
 
     // 🎨 Render Liquidity Zones
     if (intelligence.liquidityZones) {
       intelligence.liquidityZones.forEach(zone => {
+        if (!seriesRef.current.priceToCoordinate) return;
         const y = seriesRef.current.priceToCoordinate(zone.price);
         if (y === null) return;
         
@@ -118,6 +119,7 @@ const AdvancedChart = ({
     // 🔥 Render Probabilistic Future Heatmaps
     if (intelligence.probabilities) {
       intelligence.probabilities.forEach(prob => {
+        if (!seriesRef.current.priceToCoordinate) return;
         const y = seriesRef.current.priceToCoordinate(prob.level);
         if (y === null) return;
 
