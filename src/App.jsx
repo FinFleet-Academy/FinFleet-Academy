@@ -32,7 +32,7 @@ const CommunityPage = lazy(() => import('./pages/CommunityPage'));
 const PublicProfilePage = lazy(() => import('./pages/PublicProfilePage'));
 const CourseDetailPage = lazy(() => import('./pages/CourseDetailPage'));
 const TradingDashboard = lazy(() => import('./pages/TradingDashboard'));
-const ProTradingChart = lazy(() => import('./pages/ProTradingChart'));
+import ProTradingChart from './pages/ProTradingChart';
 const LiveClasses = lazy(() => import('./pages/LiveClasses'));
 const QuizPage = lazy(() => import('./pages/QuizPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
