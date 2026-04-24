@@ -15,8 +15,10 @@ const ProTradingChart = () => {
   // 1. STATE
   const [activeStock, setActiveStock] = useState({ symbol: 'RELIANCE', name: 'Reliance Industries', price: 2542.45 });
   const [timeframe, setTimeframe] = useState('1H');
+  const [chartType, setChartType] = useState('candlestick'); // candlestick, area
+  const [showIndicators, setShowIndicators] = useState(false);
+  const [isStockSelectorOpen, setIsStockSelectorOpen] = useState(false);
   const [chartData, setChartData] = useState([]);
-  const [stocks, setStocks] = useState([]);
   const [watchlist, setWatchlist] = useState([
     { symbol: 'RELIANCE', price: 2542.45, change: 2.4 },
     { symbol: 'TCS', price: 3412.10, change: -1.2 },
@@ -29,52 +31,52 @@ const ProTradingChart = () => {
   const [isLive, setIsLive] = useState(true);
 
   // 2. GENERATE INITIAL OHLC DATA
-  const generateInitialData = useCallback((basePrice) => {
+  const generateInitialData = useCallback((basePrice, tf) => {
     let data = [];
-    let time = Math.floor(Date.now() / 1000) - 200 * 3600; // 200 bars back
+    let bars = 200;
+    let step = 3600; // 1H default
+    
+    if (tf === '1m') step = 60;
+    if (tf === '5m') step = 300;
+    if (tf === '15m') step = 900;
+    if (tf === '1D') step = 86400;
+
+    let time = Math.floor(Date.now() / 1000) - bars * step;
     let lastClose = basePrice;
 
-    for (let i = 0; i < 200; i++) {
+    for (let i = 0; i < bars; i++) {
+      const volatility = tf === '1D' ? 50 : 10;
       const open = lastClose;
-      const high = open + Math.random() * 20;
-      const low = open - Math.random() * 20;
+      const high = open + Math.random() * volatility;
+      const low = open - Math.random() * volatility;
       const close = low + Math.random() * (high - low);
       
-      data.push({
-        time: time,
-        open,
-        high,
-        low,
-        close
-      });
-      time += 3600; // 1 hour step
+      data.push({ time, open, high, low, close });
+      time += step;
       lastClose = close;
     }
     return data;
   }, []);
 
   useEffect(() => {
-    setChartData(generateInitialData(activeStock.price));
-  }, [activeStock.symbol, generateInitialData]);
+    setChartData(generateInitialData(activeStock.price, timeframe));
+    setMarkers([]); // Clear markers on stock change
+  }, [activeStock.symbol, timeframe, generateInitialData]);
 
   // 3. SIMULATE LIVE UPDATES
   useEffect(() => {
     if (!isLive) return;
-
     const interval = setInterval(() => {
       setChartData(prev => {
         if (prev.length === 0) return prev;
         const lastBar = { ...prev[prev.length - 1] };
         const change = (Math.random() - 0.5) * 5;
-        
         lastBar.close += change;
         if (lastBar.close > lastBar.high) lastBar.high = lastBar.close;
         if (lastBar.close < lastBar.low) lastBar.low = lastBar.close;
-        
         return [...prev.slice(0, -1), lastBar];
       });
     }, 2000);
-
     return () => clearInterval(interval);
   }, [isLive]);
 
@@ -94,15 +96,20 @@ const ProTradingChart = () => {
 
     const newMarker = {
       time: currentTime,
+      price: currentPrice,
       position: type === 'BUY' ? 'belowBar' : 'aboveBar',
       color: type === 'BUY' ? '#10b981' : '#ef4444',
-      shape: type === 'BUY' ? 'arrowUp' : 'arrowDown',
       text: type === 'BUY' ? 'BUY @ ' + Math.round(currentPrice) : 'SELL @ ' + Math.round(currentPrice),
     };
 
     setOrders([newOrder, ...orders]);
     setMarkers([...markers, newMarker]);
     toast.success(`${type} Order Executed at ₹${currentPrice.toFixed(2)}`);
+  };
+
+  const selectStock = (stock) => {
+    setActiveStock(stock);
+    setIsStockSelectorOpen(false);
   };
 
   return (
@@ -117,15 +124,53 @@ const ProTradingChart = () => {
           <div className="h-6 w-px bg-slate-800" />
           
           {/* Stock Selector */}
-          <div className="flex items-center space-x-3 group cursor-pointer">
-            <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center font-black text-white text-xs">FF</div>
-            <div>
-              <div className="flex items-center space-x-2">
-                <span className="text-sm font-black text-white tracking-tighter uppercase">{activeStock.symbol}</span>
-                <ChevronDown className="w-3 h-3 text-slate-500" />
+          <div className="relative">
+            <div 
+              onClick={() => setIsStockSelectorOpen(!isStockSelectorOpen)}
+              className="flex items-center space-x-3 group cursor-pointer hover:bg-slate-800 p-2 rounded-xl transition-all"
+            >
+              <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center font-black text-white text-xs">FF</div>
+              <div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm font-black text-white tracking-tighter uppercase">{activeStock.symbol}</span>
+                  <ChevronDown className="w-3 h-3 text-slate-500" />
+                </div>
+                <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest leading-none">NSE India</p>
               </div>
-              <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest leading-none">NSE India</p>
             </div>
+
+            {/* Dropdown Menu */}
+            <AnimatePresence>
+              {isStockSelectorOpen && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="absolute top-14 left-0 w-64 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl z-50 overflow-hidden"
+                >
+                  <div className="p-3">
+                    <div className="relative mb-2">
+                      <Search className="absolute left-3 top-2.5 w-3 h-3 text-slate-500" />
+                      <input 
+                        type="text" 
+                        placeholder="Search stock..." 
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 pl-9 pr-4 text-[10px] focus:outline-none focus:border-brand-500"
+                      />
+                    </div>
+                    {watchlist.map(s => (
+                      <div 
+                        key={s.symbol}
+                        onClick={() => selectStock({ symbol: s.symbol, name: s.symbol, price: s.price })}
+                        className="flex items-center justify-between p-3 hover:bg-white/5 rounded-xl cursor-pointer transition-colors"
+                      >
+                        <span className="text-[10px] font-black text-white">{s.symbol}</span>
+                        <span className={`text-[10px] font-bold ${s.change >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>{s.change}%</span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           <div className="h-6 w-px bg-slate-800" />
@@ -143,21 +188,47 @@ const ProTradingChart = () => {
             ))}
           </div>
 
-          <button className="flex items-center space-x-2 px-3 py-1.5 hover:bg-slate-800 rounded-lg transition-colors">
-            <Layers className="w-4 h-4 text-brand-500" />
+          <div className="h-6 w-px bg-slate-800" />
+
+          {/* Chart Type Toggle */}
+          <div className="flex items-center bg-slate-950 rounded-lg p-1 border border-slate-800">
+             <button 
+                onClick={() => setChartType('candlestick')}
+                className={`p-1.5 rounded-md transition-all ${chartType === 'candlestick' ? 'bg-slate-800 text-brand-500' : 'text-slate-500'}`}
+             >
+                <Activity className="w-4 h-4" />
+             </button>
+             <button 
+                onClick={() => setChartType('area')}
+                className={`p-1.5 rounded-md transition-all ${chartType === 'area' ? 'bg-slate-800 text-brand-500' : 'text-slate-500'}`}
+             >
+                <TrendingUp className="w-4 h-4" />
+             </button>
+          </div>
+
+          <button 
+            onClick={() => setShowIndicators(!showIndicators)}
+            className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg transition-colors ${showIndicators ? 'bg-brand-500/20 text-brand-500' : 'hover:bg-slate-800'}`}
+          >
+            <Layers className="w-4 h-4" />
             <span className="text-[10px] font-black uppercase">Indicators</span>
           </button>
         </div>
 
         <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2 mr-4">
-            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-            <span className="text-[9px] font-black uppercase text-slate-400">Live Connection</span>
-          </div>
+          <button 
+            onClick={() => setIsLive(!isLive)}
+            className="flex items-center space-x-2 mr-4 group"
+          >
+            <div className={`w-2 h-2 rounded-full ${isLive ? 'bg-emerald-500 animate-pulse' : 'bg-slate-600'}`} />
+            <span className="text-[9px] font-black uppercase text-slate-400 group-hover:text-white transition-colors">
+              {isLive ? 'Live Connection' : 'Paused'}
+            </span>
+          </button>
           
           <div className="flex items-center bg-slate-950 rounded-xl p-1 border border-slate-800 mr-4">
-            <button onClick={() => handleTrade('BUY')} className="px-6 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition-all shadow-lg shadow-emerald-500/20">Buy</button>
-            <button onClick={() => handleTrade('SELL')} className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition-all shadow-lg shadow-red-500/20 ml-1">Sell</button>
+            <button onClick={() => handleTrade('BUY')} className="px-6 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition-all shadow-lg shadow-emerald-500/20 active:scale-95">Buy</button>
+            <button onClick={() => handleTrade('SELL')} className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition-all shadow-lg shadow-red-500/20 ml-1 active:scale-95">Sell</button>
           </div>
 
           <button className="p-2 hover:bg-slate-800 rounded-lg"><Settings className="w-4 h-4" /></button>
@@ -175,6 +246,8 @@ const ProTradingChart = () => {
                 data={chartData} 
                 timeframe={timeframe} 
                 markers={markers}
+                type={chartType}
+                showIndicators={showIndicators}
              />
 
              {/* Disclaimer Overlay */}
