@@ -5,7 +5,7 @@ import Progress from '../models/Progress.js';
 // ─── Own Profile ─────────────────────────────────────────────────────────────
 export const getUserProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select('-password');
+    const user = await User.findById(req.user.id).select('-password');
     if (!user) return res.status(404).json({ message: 'User not found' });
     res.json(user);
   } catch (error) {
@@ -15,7 +15,7 @@ export const getUserProfile = async (req, res) => {
 
 export const incrementChatCount = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user.id);
     user.chatCount += 1;
     await user.save();
     res.json({ chatCount: user.chatCount });
@@ -27,7 +27,7 @@ export const incrementChatCount = async (req, res) => {
 export const updateUserProfile = async (req, res) => {
   try {
     const { name, mobile, bio, profileImage } = req.body;
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
     if (name) user.name = name;
@@ -57,7 +57,7 @@ export const updateUserProfile = async (req, res) => {
 export const updatePrivacySettings = async (req, res) => {
   try {
     const { privacy } = req.body;
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
     const allowed = ['email', 'mobile', 'bio', 'followersList', 'followingList', 'certificates'];
@@ -78,7 +78,7 @@ export const updatePrivacySettings = async (req, res) => {
 export const updateCertificateVisibility = async (req, res) => {
   try {
     const { certId, isVisible } = req.body;
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
     const cert = user.certificates.id(certId);

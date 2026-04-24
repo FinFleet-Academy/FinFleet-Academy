@@ -10,7 +10,7 @@ export const protect = async (req, res, next) => {
   const gatewayUserRole = req.headers['x-user-role'];
 
   if (gatewayUserId) {
-    req.user = { id: gatewayUserId, role: gatewayUserRole, isAdmin: gatewayUserRole === 'admin' };
+    req.user = { id: gatewayUserId, _id: gatewayUserId, role: gatewayUserRole, isAdmin: gatewayUserRole === 'admin' };
     return next();
   }
 
@@ -23,7 +23,7 @@ export const protect = async (req, res, next) => {
       
       // Note: In a true microservice, we avoid importing models from other services.
       // We assume the user info is either in the JWT or the Gateway headers.
-      req.user = { id: decoded.id, role: decoded.role, isAdmin: decoded.role === 'admin' };
+      req.user = { id: decoded.id, _id: decoded.id, role: decoded.role, isAdmin: decoded.role === 'admin' };
       return next();
     } catch (error) {
       return res.status(401).json({ message: 'Session expired or invalid' });
@@ -50,7 +50,7 @@ export const optionalProtect = async (req, res, next) => {
   const gatewayUserRole = req.headers['x-user-role'];
 
   if (gatewayUserId) {
-    req.user = { id: gatewayUserId, role: gatewayUserRole, isAdmin: gatewayUserRole === 'admin' };
+    req.user = { id: gatewayUserId, _id: gatewayUserId, role: gatewayUserRole, isAdmin: gatewayUserRole === 'admin' };
     return next();
   }
 
@@ -59,7 +59,7 @@ export const optionalProtect = async (req, res, next) => {
     try {
       token = req.headers.authorization.split(' ')[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET || 'finfleet_super_secret_key_123!');
-      req.user = { id: decoded.id, role: decoded.role, isAdmin: decoded.role === 'admin' };
+      req.user = { id: decoded.id, _id: decoded.id, role: decoded.role, isAdmin: decoded.role === 'admin' };
     } catch (error) {
       // Ignore errors for optional auth
     }
