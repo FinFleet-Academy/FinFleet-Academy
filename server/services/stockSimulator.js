@@ -12,7 +12,7 @@ class StockSimulator extends EventEmitter {
     
     this.interval = setInterval(async () => {
       try {
-        const stocks = await Stock.find({ market: 'INDIA' });
+        const stocks = await Stock.find({}); // All stocks
         
         const updates = stocks.map(stock => {
           // Random change between -0.5% and +0.5% for higher frequency stability

@@ -6,10 +6,11 @@ import { createChart, ColorType } from 'lightweight-charts';
  * High-performance chart engine with WebGL/Canvas overlays for predictive intelligence.
  */
 const AdvancedChart = ({ 
-  data, 
+  data = [], 
   symbol, 
   intelligence = {},
   markers = [],
+  indicators = {},
   type = 'candlestick',
   config = { showGrid: true, showLabels: true },
 }) => {
@@ -84,12 +85,44 @@ const AdvancedChart = ({
     };
   }, [type]);
 
-  // 3. Data Sync
+  // 3. Data Sync & Indicators
   useEffect(() => {
     if (seriesRef.current && data.length > 0) {
       seriesRef.current.setData(data);
+
+      // Add EMA if enabled
+      if (indicators.ema && chartRef.current) {
+        if (!chartRef.current.emaSeries) {
+          chartRef.current.emaSeries = chartRef.current.addLineSeries({
+            color: '#f59e0b',
+            lineWidth: 1,
+            priceLineVisible: false,
+            lastValueVisible: false,
+          });
+        }
+        
+        // Simple EMA calculation
+        const emaData = [];
+        const period = 20;
+        let prevEma = data[0].close;
+        const k = 2 / (period + 1);
+
+        data.forEach((bar, i) => {
+          if (i === 0) {
+            emaData.push({ time: bar.time, value: bar.close });
+          } else {
+            const currentEma = bar.close * k + prevEma * (1 - k);
+            emaData.push({ time: bar.time, value: currentEma });
+            prevEma = currentEma;
+          }
+        });
+        chartRef.current.emaSeries.setData(emaData);
+      } else if (chartRef.current?.emaSeries) {
+        chartRef.current.removeSeries(chartRef.current.emaSeries);
+        chartRef.current.emaSeries = null;
+      }
     }
-  }, [data]);
+  }, [data, indicators]);
 
   // 4. Intelligence Overlay: Liquidity Zones & Predictive Heatmaps
   useEffect(() => {
