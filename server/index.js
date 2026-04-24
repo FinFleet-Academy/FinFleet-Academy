@@ -142,6 +142,7 @@ if (process.env.NODE_ENV === 'production') {
 
   // SPA fallback
   app.get('*', (req, res) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     res.sendFile(path.join(distPath, 'index.html'));
   });
 }
