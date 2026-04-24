@@ -68,6 +68,8 @@ const allowedOrigins = [
   'https://finfleetacademy.com',
   'https://www.finfleetacademy.com',
   'https://finfleet-academy.onrender.com',
+  'https://fin-fleet-academy.vercel.app',
+  'https://fin-fleet-academy-git-main-harshrj53s-projects.vercel.app',
   process.env.CLIENT_URL,
   'http://localhost:5173',
   'http://localhost:3000',
@@ -75,10 +77,13 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.some(o => origin.endsWith(o))) {
       callback(null, true);
     } else {
-      console.error(`CORS Blocked for origin: ${origin}`);
+      console.warn(`⚠️ CORS blocked for origin: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
