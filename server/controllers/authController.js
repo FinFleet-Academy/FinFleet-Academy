@@ -20,8 +20,8 @@ const generateTokens = (id) => {
 const sendRefreshTokenCookie = (res, token) => {
   res.cookie('refreshToken', token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'Strict',
+    secure: true, // Always true for SameSite=None
+    sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
     path: '/',
     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
   });
