@@ -1,6 +1,4 @@
 import { Server } from 'socket.io';
-import marketDataService from '../services/marketDataService.js';
-
 export const initMarketSocket = (io) => {
   const marketNamespace = io.of('/market');
   const adminNamespace = io.of('/admin');
@@ -25,8 +23,7 @@ export const initMarketSocket = (io) => {
 
     socket.on('subscribe', (symbol) => {
       socket.join(symbol);
-      marketDataService.subscribe(symbol);
-      console.log(`Socket ${socket.id} subscribed to ${symbol}`);
+      console.log(`Socket ${socket.id} subscribed to ${symbol} (REST fallback enabled)`);
     });
 
     socket.on('unsubscribe', (symbol) => {
@@ -38,22 +35,6 @@ export const initMarketSocket = (io) => {
       console.log('Client disconnected from market socket');
     });
   });
-
-  // Throttled broadcasting (every 300ms)
-  let updateBuffer = new Map();
-  
-  marketDataService.on('update', (data) => {
-    updateBuffer.set(data.symbol, data);
-  });
-
-  setInterval(() => {
-    if (updateBuffer.size > 0) {
-      updateBuffer.forEach((data, symbol) => {
-        marketNamespace.to(symbol).emit('priceUpdate', data);
-      });
-      updateBuffer.clear();
-    }
-  }, 300);
 
   return io;
 };
