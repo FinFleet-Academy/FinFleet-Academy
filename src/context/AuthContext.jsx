@@ -5,6 +5,7 @@ import { cachedGet } from '../utils/api';
 if (import.meta.env.VITE_API_URL) {
   axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 }
+axios.defaults.withCredentials = true;
 
 const AuthContext = createContext();
 
