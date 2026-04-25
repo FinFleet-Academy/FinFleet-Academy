@@ -218,6 +218,33 @@ export const AuthProvider = ({ children }) => {
     await axios.delete(`/api/admin/contacts/${contactId}`);
   };
 
+  useEffect(() => {
+    // Global 401 Interceptor for real-time session restoration
+    const interceptor = axios.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        const originalRequest = error.config;
+        if (error.response?.status === 401 && !originalRequest._retry) {
+          originalRequest._retry = true;
+          try {
+            const { data } = await axios.post('/api/auth/refresh');
+            const newToken = data.token;
+            localStorage.setItem('token', newToken);
+            axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+            originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
+            return axios(originalRequest);
+          } catch (refreshError) {
+            logout();
+            return Promise.reject(refreshError);
+          }
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => axios.interceptors.response.eject(interceptor);
+  }, []);
+
   return (
     <AuthContext.Provider value={{ 
       user, 
