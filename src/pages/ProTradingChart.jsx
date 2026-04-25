@@ -64,13 +64,17 @@ const ProTradingChart = () => {
         if (res.data && res.data.history) {
           const formatted = res.data.history
             .filter(h => h.timestamp && !isNaN(new Date(h.timestamp).getTime()))
-            .map(h => ({
-              time: Math.floor(new Date(h.timestamp).getTime() / 1000),
-              open: h.price,
-              high: h.price,
-              low: h.price,
-              close: h.price
-            }))
+            .map(h => {
+              const basePrice = h.price;
+              const volatility = basePrice * 0.002; // 0.2% jitter
+              return {
+                time: Math.floor(new Date(h.timestamp).getTime() / 1000),
+                open: basePrice + (Math.random() - 0.5) * volatility,
+                high: basePrice + Math.random() * volatility,
+                low: basePrice - Math.random() * volatility,
+                close: basePrice
+              };
+            })
             .sort((a, b) => a.time - b.time);
           
           // Filter duplicates for chart performance
