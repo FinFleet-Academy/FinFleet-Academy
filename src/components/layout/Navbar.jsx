@@ -4,6 +4,7 @@ import { Rocket, Sun, Moon, Menu, X, ChevronDown, User, LifeBuoy, MessageCircle,
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import BrandLogo from '../ui/BrandLogo';
 
 const Navbar = () => {
   const { isDark, toggleTheme } = useTheme();
@@ -47,8 +48,8 @@ const Navbar = () => {
           
           {/* BRAND LOGO */}
           <Link to="/" className="flex items-center space-x-3 group relative">
-            <div className="w-10 h-10 bg-slate-900 dark:bg-white rounded-[1.25rem] flex items-center justify-center shadow-2xl transition-all group-hover:scale-110 group-hover:rotate-3">
-              <Rocket className="text-white dark:text-slate-900 w-5 h-5" />
+            <div className="w-11 h-11 bg-slate-900 dark:bg-white rounded-[1.25rem] flex items-center justify-center shadow-2xl transition-all group-hover:scale-110 group-hover:rotate-3">
+              <BrandLogo className="text-white dark:text-brand-600 w-7 h-7" />
             </div>
             <div className="flex flex-col -space-y-1">
                <span className="text-xl font-black text-slate-900 dark:text-white tracking-tighter">

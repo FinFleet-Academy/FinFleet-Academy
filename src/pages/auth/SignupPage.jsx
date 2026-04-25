@@ -4,6 +4,7 @@ import { Rocket, Mail, Lock, User, ArrowRight, ShieldCheck, Star, Zap, Activity 
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth, PLANS } from '../../context/AuthContext';
 import { toast } from 'react-hot-toast';
+import BrandLogo from '../../components/ui/BrandLogo';
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({ name: '', email: '', password: '', referralCode: '' });
@@ -51,7 +52,7 @@ const SignupPage = () => {
         {/* Left Side: Why Join FinFleet */}
         <div className="lg:col-span-5 flex flex-col justify-center space-y-10">
           <motion.div {...fadeInUp} className="inline-flex items-center space-x-2 bg-brand-50 dark:bg-brand-900/20 px-3 py-1.5 rounded-full w-fit border border-brand-100 dark:border-brand-800">
-             <Rocket className="w-3 h-3 text-brand-600" />
+             <BrandLogo className="w-4 h-4 text-brand-600" />
              <span className="text-[9px] font-black uppercase tracking-widest text-brand-700 dark:text-brand-300">Create Your Account</span>
           </motion.div>
           

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import BrandLogo from '../ui/BrandLogo';
 
 // Animated SVG graph line for fintech feel
 const GraphLine = () => (
@@ -167,14 +168,8 @@ const SplashScreen = ({ onComplete }) => {
                 animate={{ opacity: [0.3, 0.7, 0.3], scale: [1, 1.15, 1] }}
                 transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
               />
-              <div className="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-violet-600 to-brand-600 flex items-center justify-center shadow-2xl">
-                {/* Rocket SVG inline */}
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
-                  <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
-                  <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/>
-                  <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>
-                </svg>
+              <div className="relative w-24 h-24 rounded-3xl bg-gradient-to-br from-violet-600 to-brand-600 flex items-center justify-center shadow-2xl">
+                <BrandLogo className="w-14 h-14 text-white" />
               </div>
             </motion.div>
 

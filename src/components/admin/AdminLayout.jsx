@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import BrandLogo from '../ui/BrandLogo';
 
 const AdminLayout = ({ children, activeTab, setActiveTab }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -47,8 +48,8 @@ const AdminLayout = ({ children, activeTab, setActiveTab }) => {
       >
         <div className="p-6 flex items-center justify-between overflow-hidden">
           <div className="flex items-center space-x-3">
-             <div className="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20 shrink-0">
-               <ShieldCheck className="w-6 h-6 text-white" />
+             <div className="w-11 h-11 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20 shrink-0">
+               <BrandLogo className="w-7 h-7 text-white" />
              </div>
              {isSidebarOpen && (
                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>

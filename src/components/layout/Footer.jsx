@@ -5,6 +5,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { motion } from 'framer-motion';
 import { useCookies } from '../../context/CookieContext';
+import BrandLogo from '../ui/BrandLogo';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -41,8 +42,8 @@ const Footer = () => {
           {/* Brand Manifesto */}
           <div className="lg:col-span-4 space-y-10">
             <Link to="/" className="flex items-center space-x-3 group">
-              <div className="w-12 h-12 bg-slate-950 dark:bg-white rounded-2xl flex items-center justify-center shadow-2xl group-hover:bg-brand-600 group-hover:scale-110 transition-all">
-                <Rocket className="text-white dark:text-slate-950 w-6 h-6 group-hover:text-white" />
+              <div className="w-14 h-14 bg-slate-950 dark:bg-white rounded-2xl flex items-center justify-center shadow-2xl group-hover:bg-brand-600 group-hover:scale-110 transition-all">
+                <BrandLogo className="text-white dark:text-brand-600 w-8 h-8" />
               </div>
               <div>
                  <span className="text-2xl font-black dark:text-white tracking-tighter uppercase leading-none block">FinFleet</span>
