@@ -11,10 +11,10 @@ const userSchema = new mongoose.Schema({
   bio: { type: String, default: '', maxlength: 500 },
   profileImage: { type: String, default: '' },
   socialLinks: {
-    instagram: { url: { type: String, default: '' }, visibility: { type: String, enum: ['PUBLIC', 'FOLLOWERS', 'PRIVATE'], default: 'PUBLIC' } },
-    twitter:   { url: { type: String, default: '' }, visibility: { type: String, enum: ['PUBLIC', 'FOLLOWERS', 'PRIVATE'], default: 'PUBLIC' } },
-    linkedin:  { url: { type: String, default: '' }, visibility: { type: String, enum: ['PUBLIC', 'FOLLOWERS', 'PRIVATE'], default: 'PUBLIC' } },
-    website:   { url: { type: String, default: '' }, visibility: { type: String, enum: ['PUBLIC', 'FOLLOWERS', 'PRIVATE'], default: 'PUBLIC' } }
+    instagram: { url: { type: String, default: '' }, visibility: { type: String, enum: ['PUBLIC', 'FOLLOWERS', 'PRIVATE', 'public', 'followers', 'private'], default: 'PUBLIC' } },
+    twitter:   { url: { type: String, default: '' }, visibility: { type: String, enum: ['PUBLIC', 'FOLLOWERS', 'PRIVATE', 'public', 'followers', 'private'], default: 'PUBLIC' } },
+    linkedin:  { url: { type: String, default: '' }, visibility: { type: String, enum: ['PUBLIC', 'FOLLOWERS', 'PRIVATE', 'public', 'followers', 'private'], default: 'PUBLIC' } },
+    website:   { url: { type: String, default: '' }, visibility: { type: String, enum: ['PUBLIC', 'FOLLOWERS', 'PRIVATE', 'public', 'followers', 'private'], default: 'PUBLIC' } }
   },
   stats: {
     followers: { type: Number, default: 0 },
@@ -23,10 +23,10 @@ const userSchema = new mongoose.Schema({
   },
   // Global Privacy Toggles
   privacy: {
-    email:        { type: String, enum: ['PUBLIC', 'FOLLOWERS', 'PRIVATE'], default: 'PRIVATE' },
-    mobile:       { type: String, enum: ['PUBLIC', 'FOLLOWERS', 'PRIVATE'], default: 'PRIVATE' },
-    stats:        { type: String, enum: ['PUBLIC', 'FOLLOWERS', 'PRIVATE'], default: 'PUBLIC' },
-    certificates: { type: String, enum: ['PUBLIC', 'FOLLOWERS', 'PRIVATE'], default: 'PUBLIC' },
+    email:        { type: String, enum: ['PUBLIC', 'FOLLOWERS', 'PRIVATE', 'public', 'followers', 'private'], default: 'PRIVATE' },
+    mobile:       { type: String, enum: ['PUBLIC', 'FOLLOWERS', 'PRIVATE', 'public', 'followers', 'private'], default: 'PRIVATE' },
+    stats:        { type: String, enum: ['PUBLIC', 'FOLLOWERS', 'PRIVATE', 'public', 'followers', 'private'], default: 'PUBLIC' },
+    certificates: { type: String, enum: ['PUBLIC', 'FOLLOWERS', 'PRIVATE', 'public', 'followers', 'private'], default: 'PUBLIC' },
   },
   themePreference: { type: String, enum: ['light', 'dark'], default: 'dark' },
   refreshTokens: [String],
