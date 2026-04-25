@@ -46,8 +46,26 @@ export const AuthProvider = ({ children }) => {
           setNotifications(notifRes.data);
 
         } catch (error) {
-          console.error("Failed to fetch user profile", error);
-          logout();
+          if (error.response?.status === 401) {
+            console.log("Access token expired, attempting refresh...");
+            try {
+              const refreshRes = await axios.post('/api/auth/refresh');
+              const newToken = refreshRes.data.token;
+              localStorage.setItem('token', newToken);
+              axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+              
+              // Retry profile fetch
+              const retryRes = await axios.get('/api/user/profile');
+              setUser(retryRes.data);
+              setPlan(retryRes.data.plan || PLANS.FREE);
+              setIsAdmin(retryRes.data.isAdmin || false);
+            } catch (refreshError) {
+              console.error("Session restoration failed", refreshError);
+              logout();
+            }
+          } else {
+            logout();
+          }
         }
       }
       
