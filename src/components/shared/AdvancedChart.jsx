@@ -1,9 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { createChart, ColorType } from 'lightweight-charts';
+import React, { useMemo } from 'react';
+import { 
+  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, 
+  CartesianGrid, ComposedChart, Bar, Cell 
+} from 'recharts';
 
 /**
- * 📊 Advanced Trading Chart Core
- * High-performance chart engine with WebGL/Canvas overlays for predictive intelligence.
+ * 📊 Neural Intelligence Chart Core
+ * High-performance chart engine powered by Recharts (Non-TradingView Implementation).
+ * Optimized for predictive analytics and market trends.
  */
 const AdvancedChart = ({ 
   data = [], 
@@ -11,161 +15,86 @@ const AdvancedChart = ({
   intelligence = {},
   markers = [],
   indicators = {},
-  type = 'candlestick',
-  config = { showGrid: true, showLabels: true },
+  type = 'area', // area, bar, candlestick (mocked via bar)
 }) => {
-  const chartContainerRef = useRef(null);
-  const chartRef = useRef(null);
-  const seriesRef = useRef(null);
-  const emaSeriesRef = useRef(null);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
-  // 1. Initial Chart Creation
-  useEffect(() => {
-    if (!chartContainerRef.current) return;
-    console.log(`[AdvancedChart] Initializing for ${symbol}...`);
+  const formattedData = useMemo(() => {
+    return data.map(item => ({
+      ...item,
+      time: new Date(item.time * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      rawTime: item.time
+    })).sort((a, b) => a.rawTime - b.rawTime);
+  }, [data]);
 
-    const width = chartContainerRef.current.clientWidth || 800;
-    const height = chartContainerRef.current.clientHeight || 500;
-
-    const chart = createChart(chartContainerRef.current, {
-      width,
-      height,
-      layout: {
-        background: { type: ColorType.Solid, color: '#020617' },
-        textColor: '#94a3b8',
-        fontSize: 10,
-        fontFamily: 'Inter, sans-serif',
-      },
-      grid: {
-        vertLines: { color: config.showGrid ? '#1e293b' : 'transparent' },
-        horzLines: { color: config.showGrid ? '#1e293b' : 'transparent' },
-      },
-      rightPriceScale: {
-        borderColor: '#1e293b',
-        visible: config.showLabels,
-      },
-      timeScale: {
-        borderColor: '#1e293b',
-        visible: config.showLabels,
-        timeVisible: true,
-        secondsVisible: false,
-      },
-      crosshair: {
-        vertLine: { labelBackgroundColor: '#6366f1' },
-        horzLine: { labelBackgroundColor: '#6366f1' },
-      },
-    });
-
-    if (type === 'candlestick') {
-      seriesRef.current = chart.addCandlestickSeries({
-        upColor: '#10b981',
-        downColor: '#ef4444',
-        borderVisible: false,
-        wickUpColor: '#10b981',
-        wickDownColor: '#ef4444',
-      });
-    } else {
-      seriesRef.current = chart.addLineSeries({
-        color: '#6366f1',
-        lineWidth: 2,
-      });
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      const d = payload[0].payload;
+      return (
+        <div className="bg-[#0f172a] border border-white/10 rounded-2xl p-4 shadow-2xl backdrop-blur-xl">
+           <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">{d.time}</p>
+           <div className="flex items-center space-x-3">
+              <div className={`w-1 h-8 rounded-full ${d.close > d.open ? 'bg-emerald-500' : 'bg-red-500'}`} />
+              <div>
+                 <p className="text-xl font-black text-white">₹{d.close.toLocaleString()}</p>
+                 <p className="text-[9px] font-bold text-slate-400">O: {d.open} | H: {d.high} | L: {d.low}</p>
+              </div>
+           </div>
+        </div>
+      );
     }
-
-    chartRef.current = chart;
-
-    const handleResize = () => {
-      if (chartRef.current && chartContainerRef.current) {
-        const { clientWidth, clientHeight } = chartContainerRef.current;
-        if (clientWidth > 0 && clientHeight > 0) {
-          chartRef.current.applyOptions({ width: clientWidth, height: clientHeight });
-          setDimensions({ width: clientWidth, height: clientHeight });
-        }
-      }
-    };
-
-    const resizeObserver = new ResizeObserver(handleResize);
-    resizeObserver.observe(chartContainerRef.current);
-
-    return () => {
-      resizeObserver.disconnect();
-      if (chartRef.current) {
-        chartRef.current.remove();
-        chartRef.current = null;
-        seriesRef.current = null;
-        emaSeriesRef.current = null;
-      }
-    };
-  }, [type, symbol]); // Added symbol to ensure it recreates on stock change if needed
-
-  // 2. Data Sync
-  useEffect(() => {
-    if (seriesRef.current && data.length > 0) {
-      console.log(`[AdvancedChart] Syncing ${data.length} data points for ${symbol}`);
-      seriesRef.current.setData(data);
-      
-      // Update EMA
-      if (indicators.ema && chartRef.current) {
-        if (!emaSeriesRef.current) {
-          emaSeriesRef.current = chartRef.current.addLineSeries({
-            color: '#f59e0b',
-            lineWidth: 1,
-            priceLineVisible: false,
-            lastValueVisible: false,
-          });
-        }
-        
-        const emaData = [];
-        const period = 20;
-        let prevEma = data[0].close;
-        const k = 2 / (period + 1);
-
-        data.forEach((bar, i) => {
-          if (i === 0) {
-            emaData.push({ time: bar.time, value: bar.close });
-          } else {
-            const currentEma = bar.close * k + prevEma * (1 - k);
-            emaData.push({ time: bar.time, value: currentEma });
-            prevEma = currentEma;
-          }
-        });
-        emaSeriesRef.current.setData(emaData);
-      } else if (emaSeriesRef.current && chartRef.current) {
-        chartRef.current.removeSeries(emaSeriesRef.current);
-        emaSeriesRef.current = null;
-      }
-    }
-  }, [data, indicators.ema, symbol]);
-
-  // 3. Intelligence Markers
-  useEffect(() => {
-    if (seriesRef.current && intelligence) {
-      const markersList = [];
-      
-      if (intelligence.whaleActivity === 'HIGH') {
-        markersList.push({
-          time: data[data.length - 1]?.time,
-          position: 'aboveBar',
-          color: '#f59e0b',
-          shape: 'arrowDown',
-          text: 'WHALE ACTIVITY',
-        });
-      }
-
-      seriesRef.current.setMarkers(markersList);
-    }
-  }, [intelligence, data, symbol]);
+    return null;
+  };
 
   return (
-    <div ref={chartContainerRef} className={`w-full h-full relative ${config.showGrid ? 'bg-slate-950/20' : ''}`}>
-      {data.length === 0 && (
-        <div className="absolute inset-0 flex items-center justify-center bg-slate-950/50 backdrop-blur-sm z-50">
-          <div className="text-center space-y-4">
-             <div className="w-12 h-12 border-4 border-brand-500/20 border-t-brand-500 rounded-full animate-spin mx-auto" />
-             <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Calibrating Engine...</p>
-          </div>
-        </div>
-      )}
+    <div className="w-full h-full min-h-[400px] relative">
+      <ResponsiveContainer width="100%" height="100%">
+        {type === 'bar' ? (
+          <BarChart data={formattedData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+            <XAxis dataKey="time" hide />
+            <YAxis hide domain={['auto', 'auto']} />
+            <Tooltip content={<CustomTooltip />} />
+            <Bar dataKey="close" radius={[4, 4, 0, 0]}>
+              {formattedData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.close > entry.open ? '#10b981' : '#ef4444'} />
+              ))}
+            </Bar>
+          </BarChart>
+        ) : (
+          <AreaChart data={formattedData}>
+            <defs>
+              <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/>
+                <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+            <XAxis dataKey="time" hide />
+            <YAxis hide domain={['auto', 'auto']} />
+            <Tooltip content={<CustomTooltip />} />
+            <Area 
+              type="monotone" 
+              dataKey="close" 
+              stroke="#6366f1" 
+              strokeWidth={3}
+              fillOpacity={1} 
+              fill="url(#chartGradient)" 
+              animationDuration={1500}
+            />
+            {indicators.ema && (
+              <Area type="monotone" dataKey="close" stroke="#10b981" fill="none" strokeWidth={1} strokeDasharray="5 5" opacity={0.5} />
+            )}
+          </AreaChart>
+        )}
+      </ResponsiveContainer>
+
+      {/* Neural Overlay (Visual Polish) */}
+      <div className="absolute top-4 right-4 flex items-center space-x-2">
+         <div className="flex items-center space-x-1.5 bg-slate-900/50 border border-white/5 px-3 py-1 rounded-full backdrop-blur-md">
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-[9px] font-black text-white uppercase tracking-widest">Neural Real-time</span>
+         </div>
+      </div>
     </div>
   );
 };

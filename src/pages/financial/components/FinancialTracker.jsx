@@ -17,7 +17,6 @@ import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, 
   PieChart, Pie, Cell, BarChart, Bar, Legend
 } from 'recharts';
-import axios from 'axios';
 
 const FinancialTracker = () => {
   const [data, setData] = useState(null);

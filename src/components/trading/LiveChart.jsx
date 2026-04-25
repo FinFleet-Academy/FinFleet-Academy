@@ -1,73 +1,54 @@
-import React, { useEffect, useRef, memo } from 'react';
-import { createChart } from 'lightweight-charts';
+import React, { useMemo, memo } from 'react';
+import { 
+  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, 
+  CartesianGrid 
+} from 'recharts';
 import { useMarketData } from '../../hooks/useMarketData';
 
+/**
+ * 📊 Neural Live Feed (Non-TradingView)
+ * High-performance real-time visualization powered by Recharts.
+ */
 const LiveChart = memo(({ symbol = 'BTCUSDT', height = 400 }) => {
-  const chartContainerRef = useRef();
-  const chartRef = useRef();
-  const seriesRef = useRef();
-  const { lastCandle } = useMarketData(symbol);
+  const { lastCandle, history = [] } = useMarketData(symbol);
 
-  useEffect(() => {
-    // 1. Initialize Chart
-    const chart = createChart(chartContainerRef.current, {
-      height,
-      layout: {
-        background: { type: 'solid', color: 'transparent' },
-        textColor: '#94a3b8',
-      },
-      grid: {
-        vertLines: { color: 'rgba(148, 163, 184, 0.05)' },
-        horzLines: { color: 'rgba(148, 163, 184, 0.05)' },
-      },
-      crosshair: {
-        mode: 1, // Magnet mode
-      },
-      rightPriceScale: {
-        borderColor: 'rgba(148, 163, 184, 0.1)',
-      },
-      timeScale: {
-        borderColor: 'rgba(148, 163, 184, 0.1)',
-        timeVisible: true,
-      },
-    });
-
-    // 2. Add Candlestick Series
-    const candlestickSeries = chart.addCandlestickSeries({
-      upColor: '#10b981',
-      downColor: '#ef4444',
-      borderVisible: false,
-      wickUpColor: '#10b981',
-      wickDownColor: '#ef4444',
-    });
-
-    chartRef.current = chart;
-    seriesRef.current = candlestickSeries;
-
-    // 3. Handle Resize
-    const handleResize = () => {
-      chart.applyOptions({ width: chartContainerRef.current.clientWidth });
-    };
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      chart.remove();
-    };
-  }, [height]);
-
-  // 4. Update with Real-Time Data (Incremental)
-  useEffect(() => {
-    if (lastCandle && seriesRef.current) {
-      requestAnimationFrame(() => {
-        seriesRef.current.update(lastCandle);
-      });
-    }
-  }, [lastCandle]);
+  // Transform history for Recharts
+  const chartData = useMemo(() => {
+    return history.map(h => ({
+      time: new Date(h.time * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      price: h.close
+    }));
+  }, [history]);
 
   return (
-    <div className="relative w-full">
-      <div ref={chartContainerRef} className="w-full" />
+    <div className="relative w-full" style={{ height }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={chartData}>
+          <defs>
+            <linearGradient id="liveGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+              <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+          <XAxis dataKey="time" hide />
+          <YAxis hide domain={['auto', 'auto']} />
+          <Tooltip 
+            contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '12px' }}
+            itemStyle={{ color: '#fff', fontSize: '12px', fontWeight: 'bold' }}
+          />
+          <Area 
+            type="monotone" 
+            dataKey="price" 
+            stroke="#10b981" 
+            strokeWidth={2}
+            fillOpacity={1} 
+            fill="url(#liveGradient)" 
+            animationDuration={500}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+
       {!lastCandle && (
         <div className="absolute inset-0 flex items-center justify-center bg-slate-900/10 backdrop-blur-sm rounded-3xl">
           <div className="flex flex-col items-center space-y-4">

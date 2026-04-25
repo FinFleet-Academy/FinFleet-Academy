@@ -25,7 +25,7 @@ const AboutPage = lazy(() => import('./pages/AboutPage'));
 const AboutFinorPage = lazy(() => import('./pages/AboutFinorPage'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const FeedbackPage = lazy(() => import('./pages/FeedbackPage'));
-const HelpPage = lazy(() => import('./pages/HelpPage'));
+const HelpPage = lazy(() => import('./pages/help/HelpSupportPage'));
 const ToolsRouter = lazy(() => import('./pages/tools/ToolsRouter'));
 const FinancialRouter = lazy(() => import('./pages/financial/FinancialRouter'));
 const CommunityPage = lazy(() => import('./pages/CommunityPage'));

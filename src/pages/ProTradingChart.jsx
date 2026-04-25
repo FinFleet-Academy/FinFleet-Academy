@@ -66,7 +66,7 @@ const ProTradingChart = () => {
             }))
             .sort((a, b) => a.time - b.time);
           
-          // Filter duplicates for lightweight-charts
+          // Filter duplicates for chart performance
           const uniqueData = [];
           const seenTimes = new Set();
           formatted.forEach(p => {
@@ -119,7 +119,7 @@ const ProTradingChart = () => {
           const lastBar = prev[prev.length - 1];
           let tickTime = Math.floor(payload.ts / 1000);
           
-          // Safety: lightweight-charts requires strictly ascending or equal time
+          // Safety: charting requires strictly ascending or equal time
           if (lastBar && tickTime < lastBar.time) {
             tickTime = lastBar.time;
           }

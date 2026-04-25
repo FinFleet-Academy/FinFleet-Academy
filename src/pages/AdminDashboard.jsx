@@ -19,6 +19,7 @@ import { StatCardSkeleton, ChartSkeleton, TableSkeleton } from '../components/ad
 
 import { Routes, Route, useLocation } from 'react-router-dom';
 import AdminAnalytics from './admin/Analytics';
+import SupportManager from './admin/SupportManager';
 
 const AdminDashboard = () => {
   const { isAdmin, fetchUsers, upgradePlan } = useAuth();
@@ -86,6 +87,7 @@ const AdminDashboard = () => {
         <Route path="analytics" element={<AdminAnalytics />} />
         <Route path="audit" element={<AdminAuditLogs />} />
         <Route path="health" element={<SystemHealth />} />
+        <Route path="support" element={<SupportManager />} />
         <Route path="settings" element={<AdminSettings />} />
       </Routes>
     </div>
