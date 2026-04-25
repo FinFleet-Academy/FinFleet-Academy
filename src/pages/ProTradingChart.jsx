@@ -476,6 +476,7 @@ const ProTradingChart = () => {
               </div>
            </div>
         </div>
+        )}
 
         {/* 3. MAIN CHART CORE */}
         <div className="flex-grow relative bg-[#020617]">
@@ -501,23 +502,25 @@ const ProTradingChart = () => {
           </AnimatePresence>
 
           {/* Quick HUD Overlay */}
-          <div className="absolute bottom-10 right-10 flex flex-col space-y-4 z-20">
-             <div className="bg-slate-950/80 backdrop-blur-xl border border-slate-800 p-6 rounded-[2rem] shadow-2xl">
-                <div className="flex items-center space-x-4 mb-4">
-                  <div className="w-12 h-12 bg-emerald-500/20 rounded-2xl flex items-center justify-center">
-                    <TrendingUp className="w-6 h-6 text-emerald-500" />
+          {!fullView && (
+            <div className="absolute bottom-10 right-10 flex flex-col space-y-4 z-20">
+               <div className="bg-slate-950/80 backdrop-blur-xl border border-slate-800 p-6 rounded-[2rem] shadow-2xl">
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="w-12 h-12 bg-emerald-500/20 rounded-2xl flex items-center justify-center">
+                      <TrendingUp className="w-6 h-6 text-emerald-500" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Current Signal</p>
+                      <h4 className="text-xl font-black text-white uppercase">Strong Buy</h4>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Current Signal</p>
-                    <h4 className="text-xl font-black text-white uppercase">Strong Buy</h4>
+                  <div className="flex items-center space-x-2">
+                     <div className="px-3 py-1 bg-white/5 rounded-lg text-[9px] font-black text-slate-400">CONFIDENCE: 92%</div>
+                     <div className="px-3 py-1 bg-white/5 rounded-lg text-[9px] font-black text-slate-400">RISK: LOW</div>
                   </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                   <div className="px-3 py-1 bg-white/5 rounded-lg text-[9px] font-black text-slate-400">CONFIDENCE: 92%</div>
-                   <div className="px-3 py-1 bg-white/5 rounded-lg text-[9px] font-black text-slate-400">RISK: LOW</div>
-                </div>
-             </div>
-          </div>
+               </div>
+            </div>
+          )}
         </div>
 
       </div>
