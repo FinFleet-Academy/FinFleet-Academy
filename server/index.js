@@ -212,8 +212,12 @@ initSocketServer();
 const intelStreamer = new MarketStreamer();
 intelStreamer.init(httpServer);
 
-// Link Simulator to Intelligence Streamer
+// Link Simulator and Market Data to Intelligence Streamer
 stockSimulator.on('tick', (tick) => {
+  intelStreamer.injectTick(tick.symbol, tick);
+});
+
+marketDataService.on('update', (tick) => {
   intelStreamer.injectTick(tick.symbol, tick);
 });
 

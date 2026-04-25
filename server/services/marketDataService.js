@@ -43,7 +43,9 @@ class MarketDataService extends EventEmitter {
         console.error('MarketDataService: WebSocket Error:', err.message);
         
         if (err.message.includes('451')) {
-          console.error('MarketDataService: CRITICAL - Regional Block (451) detected. Suspending Binance connection.');
+          if (!this.isBlocked) {
+            console.error('MarketDataService: Regional Block (451) detected. Fallback to Internal Simulator engaged.');
+          }
           this.isBlocked = true;
           this.isCircuitOpen = true; // Block future attempts
           ws.terminate();
