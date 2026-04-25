@@ -196,16 +196,16 @@ const TradingDashboard = () => {
                 <div className="absolute top-0 right-0 w-80 h-80 bg-brand-500 rounded-full blur-[120px] opacity-20 -mr-40 -mt-40" />
                 <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-6">Aggregate Net Worth</p>
                 <h2 className="text-6xl lg:text-8xl font-black text-white tracking-tighter mb-12">
-                  ₹{(balance + portfolioValue).toLocaleString()}
+                  ₹{((balance || 0) + (portfolioValue || 0)).toLocaleString()}
                 </h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-10 pt-10 border-t border-slate-800">
                   <div>
                     <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Available Cash</p>
-                    <p className="text-2xl font-black text-white">₹{balance.toLocaleString()}</p>
+                    <p className="text-2xl font-black text-white">₹{(balance || 0).toLocaleString()}</p>
                   </div>
                   <div>
                     <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Invested Assets</p>
-                    <p className="text-2xl font-black text-white">₹{portfolioValue.toLocaleString()}</p>
+                    <p className="text-2xl font-black text-white">₹{(portfolioValue || 0).toLocaleString()}</p>
                   </div>
                   <div className="hidden md:block">
                     <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Day Change</p>
@@ -230,11 +230,11 @@ const TradingDashboard = () => {
                     <TableRow key={i}>
                       <TableCell className="font-black dark:text-white uppercase">{item.symbol}</TableCell>
                       <TableCell>{item.quantity}</TableCell>
-                      <TableCell>₹{item.averagePrice.toLocaleString()}</TableCell>
-                      <TableCell>₹{currentPrice.toLocaleString()}</TableCell>
+                      <TableCell>₹{(item.averagePrice || 0).toLocaleString()}</TableCell>
+                      <TableCell>₹{(currentPrice || 0).toLocaleString()}</TableCell>
                       <TableCell>
                         <span className={`font-black ${pnl >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                          {pnl >= 0 ? '+' : ''}₹{pnl.toLocaleString()} ({pnlPercent.toFixed(2)}%)
+                          {pnl >= 0 ? '+' : ''}₹{(pnl || 0).toLocaleString()} ({(pnlPercent || 0).toFixed(2)}%)
                         </span>
                       </TableCell>
                     </TableRow>
@@ -266,7 +266,7 @@ const TradingDashboard = () => {
                         <p className={`text-[8px] font-bold uppercase mt-1 ${selectedStock?.symbol === stock.symbol ? 'text-white/60' : 'text-slate-400'}`}>{stock.name}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-black">₹{stock.currentPrice.toLocaleString()}</p>
+                        <p className="text-sm font-black">₹{(stock.currentPrice || 0).toLocaleString()}</p>
                         <p className={`text-[9px] font-bold ${stock.changePercent >= 0 ? 'text-emerald-500' : 'text-red-500'} ${selectedStock?.symbol === stock.symbol ? 'text-white' : ''}`}>
                           {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent}%
                         </p>
