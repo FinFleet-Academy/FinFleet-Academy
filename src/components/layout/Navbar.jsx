@@ -48,9 +48,7 @@ const Navbar = () => {
           
           {/* BRAND LOGO */}
           <Link to="/" className="flex items-center space-x-3 group relative">
-            <div className="w-11 h-11 bg-slate-900 dark:bg-white rounded-[1.25rem] flex items-center justify-center shadow-2xl transition-all group-hover:scale-110 group-hover:rotate-3">
-              <BrandLogo className="text-white dark:text-brand-600 w-7 h-7" />
-            </div>
+            <BrandLogo className="h-8 w-auto" />
             <div className="flex flex-col -space-y-1">
                <span className="text-xl font-black text-slate-900 dark:text-white tracking-tighter">
                  {location.pathname.startsWith('/finor') ? 'Finor' : 'FinFleet'}

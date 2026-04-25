@@ -1,99 +1,242 @@
-import React, { useState, useEffect } from 'react';
-import ReactApexChart from 'react-apexcharts';
+import React, { useState, useEffect, useRef } from 'react';
+import { createChart, CrosshairMode } from 'lightweight-charts';
 import { motion } from 'framer-motion';
-import { TrendingUp, ArrowRight, Activity, Users, Zap, ShieldCheck } from 'lucide-react';
+import { TrendingUp, ArrowRight, Activity, Zap, Maximize2, AlertCircle, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+import BrandLogo from '../ui/BrandLogo';
 
-const PremiumLiveChart = () => {
-  const [currentPrice, setCurrentPrice] = useState(2542.45);
-  const [change, setChange] = useState(2.4);
-  const [series, setSeries] = useState([{
-    name: 'NIFTY 50',
-    data: []
-  }]);
+const PremiumLiveChart = ({ symbol = 'AAPL' }) => {
+  const chartContainerRef = useRef(null);
+  
+  // Data States
+  const [currentPrice, setCurrentPrice] = useState(0);
+  const [change, setChange] = useState(0);
+  const [chartData, setChartData] = useState([]);
+  
+  // UI States
+  const [timeframe, setTimeframe] = useState('5m');
+  const [chartType, setChartType] = useState('candles');
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  
+  // Network States
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+  const [status, setStatus] = useState('FETCHING'); // FETCHING, LIVE, DELAYED
+  const [retryCount, setRetryCount] = useState(0);
 
+  // Refs for chart instances
+  const chartRef = useRef(null);
+  const candleSeriesRef = useRef(null);
+  const volumeSeriesRef = useRef(null);
+  const lineSeriesRef = useRef(null);
+  const lastFetchTimeRef = useRef(0);
+
+  // Initialize Chart
   useEffect(() => {
-    // Generate initial data
-    let data = [];
-    let time = Date.now() - 100 * 2000;
-    let price = 2500;
-    for (let i = 0; i < 50; i++) {
-      price = price + (Math.random() - 0.5) * 10;
-      data.push([time, parseFloat(price.toFixed(2))]);
-      time += 2000;
+    if (!chartContainerRef.current) return;
+
+    const chart = createChart(chartContainerRef.current, {
+      layout: {
+        background: { type: 'solid', color: '#0b0f17' },
+        textColor: '#9ca3af',
+      },
+      grid: {
+        vertLines: { color: '#1f2937' },
+        horzLines: { color: '#1f2937' },
+      },
+      crosshair: {
+        mode: CrosshairMode.Normal,
+      },
+      rightPriceScale: {
+        borderColor: '#1f2937',
+      },
+      timeScale: {
+        borderColor: '#1f2937',
+        timeVisible: true,
+        secondsVisible: false,
+      },
+    });
+    chartRef.current = chart;
+
+    const candlestickSeries = chart.addCandlestickSeries({
+      upColor: '#22c55e',
+      downColor: '#ef4444',
+      borderVisible: false,
+      wickUpColor: '#22c55e',
+      wickDownColor: '#ef4444',
+    });
+    candleSeriesRef.current = candlestickSeries;
+
+    const lineSeries = chart.addLineSeries({
+      color: '#22c55e',
+      lineWidth: 2,
+    });
+    lineSeriesRef.current = lineSeries;
+
+    const volumeSeries = chart.addHistogramSeries({
+      color: '#26a69a',
+      priceFormat: { type: 'volume' },
+      priceScaleId: '', 
+      scaleMargins: {
+        top: 0.8,
+        bottom: 0,
+      },
+    });
+    volumeSeriesRef.current = volumeSeries;
+
+    // Apply visibility based on initial state
+    if (chartType === 'candles') {
+      lineSeries.applyOptions({ visible: false });
+    } else {
+      candlestickSeries.applyOptions({ visible: false });
     }
-    setSeries([{ name: 'NIFTY 50', data }]);
 
-    const interval = setInterval(() => {
-      setSeries(prev => {
-        const last = prev[0].data[prev[0].data.length - 1];
-        const newPrice = last[1] + (Math.random() - 0.5) * 5;
-        const newTime = last[0] + 2000;
-        const newData = [...prev[0].data, [newTime, parseFloat(newPrice.toFixed(2))]];
-        
-        if (newData.length > 60) newData.shift();
-        
-        setCurrentPrice(newPrice);
-        setChange(((newPrice - 2500) / 2500 * 100).toFixed(2));
-        
-        return [{ ...prev[0], data: newData }];
-      });
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const options = {
-    chart: {
-      type: 'area',
-      height: 350,
-      toolbar: { show: false },
-      animations: { enabled: true, easing: 'linear', dynamicAnimation: { speed: 1000 } },
-      sparkline: { enabled: false },
-      background: 'transparent'
-    },
-    dataLabels: { enabled: false },
-    stroke: { curve: 'smooth', width: 3, colors: ['#22c55e'] },
-    fill: {
-      type: 'gradient',
-      gradient: {
-        shadeIntensity: 1,
-        opacityFrom: 0.45,
-        opacityTo: 0.05,
-        stops: [20, 100, 100, 100],
-        colorStops: [
-          { offset: 0, color: "#22c55e", opacity: 0.4 },
-          { offset: 100, color: "#22c55e", opacity: 0 }
-        ]
+    const handleResize = () => {
+      if (chartContainerRef.current) {
+        chart.applyOptions({ width: chartContainerRef.current.clientWidth });
       }
-    },
-    grid: {
-      borderColor: 'rgba(255, 255, 255, 0.05)',
-      xaxis: { lines: { show: false } },
-      yaxis: { lines: { show: true } }
-    },
-    xaxis: {
-      type: 'datetime',
-      labels: { show: false },
-      axisBorder: { show: false },
-      axisTicks: { show: false },
-    },
-    yaxis: {
-      labels: { show: false },
-    },
-    tooltip: {
-      theme: 'dark',
-      x: { format: 'dd MMM HH:mm:ss' },
-      style: { fontSize: '10px', fontFamily: 'Inter' }
-    },
-    colors: ['#22c55e'],
+    };
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      chart.remove();
+    };
+  }, []); // Run once on mount
+
+  // Fetch Data Function
+  const fetchMarketData = async () => {
+    try {
+      if (chartData.length === 0) setIsLoading(true);
+      
+      const response = await axios.get(`/api/market-data?symbol=${symbol}`);
+      
+      if (response.data && response.data.success) {
+        const data = response.data.data;
+        if (data && data.length > 0) {
+          setChartData(data);
+          
+          // Generate volume data mapped to the main data
+          const volumeData = data.map(d => {
+            const isUp = d.close >= d.open;
+            return {
+              time: d.time,
+              value: d.volume,
+              color: isUp ? 'rgba(34, 197, 94, 0.5)' : 'rgba(239, 68, 68, 0.5)'
+            };
+          });
+
+          // Update chart series
+          if (candleSeriesRef.current) candleSeriesRef.current.setData(data);
+          if (lineSeriesRef.current) {
+            const lineData = data.map(d => ({ time: d.time, value: d.close }));
+            lineSeriesRef.current.setData(lineData);
+          }
+          if (volumeSeriesRef.current) volumeSeriesRef.current.setData(volumeData);
+
+          // Update UI info
+          const latest = data[data.length - 1];
+          const previous = data.length > 1 ? data[data.length - 2] : latest;
+          
+          setCurrentPrice(latest.close);
+          
+          // Calculate simple % change from previous close (or could use day open if available)
+          const pctChange = ((latest.close - previous.close) / previous.close) * 100;
+          setChange(pctChange);
+
+          setIsError(false);
+          setStatus('LIVE');
+          setRetryCount(0);
+          lastFetchTimeRef.current = Date.now();
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching market data:", error);
+      setIsError(true);
+      setStatus('DELAYED');
+      
+      // Exponential backoff up to max 5 minutes (300000ms)
+      setRetryCount(prev => Math.min(prev + 1, 10));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Setup Polling
+  useEffect(() => {
+    // Initial fetch
+    fetchMarketData();
+
+    let timeoutId;
+    
+    const scheduleNextFetch = () => {
+      // Calculate delay: 30s normally, or exponential backoff if error (30s * 2^retryCount)
+      const baseDelay = 30000;
+      const delay = isError ? Math.min(baseDelay * Math.pow(2, retryCount), 300000) : baseDelay;
+      
+      timeoutId = setTimeout(() => {
+        if (document.visibilityState === 'visible') {
+          fetchMarketData().then(scheduleNextFetch);
+        } else {
+          // If not visible, check again soon without fetching
+          scheduleNextFetch();
+        }
+      }, delay);
+    };
+
+    scheduleNextFetch();
+
+    // Re-fetch immediately when tab becomes visible if it's been more than 30s
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        const timeSinceLastFetch = Date.now() - lastFetchTimeRef.current;
+        if (timeSinceLastFetch > 30000 && !isLoading) {
+          clearTimeout(timeoutId);
+          fetchMarketData().then(scheduleNextFetch);
+        }
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [symbol, isError, retryCount]);
+
+  // Update chart type visibility
+  useEffect(() => {
+    if (candleSeriesRef.current && lineSeriesRef.current) {
+      if (chartType === 'candles') {
+        candleSeriesRef.current.applyOptions({ visible: true });
+        lineSeriesRef.current.applyOptions({ visible: false });
+      } else {
+        candleSeriesRef.current.applyOptions({ visible: false });
+        lineSeriesRef.current.applyOptions({ visible: true });
+      }
+    }
+  }, [chartType]);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      chartContainerRef.current.parentElement.requestFullscreen().catch(err => {
+        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+      });
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen();
+      setIsFullscreen(false);
+    }
   };
 
   return (
     <section className="relative pt-28 pb-20 md:pt-40 md:pb-32 px-6 overflow-hidden bg-[#F9FAFB] dark:bg-[#080C10]">
-      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-500 rounded-full blur-[160px] opacity-[0.08] -mr-64 -mt-64" />
+      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-500 rounded-full blur-[160px] opacity-[0.08] -mr-64 -mt-64 pointer-events-none" />
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          
           <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }} className="space-y-10">
             <div className="inline-flex items-center space-x-3 bg-brand-500/10 border border-brand-500/20 px-4 py-2 rounded-full">
               <Zap className="w-4 h-4 text-brand-600 animate-pulse" />
@@ -107,30 +250,123 @@ const PremiumLiveChart = () => {
             </div>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, delay: 0.2 }} className="relative group">
-            <div className="relative bg-white dark:bg-slate-900/50 backdrop-blur-3xl rounded-[3.5rem] p-4 border border-slate-200 dark:border-slate-800 shadow-2xl shadow-slate-200/50 dark:shadow-none overflow-hidden">
-               <div className="p-8 flex items-center justify-between border-b border-slate-50 dark:border-slate-800/50">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, delay: 0.2 }} className="relative group w-full">
+            <div className="relative bg-[#0b0f17] rounded-2xl border border-[#1f2937] shadow-2xl overflow-hidden w-full flex flex-col min-h-[500px]">
+               
+               {/* Top Info Bar */}
+               <div className="p-6 flex items-center justify-between border-b border-[#1f2937]">
                   <div className="flex items-center space-x-4">
-                     <div className="w-12 h-12 bg-slate-900 dark:bg-white rounded-2xl flex items-center justify-center font-black text-white dark:text-slate-900">FF</div>
+                     <BrandLogo className="h-7 w-auto" />
                      <div>
-                        <h3 className="text-sm font-black dark:text-white uppercase tracking-widest">NIFTY 50 Index</h3>
-                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">Market Simulation</p>
+                        <h3 className="text-sm font-black text-white uppercase tracking-widest">{symbol}</h3>
+                        <p className="text-[9px] font-bold text-gray-500 uppercase tracking-[0.2em]">Market Data</p>
                      </div>
                   </div>
                   <div className="text-right">
-                     <p className="text-2xl font-black dark:text-white tracking-tighter">₹{currentPrice.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</p>
-                     <p className={`text-[10px] font-black uppercase tracking-widest ${change >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>{change >= 0 ? '↑' : '↓'} {Math.abs(change)}% Today</p>
+                     <p className="text-2xl font-black text-white tracking-tighter">
+                       {currentPrice > 0 ? `$${currentPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '---'}
+                     </p>
+                     {currentPrice > 0 && (
+                       <p className={`text-[10px] font-black uppercase tracking-widest ${change >= 0 ? 'text-[#22c55e]' : 'text-[#ef4444]'}`}>
+                         {change >= 0 ? '↑' : '↓'} {Math.abs(change).toFixed(2)}%
+                       </p>
+                     )}
                   </div>
                </div>
-               <div className="w-full h-[350px] relative mt-4">
-                  <ReactApexChart options={options} series={series} type="area" height={350} />
+
+               {/* Toolbar */}
+               <div className="bg-[#0b0f17] border-b border-[#1f2937] px-4 py-3 flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="flex items-center bg-[#111827] rounded-lg p-1 border border-[#1f2937]">
+                      {['1m', '5m', '15m', '1H'].map(tf => (
+                        <button 
+                          key={tf}
+                          onClick={() => setTimeframe(tf)}
+                          className={`px-3 py-1.5 rounded text-[10px] font-black uppercase transition-all ${timeframe === tf ? 'bg-[#374151] text-white' : 'text-gray-500 hover:text-gray-300'}`}
+                        >
+                          {tf}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="h-4 w-px bg-[#1f2937] mx-1" />
+                    <div className="flex items-center bg-[#111827] rounded-lg p-1 border border-[#1f2937]">
+                      <button 
+                        onClick={() => setChartType('candles')}
+                        className={`p-1.5 rounded transition-all ${chartType === 'candles' ? 'bg-[#374151] text-white' : 'text-gray-500 hover:text-gray-300'}`}
+                        title="Candles"
+                      >
+                        <Activity className="w-3.5 h-3.5" />
+                      </button>
+                      <button 
+                        onClick={() => setChartType('line')}
+                        className={`p-1.5 rounded transition-all ${chartType === 'line' ? 'bg-[#374151] text-white' : 'text-gray-500 hover:text-gray-300'}`}
+                        title="Line"
+                      >
+                        <TrendingUp className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={toggleFullscreen}
+                    className="p-2 hover:bg-[#1f2937] rounded-lg transition-colors text-gray-400 hover:text-white border border-[#1f2937]"
+                  >
+                    <Maximize2 className="w-4 h-4" />
+                  </button>
                </div>
-               <div className="p-6 bg-slate-50 dark:bg-slate-950/50 flex items-center justify-center space-x-8">
-                  <div className="flex items-center space-x-2"><div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" /><span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Live Feed</span></div>
-                  <div className="w-px h-4 bg-slate-200 dark:bg-slate-800" /><span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Delayed by 0.5s</span>
+
+               {/* Chart Container */}
+               <div className="w-full flex-grow min-h-[350px] relative">
+                  <div className="absolute inset-0 z-0" ref={chartContainerRef} />
+                  
+                  {/* Loading Overlay */}
+                  {isLoading && chartData.length === 0 && (
+                    <div className="absolute inset-0 z-10 bg-[#0b0f17]/80 backdrop-blur-sm flex flex-col items-center justify-center">
+                      <Loader2 className="w-8 h-8 text-brand-500 animate-spin mb-4" />
+                      <p className="text-xs font-black text-gray-400 uppercase tracking-widest">Fetching live market data...</p>
+                    </div>
+                  )}
+
+                  {/* Error / Offline Overlay if no data available */}
+                  {isError && chartData.length === 0 && !isLoading && (
+                    <div className="absolute inset-0 z-10 bg-[#0b0f17]/90 flex flex-col items-center justify-center text-center p-6">
+                      <AlertCircle className="w-10 h-10 text-red-500 mb-4" />
+                      <p className="text-sm font-black text-white uppercase tracking-wider mb-2">Market Data Unavailable</p>
+                      <p className="text-xs text-gray-500 font-medium">Live data unavailable, retrying in {Math.pow(2, retryCount - 1) * 30}s...</p>
+                    </div>
+                  )}
+               </div>
+               
+               {/* Bottom Info Bar */}
+               <div className="p-4 bg-[#0b0f17] border-t border-[#1f2937] flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    {status === 'LIVE' ? (
+                      <>
+                        <div className="w-2 h-2 bg-[#22c55e] rounded-full animate-pulse" />
+                        <span className="text-[9px] font-black text-[#22c55e] uppercase tracking-widest">LIVE</span>
+                      </>
+                    ) : status === 'DELAYED' ? (
+                      <>
+                        <div className="w-2 h-2 bg-amber-500 rounded-full" />
+                        <span className="text-[9px] font-black text-amber-500 uppercase tracking-widest">DELAYED</span>
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-2 h-2 bg-gray-500 rounded-full animate-pulse" />
+                        <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">FETCHING</span>
+                      </>
+                    )}
+                  </div>
+                  
+                  {chartData.length > 0 && (
+                    <div className="flex items-center space-x-4">
+                      <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">O: {chartData[chartData.length-1].open.toFixed(2)}</span>
+                      <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">H: {chartData[chartData.length-1].high.toFixed(2)}</span>
+                      <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">L: {chartData[chartData.length-1].low.toFixed(2)}</span>
+                      <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">C: {chartData[chartData.length-1].close.toFixed(2)}</span>
+                    </div>
+                  )}
                </div>
             </div>
-            <div className="absolute -inset-4 bg-gradient-to-r from-brand-500/20 to-indigo-500/20 rounded-[4rem] blur-2xl -z-10 group-hover:opacity-40 transition-opacity duration-700" />
           </motion.div>
         </div>
       </div>

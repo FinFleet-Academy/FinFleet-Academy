@@ -1,135 +1,82 @@
-import WebSocket from 'ws';
-import EventEmitter from 'events';
+import axios from 'axios';
 
-class MarketDataService extends EventEmitter {
+class MarketDataService {
   constructor() {
-    super();
-    this.binanceWs = null;
-    this.symbols = new Set();
-    this.isBlocked = false;
-    this.reconnectTimeout = null;
-    this.isCircuitOpen = false;
-    this.failureCount = 0;
-    this.lastFailureTime = 0;
-    this.COOLDOWN_PERIOD = 60000;
+    this.cache = new Map();
+    this.CACHE_TTL = 60000; // 60 seconds minimum
   }
 
-  connect() {
-    if (this.isCircuitOpen) {
-      const now = Date.now();
-      if (now - this.lastFailureTime > this.COOLDOWN_PERIOD) {
-        console.log('MarketDataService: Cooldown finished, attempting to close circuit...');
-        this.isCircuitOpen = false;
-        this.failureCount = 0;
-      } else {
-        console.warn('MarketDataService: Circuit is OPEN. Skipping connection attempt.');
-        return;
-      }
-    }
+  async getIntradayData(symbol = 'AAPL') {
+    const formattedSymbol = symbol.toUpperCase();
+    const now = Date.now();
     
-    // Prevent multiple connections or connections when blocked
-    if (this.isBlocked || (this.binanceWs && this.binanceWs.readyState === WebSocket.CONNECTING)) {
-      return;
+    // Check Cache
+    if (this.cache.has(formattedSymbol)) {
+      const cached = this.cache.get(formattedSymbol);
+      if (now - cached.lastFetched < this.CACHE_TTL) {
+        return cached.data;
+      }
     }
 
     try {
-      console.log('MarketDataService: Attempting to connect to Binance...');
-      
-      const ws = new WebSocket('wss://stream.binance.com:9443/ws');
-      this.binanceWs = ws;
-
-      // Attach error listener IMMEDIATELY
-      ws.on('error', (err) => {
-        console.error('MarketDataService: WebSocket Error:', err.message);
-        
-        if (err.message.includes('451')) {
-          if (!this.isBlocked) {
-            console.error('MarketDataService: Regional Block (451) detected. Fallback to Internal Simulator engaged.');
-          }
-          this.isBlocked = true;
-          this.isCircuitOpen = true; // Block future attempts
-          ws.terminate();
-          return;
-        }
-
-        this.failureCount++;
-        if (this.failureCount >= 5) {
-          console.error('MarketDataService: CRITICAL FAILURE THRESHOLD REACHED. OPENING CIRCUIT.');
-          this.isCircuitOpen = true;
-          this.lastFailureTime = Date.now();
+      const apiKey = process.env.ALPHA_VANTAGE_API_KEY || 'demo';
+      const response = await axios.get(`https://www.alphavantage.co/query`, {
+        params: {
+          function: 'TIME_SERIES_INTRADAY',
+          symbol: formattedSymbol,
+          interval: '5min',
+          apikey: apiKey,
+          outputsize: 'compact'
         }
       });
 
-      ws.on('open', () => {
-        console.log('MarketDataService: Connected to Binance WebSocket');
-        this.reconnectAttempts = 0;
-        this.isBlocked = false;
-        this.subscribeAll();
-      });
-
-      ws.on('message', (data) => {
-        try {
-          const msg = JSON.parse(data);
-          if (msg.e === 'kline') {
-            const normalized = {
-              symbol: msg.s,
-              price: parseFloat(msg.k.c),
-              open: parseFloat(msg.k.o),
-              high: parseFloat(msg.k.h),
-              low: parseFloat(msg.k.l),
-              close: parseFloat(msg.k.c),
-              volume: parseFloat(msg.k.v),
-              timestamp: msg.k.t,
-              isFinal: msg.k.x
-            };
-            this.emit('update', normalized);
-          }
-        } catch (e) {
-          // Ignore parse errors
+      const timeSeries = response.data['Time Series (5min)'];
+      if (!timeSeries) {
+        if (response.data.Information) {
+          throw new Error('API Rate Limit Exceeded: ' + response.data.Information);
         }
-      });
-
-      ws.on('close', (code, reason) => {
-        if (!this.isBlocked) {
-          const delay = Math.min(30000, 1000 * Math.pow(2, this.reconnectAttempts++));
-          console.log(`MarketDataService: Connection closed (${code}). Retrying in ${delay}ms (Attempt ${this.reconnectAttempts})...`);
-          
-          if (this.reconnectTimeout) clearTimeout(this.reconnectTimeout);
-          this.reconnectTimeout = setTimeout(() => this.connect(), delay);
+        if (response.data['Error Message']) {
+             throw new Error('API Error: ' + response.data['Error Message']);
         }
-      });
-
-    } catch (e) {
-      console.error('MarketDataService: Failed to initialize WebSocket:', e.message);
-    }
-  }
-
-  subscribe(symbol) {
-    const formattedSymbol = symbol.toLowerCase();
-    if (!this.symbols.has(formattedSymbol)) {
-      this.symbols.add(formattedSymbol);
-      this.sendSubscription([`${formattedSymbol}@kline_1m`]);
-    }
-  }
-
-  subscribeAll() {
-    if (this.symbols.size > 0) {
-      const params = Array.from(this.symbols).map(s => `${s}@kline_1m`);
-      this.sendSubscription(params);
-    }
-  }
-
-  sendSubscription(params) {
-    if (this.binanceWs && this.binanceWs.readyState === WebSocket.OPEN) {
-      try {
-        this.binanceWs.send(JSON.stringify({
-          method: 'SUBSCRIBE',
-          params,
-          id: Date.now()
-        }));
-      } catch (e) {
-        console.error('MarketDataService: Error sending subscription:', e.message);
+        throw new Error('Invalid response from Alpha Vantage');
       }
+
+      // Format Data: [ { time, open, high, low, close, volume } ]
+      const data = Object.keys(timeSeries)
+        .map(timeStr => {
+          const entry = timeSeries[timeStr];
+          // Convert "YYYY-MM-DD HH:mm:ss" -> "YYYY-MM-DDTHH:mm:ss"
+          const isoTime = timeStr.replace(' ', 'T');
+          // Lightweight charts needs unix timestamp in seconds for Dst
+          return {
+            time: Math.floor(new Date(isoTime).getTime() / 1000),
+            open: parseFloat(entry['1. open']),
+            high: parseFloat(entry['2. high']),
+            low: parseFloat(entry['3. low']),
+            close: parseFloat(entry['4. close']),
+            volume: parseFloat(entry['5. volume'])
+          };
+        })
+        .sort((a, b) => a.time - b.time); // Sort chronologically (oldest first)
+
+      // Store in cache
+      this.cache.set(formattedSymbol, {
+        data,
+        lastFetched: now
+      });
+
+      return data;
+
+    } catch (error) {
+      console.error(`MarketDataService Error fetching ${formattedSymbol}:`, error.message);
+      
+      // Fallback to cache if available
+      if (this.cache.has(formattedSymbol)) {
+        console.warn(`Falling back to cached data for ${formattedSymbol}`);
+        return this.cache.get(formattedSymbol).data;
+      }
+      
+      throw error;
     }
   }
 }

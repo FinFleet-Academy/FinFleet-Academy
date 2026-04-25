@@ -12,6 +12,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import AdvancedChart from '../components/shared/AdvancedChart';
 import Badge from '../components/ui/Badge';
 import axios from 'axios';
+import BrandLogo from '../components/ui/BrandLogo';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
 import msgpack from 'msgpack-lite';
@@ -260,7 +261,7 @@ const ProTradingChart = () => {
           </Link>
           
           <div className="flex items-center space-x-3">
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-white text-xs ${uiMode === 'CRITICAL' ? 'bg-red-600 animate-pulse' : 'bg-brand-600'}`}>FF</div>
+            <BrandLogo className="h-7 w-auto" />
             <div>
               <div className="flex items-center space-x-2">
                 <span className="text-sm font-black text-white uppercase">{activeStock.symbol}</span>

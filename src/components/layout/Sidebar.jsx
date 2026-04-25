@@ -7,6 +7,7 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppStore } from '../../store/useAppStore';
 import { uiContent } from '../../config/ui-content';
+import BrandLogo from '../ui/BrandLogo';
 
 const Sidebar = ({ isMobile }) => {
   const { user, isSidebarOpen, setSidebarOpen } = useAppStore();
@@ -49,9 +50,7 @@ const Sidebar = ({ isMobile }) => {
     >
       <div className="p-8 flex items-center justify-between overflow-hidden">
         <div className="flex items-center space-x-4">
-          <div className="w-10 h-10 bg-brand-600 rounded-2xl flex items-center justify-center shadow-lg shadow-brand-500/20 shrink-0">
-            <Zap className="w-6 h-6 text-white" />
-          </div>
+          <BrandLogo className="h-8 w-auto shrink-0" />
           {isSidebarOpen && (
             <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>
               <h1 className="text-lg font-black uppercase tracking-tighter leading-none dark:text-white">FinFleet</h1>

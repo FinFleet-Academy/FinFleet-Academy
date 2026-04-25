@@ -21,6 +21,7 @@ import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, 
   PieChart, Pie, Cell, BarChart, Bar, Legend, CartesianGrid
 } from 'recharts';
+import BrandLogo from '../../../components/ui/BrandLogo';
 
 /**
  * 💎 FinFleet Premium: Wealth Intelligence Hub
@@ -250,9 +251,7 @@ const FinancialTracker = () => {
         
         <div className="flex items-center justify-between mb-10 relative z-10">
            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-indigo-500/20 rounded-2xl flex items-center justify-center">
-                 <Zap className="w-6 h-6 text-indigo-500" />
-              </div>
+              <BrandLogo className="h-8 w-auto" />
               <div>
                  <h3 className="text-sm font-black text-white uppercase tracking-[0.2em]">Neural Intelligence Analysis</h3>
                  <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">v4.2.0-Alpha Stream Active</p>

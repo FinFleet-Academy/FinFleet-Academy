@@ -12,7 +12,6 @@ import cookieParser from 'cookie-parser';
 import { fileURLToPath } from 'url';
 import { createServer } from 'http';
 import { initMarketSocket } from './socket/marketSocket.js';
-import marketDataService from './services/marketDataService.js';
 import { apiLimiter, authLimiter } from './middleware/rateLimiter.js';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
@@ -43,7 +42,7 @@ import stockRoutes from './routes/stockRoutes.js';
 import auditRoutes from './routes/auditRoutes.js';
 import financialRoutes from './routes/financialRoutes.js';
 import supportSystemRoutes from './routes/supportSystemRoutes.js';
-import stockSimulator from './services/stockSimulator.js';
+import marketRoutes from './routes/marketRoutes.js';
 import MarketStreamer from './services/intelligence-service/marketStreamer.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 import { requestTracer } from './utils/logger.js';
@@ -159,6 +158,7 @@ app.use('/api/stocks', stockRoutes);
 app.use('/api/audit', auditRoutes);
 app.use('/api/financial', financialRoutes);
 app.use('/api/support-system', supportSystemRoutes);
+app.use('/api/market-data', marketRoutes);
 
 // Static Asset Caching & Serving (Production)
 if (process.env.NODE_ENV === 'production') {
@@ -212,23 +212,13 @@ initSocketServer();
 const intelStreamer = new MarketStreamer();
 intelStreamer.init(httpServer);
 
-// Link Simulator and Market Data to Intelligence Streamer
-stockSimulator.on('tick', (tick) => {
-  intelStreamer.injectTick(tick.symbol, tick);
-});
-
-marketDataService.on('update', (tick) => {
-  intelStreamer.injectTick(tick.symbol, tick);
-});
+// No simulator injections needed.
 
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/finfleet')
   .then(() => {
     console.log('Connected to MongoDB');
     httpServer.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
-      // Start Simulation Engines
-      stockSimulator.startSimulation();
-      marketDataService.connect();
     });
   })
   .catch((err) => {
