@@ -31,6 +31,9 @@ const ProTradingChart = () => {
   const [isLive, setIsLive] = useState(true);
   const [fullView, setFullView] = useState(false);
   const [teachingMode, setTeachingMode] = useState(true);
+  const [chartType, setChartType] = useState('candlestick');
+  const [timeframe, setTimeframe] = useState('1m');
+  const [indicators, setIndicators] = useState({ ma: true, volume: true, ema: false, rsi: false, bollinger: false });
   const [aiInsights, setAiInsights] = useState([
     "Accumulation phase detected near support. High probability of breakout.",
     "RSI Divergence forming on 5m timeframe. Watch for reversal nodes.",
@@ -72,7 +75,8 @@ const ProTradingChart = () => {
                 open: basePrice + (Math.random() - 0.5) * volatility,
                 high: basePrice + Math.random() * volatility,
                 low: basePrice - Math.random() * volatility,
-                close: basePrice
+                close: basePrice,
+                volume: Math.random() * 10000 + 5000
               };
             })
             .sort((a, b) => a.time - b.time);
@@ -149,7 +153,8 @@ const ProTradingChart = () => {
               open: payload.price,
               high: payload.price,
               low: payload.price,
-              close: payload.price
+              close: payload.price,
+              volume: Math.random() * 500 + 100
             };
             const next = [...prev, newBar];
             return next.slice(-500); // 500 candle memory window
@@ -265,22 +270,33 @@ const ProTradingChart = () => {
             </div>
           </div>
 
-          {/* Layer Toggles */}
-          <div className="flex items-center bg-slate-950 rounded-xl p-1 border border-slate-800">
-             {[
-               { id: 'liquidity', icon: Waves, label: 'Liquidity' },
-               { id: 'predictive', icon: Target, label: 'Predictive' },
-               { id: 'psychology', icon: Gauge, label: 'Psychology' }
-             ].map(layer => (
+          {/* Timeframe Selector */}
+          <div className="flex items-center bg-slate-950 rounded-xl p-1 border border-slate-800 ml-4">
+             {['1m', '5m', '15m', '1H'].map(tf => (
                <button 
-                key={layer.id}
-                onClick={() => toggleLayer(layer.id)}
-                className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg transition-all ${activeLayers[layer.id] ? 'bg-slate-800 text-brand-500' : 'text-slate-500 hover:text-slate-300'}`}
+                key={tf}
+                onClick={() => setTimeframe(tf)}
+                className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all ${timeframe === tf ? 'bg-brand-600 text-white' : 'text-slate-500 hover:text-slate-300'}`}
                >
-                 <layer.icon className="w-3.5 h-3.5" />
-                 <span className="text-[9px] font-black uppercase tracking-widest">{layer.label}</span>
+                 {tf}
                </button>
              ))}
+          </div>
+
+          {/* Chart Type Toggle */}
+          <div className="flex items-center bg-slate-950 rounded-xl p-1 border border-slate-800 ml-2">
+             <button 
+              onClick={() => setChartType('candlestick')}
+              className={`p-1.5 rounded-lg transition-all ${chartType === 'candlestick' ? 'bg-slate-800 text-brand-500' : 'text-slate-500'}`}
+             >
+               <Activity className="w-3.5 h-3.5" />
+             </button>
+             <button 
+              onClick={() => setChartType('line')}
+              className={`p-1.5 rounded-lg transition-all ${chartType === 'line' ? 'bg-slate-800 text-brand-500' : 'text-slate-500'}`}
+             >
+               <TrendingUp className="w-3.5 h-3.5" />
+             </button>
           </div>
         </div>
 
@@ -466,10 +482,10 @@ const ProTradingChart = () => {
           <AdvancedChart 
             symbol={activeStock.symbol} 
             data={chartData} 
-            intelligence={activeLayers.predictive ? intelligence : null}
             indicators={indicators}
-            type="candlestick"
+            type={chartType}
             fullView={fullView}
+            timeframe={timeframe}
           />
           
           {/* Predictive Warning Overlays */}
