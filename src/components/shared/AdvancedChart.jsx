@@ -1,42 +1,59 @@
 import React, { useMemo } from 'react';
 import { 
-  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, 
-  CartesianGrid, ComposedChart, Bar, Cell 
+  ComposedChart, Line, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, 
+  CartesianGrid, Bar, Cell, Scatter 
 } from 'recharts';
 
 /**
- * 📊 Neural Intelligence Chart Core
- * High-performance chart engine powered by Recharts (Non-TradingView Implementation).
- * Optimized for predictive analytics and market trends.
+ * 📊 Neural Intelligence Candlestick Engine
+ * High-performance charting using Recharts (Zero TradingView Dependency).
+ * Features: Professional Candlesticks, Neural Overlays, and Predictive Heatmaps.
  */
 const AdvancedChart = ({ 
   data = [], 
   symbol, 
-  intelligence = {},
-  markers = [],
-  indicators = {},
-  type = 'area', // area, bar, candlestick (mocked via bar)
+  type = 'candlestick',
+  indicators = { ema: true, bollinger: false },
+  fullView = false
 }) => {
 
   const formattedData = useMemo(() => {
     return data.map(item => ({
       ...item,
       time: new Date(item.time * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      rawTime: item.time
-    })).sort((a, b) => a.rawTime - b.rawTime);
+      // For Candlesticks in Recharts:
+      // We use a Bar for the body (low to high range) and a Line/Scatter for the wicks
+      body: [item.open, item.close],
+      wick: [item.low, item.high],
+      isUp: item.close >= item.open
+    })).sort((a, b) => a.time.localeCompare(b.time));
   }, [data]);
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       const d = payload[0].payload;
       return (
-        <div className="bg-[#0f172a] border border-white/10 rounded-2xl p-4 shadow-2xl backdrop-blur-xl">
-           <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">{d.time}</p>
-           <div className="flex items-center space-x-3">
-              <div className={`w-1 h-8 rounded-full ${d.close > d.open ? 'bg-emerald-500' : 'bg-red-500'}`} />
-              <div>
-                 <p className="text-xl font-black text-white">₹{d.close.toLocaleString()}</p>
-                 <p className="text-[9px] font-bold text-slate-400">O: {d.open} | H: {d.high} | L: {d.low}</p>
+        <div className="bg-[#0f172a]/95 border border-white/10 rounded-2xl p-4 shadow-2xl backdrop-blur-xl">
+           <div className="flex items-center justify-between mb-3 border-b border-white/5 pb-2">
+              <p className="text-[10px] font-black text-brand-500 uppercase tracking-widest">{symbol}</p>
+              <p className="text-[9px] font-bold text-slate-500">{d.time}</p>
+           </div>
+           <div className="space-y-1">
+              <div className="flex justify-between space-x-8">
+                 <span className="text-[10px] font-black text-slate-400 uppercase">Open</span>
+                 <span className="text-[10px] font-black text-white">₹{d.open.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between space-x-8">
+                 <span className="text-[10px] font-black text-slate-400 uppercase">High</span>
+                 <span className="text-[10px] font-black text-emerald-500">₹{d.high.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between space-x-8">
+                 <span className="text-[10px] font-black text-slate-400 uppercase">Low</span>
+                 <span className="text-[10px] font-black text-red-500">₹{d.low.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between space-x-8">
+                 <span className="text-[10px] font-black text-slate-400 uppercase">Close</span>
+                 <span className={`text-[10px] font-black ${d.isUp ? 'text-emerald-500' : 'text-red-500'}`}>₹{d.close.toLocaleString()}</span>
               </div>
            </div>
         </div>
@@ -46,53 +63,72 @@ const AdvancedChart = ({
   };
 
   return (
-    <div className="w-full h-full min-h-[400px] relative">
+    <div className={`w-full h-full relative ${fullView ? 'bg-[#020617]' : ''}`}>
       <ResponsiveContainer width="100%" height="100%">
-        {type === 'bar' ? (
-          <BarChart data={formattedData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
-            <XAxis dataKey="time" hide />
-            <YAxis hide domain={['auto', 'auto']} />
-            <Tooltip content={<CustomTooltip />} />
-            <Bar dataKey="close" radius={[4, 4, 0, 0]}>
-              {formattedData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.close > entry.open ? '#10b981' : '#ef4444'} />
-              ))}
-            </Bar>
-          </BarChart>
-        ) : (
-          <AreaChart data={formattedData}>
-            <defs>
-              <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
-              </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
-            <XAxis dataKey="time" hide />
-            <YAxis hide domain={['auto', 'auto']} />
-            <Tooltip content={<CustomTooltip />} />
+        <ComposedChart data={formattedData} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
+          <defs>
+            <linearGradient id="upGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#10b981" stopOpacity={0.2}/>
+              <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+            </linearGradient>
+            <linearGradient id="downGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#ef4444" stopOpacity={0.2}/>
+              <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+            </linearGradient>
+          </defs>
+          
+          <CartesianGrid strokeDasharray="1 4" stroke="#1e293b" vertical={false} />
+          <XAxis dataKey="time" hide />
+          <YAxis hide domain={['auto', 'auto']} />
+          <Tooltip content={<CustomTooltip />} />
+
+          {/* 🕯️ CANDLESTICK IMPLEMENTATION */}
+          {type === 'candlestick' ? (
+            <>
+              {/* Wicks */}
+              <Bar dataKey="wick" barSize={1} strokeWidth={0}>
+                {formattedData.map((entry, index) => (
+                  <Cell key={`wick-${index}`} fill={entry.isUp ? '#10b981' : '#ef4444'} opacity={0.6} />
+                ))}
+              </Bar>
+              {/* Body */}
+              <Bar dataKey="body" barSize={10} strokeWidth={0}>
+                {formattedData.map((entry, index) => (
+                  <Cell key={`body-${index}`} fill={entry.isUp ? '#10b981' : '#ef4444'} />
+                ))}
+              </Bar>
+            </>
+          ) : (
             <Area 
               type="monotone" 
               dataKey="close" 
               stroke="#6366f1" 
               strokeWidth={3}
               fillOpacity={1} 
-              fill="url(#chartGradient)" 
-              animationDuration={1500}
+              fill="url(#upGradient)" 
             />
-            {indicators.ema && (
-              <Area type="monotone" dataKey="close" stroke="#10b981" fill="none" strokeWidth={1} strokeDasharray="5 5" opacity={0.5} />
-            )}
-          </AreaChart>
-        )}
+          )}
+
+          {/* 🧠 NEURAL INDICATORS */}
+          {indicators.ema && (
+            <Line 
+              type="monotone" 
+              dataKey="close" 
+              stroke="#10b981" 
+              strokeWidth={1} 
+              dot={false} 
+              strokeDasharray="5 5" 
+              opacity={0.4} 
+            />
+          )}
+        </ComposedChart>
       </ResponsiveContainer>
 
-      {/* Neural Overlay (Visual Polish) */}
-      <div className="absolute top-4 right-4 flex items-center space-x-2">
-         <div className="flex items-center space-x-1.5 bg-slate-900/50 border border-white/5 px-3 py-1 rounded-full backdrop-blur-md">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-[9px] font-black text-white uppercase tracking-widest">Neural Real-time</span>
+      {/* Floating Intel Overlay */}
+      <div className="absolute top-6 left-6 pointer-events-none">
+         <div className="flex items-center space-x-3 bg-[#0f172a]/80 backdrop-blur-xl border border-white/5 px-4 py-2 rounded-2xl">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Live Neural Stream</span>
          </div>
       </div>
     </div>

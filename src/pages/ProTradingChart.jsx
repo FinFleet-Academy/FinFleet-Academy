@@ -29,6 +29,13 @@ const ProTradingChart = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [uiMode, setUiMode] = useState('BALANCED'); // BALANCED, CRITICAL, SIMPLIFIED
   const [isLive, setIsLive] = useState(true);
+  const [fullView, setFullView] = useState(false);
+  const [teachingMode, setTeachingMode] = useState(true);
+  const [aiInsights, setAiInsights] = useState([
+    "Accumulation phase detected near support. High probability of breakout.",
+    "RSI Divergence forming on 5m timeframe. Watch for reversal nodes.",
+    "Institutional order flow shifting to buy-side. Liquidity depth expanding."
+  ]);
   
   const wsRef = useRef(null);
   const chartRef = useRef(null);
@@ -290,6 +297,12 @@ const ProTradingChart = () => {
 
         <div className="flex items-center space-x-4">
           <button 
+            onClick={() => setFullView(!fullView)}
+            className={`p-2 rounded-lg transition-colors ${fullView ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/20' : 'hover:bg-slate-800 text-slate-400'}`}
+          >
+            <Maximize2 className="w-5 h-5" />
+          </button>
+          <button 
             onClick={() => setShowSettings(!showSettings)}
             className={`p-2 rounded-lg transition-colors ${showSettings ? 'bg-brand-500 text-white' : 'hover:bg-slate-800 text-slate-400'}`}
           >
@@ -346,6 +359,19 @@ const ProTradingChart = () => {
                     ))}
                   </div>
                 </div>
+
+                <div className="space-y-4 pt-6 border-t border-slate-800">
+                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Teaching Features</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-black uppercase text-slate-300">Candle Patterns</span>
+                    <button 
+                      onClick={() => setTeachingMode(!teachingMode)}
+                      className={`w-8 h-4 rounded-full relative transition-colors ${teachingMode ? 'bg-emerald-500' : 'bg-slate-700'}`}
+                    >
+                      <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all ${teachingMode ? 'right-0.5' : 'left-0.5'}`} />
+                    </button>
+                  </div>
+                </div>
               </div>
             </motion.div>
           )}
@@ -354,7 +380,8 @@ const ProTradingChart = () => {
       <div className="flex-grow flex overflow-hidden">
         
         {/* 2. INTELLIGENCE HUD */}
-        <div className="w-80 border-r border-slate-800 bg-slate-900/30 p-6 flex flex-col space-y-8 overflow-y-auto custom-scrollbar">
+        {!fullView && (
+          <div className="w-80 border-r border-slate-800 bg-slate-900/30 p-6 flex flex-col space-y-8 overflow-y-auto custom-scrollbar">
            
            {/* Psychology Meter */}
            <div className="space-y-4">
@@ -377,20 +404,19 @@ const ProTradingChart = () => {
            <div className="space-y-4">
               <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Pro Intelligence</h3>
               <div className="space-y-3">
-                 {[
-                   { label: 'Trend Exhaustion', value: `${Math.round(intelligence?.exhaustion * 100)}%`, icon: Zap },
-                   { label: 'Whale Activity', value: intelligence?.whaleActivity || 'NORMAL', icon: Waves },
-                   { label: 'Liquidity Depth', value: 'ULTRA HIGH', icon: Layers }
-                 ].map((signal, i) => (
-                   <div key={i} className="p-4 bg-slate-950 border border-slate-800 rounded-2xl group hover:border-brand-500/50 transition-all">
-                      <div className="flex items-center justify-between mb-2">
-                        <signal.icon className="w-4 h-4 text-brand-500" />
-                        <span className="text-xs font-black text-white">{signal.value}</span>
-                      </div>
-                      <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{signal.label}</p>
-                   </div>
-                 ))}
-              </div>
+                  {aiInsights.map((insight, i) => (
+                    <motion.div 
+                      key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }}
+                      className="p-4 bg-slate-950 border border-slate-800 rounded-2xl group hover:border-brand-500/50 transition-all cursor-help"
+                    >
+                       <div className="flex items-center space-x-3 mb-2">
+                         <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
+                         <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Neural Node {i+1}</span>
+                       </div>
+                       <p className="text-[10px] font-bold text-white leading-relaxed">{insight}</p>
+                    </motion.div>
+                  ))}
+               </div>
            </div>
 
            {/* Watchlist Mini */}
@@ -439,6 +465,7 @@ const ProTradingChart = () => {
             intelligence={activeLayers.predictive ? intelligence : null}
             indicators={indicators}
             type="candlestick"
+            fullView={fullView}
           />
           
           {/* Predictive Warning Overlays */}
