@@ -115,7 +115,7 @@ function App() {
                 </motion.div>
               </AnimatePresence>
               
-              <FloatingChatButton />
+
               
               {/* Floating WhatsApp Button */}
               <motion.a

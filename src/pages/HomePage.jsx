@@ -244,31 +244,44 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* 6. Connect With Us */}
-      <section className="py-32 bg-slate-950 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-brand-900/20 opacity-30" />
+      {/* 6. Connect with FinFleet */}
+      <section className="py-32 bg-[#080C10] relative overflow-hidden border-t border-white/5">
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="text-center mb-20">
-            <h2 className="text-5xl lg:text-7xl font-black uppercase tracking-tighter mb-6">Connect <span className="text-brand-500">With Us</span></h2>
-            <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Join our global network of elite traders</p>
+          <div className="mb-16">
+            <motion.h2 
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+              className="text-4xl md:text-5xl font-black text-white tracking-tight mb-4"
+            >
+              Connect with <span className="text-brand-500">FinFleet</span>
+            </motion.h2>
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
+              className="text-slate-400 font-bold text-sm tracking-wide"
+            >
+              Reach out, follow updates, or get support
+            </motion.p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {[
-              { name: 'WhatsApp', icon: <Zap className="w-5 h-5" />, link: 'https://wa.me/918986165504', color: 'bg-[#25D366]' },
-              { name: 'Instagram', icon: <Globe className="w-5 h-5" />, link: 'https://www.instagram.com/finfleetacademy/', color: 'bg-[#E4405F]' },
-              { name: 'LinkedIn', icon: <Users className="w-5 h-5" />, link: 'https://www.linkedin.com/company/finfleet-academy/', color: 'bg-[#0A66C2]' },
-              { name: 'YouTube', icon: <PlayCircle className="w-5 h-5" />, link: 'https://youtube.com/@finfleetacademy', color: 'bg-[#FF0000]' },
-              { name: 'Finor', icon: <Activity className="w-5 h-5" />, link: 'https://www.instagram.com/finor.in/', color: 'bg-indigo-600' },
-              { name: 'Email', icon: <Newspaper className="w-5 h-5" />, link: 'mailto:info@finfleetacademy.com', color: 'bg-slate-700' }
+              { name: 'WhatsApp', subtitle: 'Chat with us instantly', icon: <Zap className="w-5 h-5" />, link: 'https://wa.me/918986165504' },
+              { name: 'Instagram', subtitle: 'Follow for updates', icon: <Globe className="w-5 h-5" />, link: 'https://www.instagram.com/finfleetacademy/' },
+              { name: 'LinkedIn', subtitle: 'Institutional network', icon: <Users className="w-5 h-5" />, link: 'https://www.linkedin.com/company/finfleet-academy/' },
+              { name: 'YouTube', subtitle: 'Video masterclasses', icon: <PlayCircle className="w-5 h-5" />, link: 'https://youtube.com/@finfleetacademy' },
+              { name: 'Finor AI', subtitle: 'Intelligence updates', icon: <Activity className="w-5 h-5" />, link: 'https://www.instagram.com/finor.in/' },
+              { name: 'Email', subtitle: 'Contact support', icon: <Newspaper className="w-5 h-5" />, link: 'mailto:info@finfleetacademy.com' }
             ].map((social, i) => (
               <motion.a
                 key={i} href={social.link} target="_blank" rel="noopener noreferrer"
-                whileHover={{ scale: 1.05, y: -5 }} whileTap={{ scale: 0.95 }}
-                className={`flex flex-col items-center justify-center p-8 rounded-[2rem] ${social.color} shadow-lg shadow-black/20 group transition-all`}
+                initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}
+                whileHover={{ scale: 1.02, backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'rgba(99,102,241,0.3)' }}
+                className="flex flex-col p-8 rounded-2xl bg-white/[0.03] border border-white/[0.08] group transition-all"
               >
-                <div className="mb-4 text-white">{social.icon}</div>
-                <span className="text-[10px] font-black uppercase tracking-widest">{social.name}</span>
+                <div className="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center text-brand-500 mb-6 group-hover:bg-brand-500 group-hover:text-white transition-colors">
+                  {social.icon}
+                </div>
+                <h3 className="text-lg font-bold text-white mb-1">{social.name}</h3>
+                <p className="text-xs text-slate-500 font-medium">{social.subtitle}</p>
               </motion.a>
             ))}
           </div>
