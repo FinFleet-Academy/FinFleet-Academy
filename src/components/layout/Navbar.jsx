@@ -51,7 +51,7 @@ const Navbar = () => {
             <BrandLogo className="h-8 w-auto" />
             <div className="flex flex-col -space-y-1">
                <span className="text-xl font-black text-slate-900 dark:text-white tracking-tighter">
-                 {location.pathname.startsWith('/finor') ? 'Finor' : 'FinFleet'}
+                 {location.pathname.startsWith('/finor') ? 'Finor' : 'FinFleet Academy'}
                </span>
                <span className="text-[9px] font-black text-brand-600 uppercase tracking-[0.2em]">
                  {location.pathname.startsWith('/finor') ? 'By FinFleet Academy' : 'Academy'}

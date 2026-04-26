@@ -299,8 +299,8 @@ const LiveClasses = () => {
            <div>
               <h4 className="text-sm font-black dark:text-white uppercase tracking-widest mb-3">Participation & Security</h4>
               <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase leading-relaxed max-w-4xl">
-                FinFleet Live Classes are hosted on Google Meet and Zoom. Paid sessions are strictly gated—links are only visible after payment verification. 
-                Please ensure you join with the same email used for your FinFleet account.
+                FinFleet Academy Live Classes are hosted on Google Meet and Zoom. Paid sessions are strictly gated—links are only visible after payment verification. 
+                Please ensure you join with the same email used for your FinFleet Academy account.
               </p>
            </div>
         </div>

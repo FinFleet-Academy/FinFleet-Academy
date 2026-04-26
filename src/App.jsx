@@ -41,7 +41,7 @@ const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 const PageLoader = () => (
   <div className="min-h-[60vh] flex flex-col items-center justify-center">
     <div className="w-12 h-12 border-4 border-indigo-500/10 border-t-indigo-600 rounded-full animate-spin mb-4" />
-    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 animate-pulse">FinFleet Loading</p>
+    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 animate-pulse">FinFleet Academy Loading</p>
   </div>
 );
 

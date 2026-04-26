@@ -28,7 +28,7 @@ const FloatingChatButton = () => {
         
         {/* Tooltip */}
         <div className="absolute right-full mr-4 bg-slate-900 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none uppercase tracking-widest border border-slate-700">
-          Ask FinFleet AI
+          Ask FinFleet Academy AI
         </div>
       </Link>
     </motion.div>

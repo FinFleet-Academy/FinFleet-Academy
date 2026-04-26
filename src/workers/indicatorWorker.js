@@ -1,5 +1,5 @@
 /**
- * FinFleet Indicator Worker
+ * FinFleet Academy Indicator Worker
  * Offloads heavy technical analysis (RSI, EMA, MACD) from the main thread
  */
 self.onmessage = (e) => {

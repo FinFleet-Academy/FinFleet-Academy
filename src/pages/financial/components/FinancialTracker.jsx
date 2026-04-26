@@ -24,7 +24,7 @@ import {
 import BrandLogo from '../../../components/ui/BrandLogo';
 
 /**
- * 💎 FinFleet Premium: Wealth Intelligence Hub
+ * 💎 FinFleet Academy Premium: Wealth Intelligence Hub
  * Advanced financial tracking with neural scoring and institutional analytics.
  */
 const FinancialTracker = () => {

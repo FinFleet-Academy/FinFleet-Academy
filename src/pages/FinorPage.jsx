@@ -10,7 +10,7 @@ import { toast } from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 
 /**
- * 🟣 FinFleet Pro: Finor Intelligence Terminal
+ * 🟣 FinFleet Academy Pro: Finor Intelligence Terminal
  * A high-density, Bloomberg-style financial news feed powered by AI.
  */
 const FinorPage = () => {

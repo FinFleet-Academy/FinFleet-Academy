@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   TrendingUp, Activity, Search, Filter, Globe, Eye, 
-  ArrowLeft, Maximize2, Settings, Download, Share2,
+  ArrowLeft, Maximize2, Minimize2, Settings, Download, Share2,
   ChevronDown, Layers, Crosshair, Zap, ShieldCheck,
   Plus, Minus, Clock, Briefcase, History, TrendingDown,
   Sparkles, Brain, HelpCircle, ChevronRight, AlertTriangle,
@@ -320,7 +320,7 @@ const ProTradingChart = () => {
             onClick={() => setFullView(!fullView)}
             className={`p-2 rounded-lg transition-colors ${fullView ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/20' : 'hover:bg-slate-800 text-slate-400'}`}
           >
-            <Maximize2 className="w-5 h-5" />
+            {fullView ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
           </button>
           <button 
             onClick={() => setShowSettings(!showSettings)}

@@ -46,7 +46,7 @@ const Footer = () => {
                 <BrandLogo className="text-white dark:text-brand-600 w-8 h-8" />
               </div>
               <div>
-                 <span className="text-2xl font-black dark:text-white tracking-tighter uppercase leading-none block">FinFleet</span>
+                 <span className="text-2xl font-black dark:text-white tracking-tighter uppercase leading-none block">FinFleet Academy</span>
                  <span className="text-[10px] font-black text-brand-600 uppercase tracking-[0.4em] leading-none mt-1 block">Academy</span>
               </div>
             </Link>

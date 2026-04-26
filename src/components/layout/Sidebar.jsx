@@ -53,7 +53,7 @@ const Sidebar = ({ isMobile }) => {
           <BrandLogo className="h-8 w-auto shrink-0" />
           {isSidebarOpen && (
             <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>
-              <h1 className="text-lg font-black uppercase tracking-tighter leading-none dark:text-white">FinFleet</h1>
+              <h1 className="text-lg font-black uppercase tracking-tighter leading-none dark:text-white">FinFleet Academy</h1>
               <p className="text-[9px] font-black text-brand-600 uppercase tracking-widest">Academy</p>
             </motion.div>
           )}

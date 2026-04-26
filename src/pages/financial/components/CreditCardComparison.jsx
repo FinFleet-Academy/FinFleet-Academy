@@ -4,7 +4,7 @@ import { CreditCard, Filter, ChevronRight, Star, ShieldCheck, Zap, Layers, Spark
 import axios from 'axios';
 
 /**
- * 💳 FinFleet Elite: Smart Card Portfolio
+ * 💳 FinFleet Academy Elite: Smart Card Portfolio
  * AI-driven credit optimization and institutional benefit comparison.
  */
 const CreditCardComparison = () => {
@@ -26,7 +26,7 @@ const CreditCardComparison = () => {
       console.error("Fetch failed, using elite mock data", err);
       // Premium Fallback Data
       setCards([
-        { _id: '1', name: 'Sapphire Neural', issuer: 'FinFleet Global', type: 'Travel', annualFee: 499, apr: 14.99, rewardRate: 5, benefits: ['Unlimited Lounge Access', 'Crypto Cashback', 'Neural Concierge'], rating: 4.9, color: 'bg-indigo-600' },
+        { _id: '1', name: 'Sapphire Neural', issuer: 'FinFleet Academy Global', type: 'Travel', annualFee: 499, apr: 14.99, rewardRate: 5, benefits: ['Unlimited Lounge Access', 'Crypto Cashback', 'Neural Concierge'], rating: 4.9, color: 'bg-indigo-600' },
         { _id: '2', name: 'Emerald Quantum', issuer: 'AssetNode', type: 'Rewards', annualFee: 0, apr: 18.99, rewardRate: 3, benefits: ['Zero FX Markup', 'Fraud Insurance', 'Node Rewards'], rating: 4.7, color: 'bg-emerald-600' },
         { _id: '3', name: 'Onyx Elite', issuer: 'Reserve One', type: 'Premium', annualFee: 999, apr: 12.49, rewardRate: 10, benefits: ['Private Jet Access', 'Lifestyle Manager', 'Unlimited 10% Back'], rating: 5.0, color: 'bg-slate-900' },
       ]);

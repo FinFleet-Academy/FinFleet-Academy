@@ -18,7 +18,7 @@ const SignupPage = () => {
     setLoading(true);
     try {
       await registerUser(formData.name, formData.email, formData.password, selectedPlan, formData.referralCode);
-      toast.success(`Welcome to FinFleet, ${formData.name}! Your account is ready.`);
+      toast.success(`Welcome to FinFleet Academy, ${formData.name}! Your account is ready.`);
       navigate('/trading'); // Send to trading dashboard after signup
     } catch (err) {
       const serverMessage = err.response?.data?.message;
@@ -49,7 +49,7 @@ const SignupPage = () => {
         animate={{ opacity: 1, scale: 1 }}
         className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-12 gap-12 relative z-10"
       >
-        {/* Left Side: Why Join FinFleet */}
+        {/* Left Side: Why Join FinFleet Academy */}
         <div className="lg:col-span-5 flex flex-col justify-center space-y-10">
           <motion.div {...fadeInUp} className="inline-flex items-center space-x-2 bg-brand-50 dark:bg-brand-900/20 px-3 py-1.5 rounded-full w-fit border border-brand-100 dark:border-brand-800">
              <BrandLogo className="w-4 h-4 text-brand-600" />
@@ -99,7 +99,7 @@ const SignupPage = () => {
           >
             <div className="absolute top-0 right-0 p-4 opacity-5"><Star className="w-12 h-12 text-brand-600" /></div>
             <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-              "FinFleet is the best platform I've found for learning finance in a structured, practical way. Highly recommended for beginners and experienced investors alike."
+              "FinFleet Academy is the best platform I've found for learning finance in a structured, practical way. Highly recommended for beginners and experienced investors alike."
             </p>
             <div className="mt-4 flex items-center space-x-3">
               <div className="w-9 h-9 bg-slate-100 dark:bg-slate-800 rounded-full border-2 border-brand-500/20" />

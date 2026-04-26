@@ -1,10 +1,10 @@
 import React from 'react';
 
 /**
- * 💎 FinFleet Premium Brand Logo
+ * 💎 FinFleet Academy Premium Brand Logo
  * High-fidelity SVG recreation of the custom 'F' winged insignia.
  */
-const BrandLogo = ({ className = "h-8", alt = "FinFleet Logo" }) => {
+const BrandLogo = ({ className = "h-8", alt = "FinFleet Academy Logo" }) => {
   return (
     <img 
       src="/finfleet-logo.png" 

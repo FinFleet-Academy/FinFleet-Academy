@@ -15,7 +15,7 @@ describe('Footer Component', () => {
       </BrowserRouter>
     );
     
-    expect(screen.getByText(/FinFleet/i)).toBeInTheDocument();
+    expect(screen.getByText(/FinFleet Academy/i)).toBeInTheDocument();
   });
 
   it('contains essential links', () => {

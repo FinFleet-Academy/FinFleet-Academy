@@ -112,7 +112,7 @@ const LoginPage = () => {
 
           <div className="mt-10 pt-8 border-t border-slate-50 dark:border-slate-800 text-center">
             <p className="text-sm text-slate-400">
-              New to FinFleet?{' '}
+              New to FinFleet Academy?{' '}
               <Link to="/signup" className="text-brand-600 font-bold hover:text-brand-700 underline underline-offset-4">Create an account</Link>
             </p>
           </div>

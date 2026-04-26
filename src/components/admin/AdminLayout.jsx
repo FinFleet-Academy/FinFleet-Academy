@@ -53,7 +53,7 @@ const AdminLayout = ({ children, activeTab, setActiveTab }) => {
              </div>
              {isSidebarOpen && (
                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                  <h1 className="text-lg font-black uppercase tracking-tighter leading-none">FinFleet</h1>
+                  <h1 className="text-lg font-black uppercase tracking-tighter leading-none">FinFleet Academy</h1>
                   <p className="text-[9px] font-black text-indigo-600 uppercase tracking-widest">Admin Control</p>
                </motion.div>
              )}

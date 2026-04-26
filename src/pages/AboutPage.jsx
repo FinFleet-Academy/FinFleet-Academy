@@ -143,7 +143,7 @@ const AboutPage = () => {
       <section className="py-32">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center md:text-left mb-20">
-            <h2 className="text-4xl font-black dark:text-white mb-4 uppercase tracking-tighter">The FinFleet Advantage.</h2>
+            <h2 className="text-4xl font-black dark:text-white mb-4 uppercase tracking-tighter">The FinFleet Academy Advantage.</h2>
             <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">World-Class Learning Platform</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -182,7 +182,7 @@ const AboutPage = () => {
             
             <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex items-center space-x-2 text-slate-700">
                <Heart className="w-3 h-3 fill-red-500/20" />
-               <span className="text-[9px] font-black uppercase tracking-[0.3em]">Made with love by the FinFleet Team</span>
+               <span className="text-[9px] font-black uppercase tracking-[0.3em]">Made with love by the FinFleet Academy Team</span>
             </div>
           </div>
         </div>

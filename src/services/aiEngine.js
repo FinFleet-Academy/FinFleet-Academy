@@ -1,5 +1,5 @@
 /**
- * AI Engine for FinFleet Pro Chart
+ * AI Engine for FinFleet Academy Pro Chart
  * Provides rule-based market analysis, pattern detection, and educational insights.
  */
 

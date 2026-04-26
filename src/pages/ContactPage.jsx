@@ -115,7 +115,7 @@ const ContactPage = () => {
                   <Star className="w-4 h-4 mr-2 text-amber-500 fill-amber-500" />
                   Partnerships
                </h4>
-               <p className="text-slate-500 dark:text-slate-400 text-[10px] font-bold leading-relaxed mb-6">Interested in partnering with FinFleet or integrating our tools into your institutional workflow?</p>
+               <p className="text-slate-500 dark:text-slate-400 text-[10px] font-bold leading-relaxed mb-6">Interested in partnering with FinFleet Academy or integrating our tools into your institutional workflow?</p>
                <button className="text-[10px] font-black uppercase tracking-widest text-brand-600 flex items-center hover:translate-x-1 transition-transform">
                   Partner Portal <ArrowRight className="w-4 h-4 ml-2" />
                </button>

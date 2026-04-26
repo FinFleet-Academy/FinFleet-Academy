@@ -65,7 +65,7 @@ const FeedbackPage = () => {
             <ShieldCheck className="w-12 h-12 text-emerald-500" />
           </div>
           <h2 className="text-3xl font-black dark:text-white mb-4 uppercase tracking-tighter">Thank You!</h2>
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-bold leading-relaxed mb-12">Your feedback helps us improve FinFleet for everyone. We appreciate your time!</p>
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-bold leading-relaxed mb-12">Your feedback helps us improve FinFleet Academy for everyone. We appreciate your time!</p>
           <button onClick={() => { setSubmitted(false); setRating(0); }}
             className="w-full py-5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center justify-center space-x-2">
             <RefreshCcw className="w-4 h-4" />
@@ -88,7 +88,7 @@ const FeedbackPage = () => {
             <Sparkles className="w-10 h-10 text-brand-600" />
           </div>
           <h1 className="text-4xl md:text-6xl font-black dark:text-white mb-6 tracking-tighter">Share <span className="text-gradient">Feedback.</span></h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-bold leading-relaxed max-w-md mx-auto">Help us improve FinFleet by sharing your thoughts and experiences.</p>
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-bold leading-relaxed max-w-md mx-auto">Help us improve FinFleet Academy by sharing your thoughts and experiences.</p>
         </motion.div>
 
         <motion.form

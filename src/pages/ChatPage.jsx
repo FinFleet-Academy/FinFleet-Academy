@@ -155,7 +155,7 @@ const PrivateChat = ({ currentUser }) => {
 // ─── AI CHAT INTERFACE ───────────────────────────────────────────────────────
 const AIChat = ({ user, plan, chatCount, setChatCount }) => {
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: "Hello! I'm your FinFleet AI assistant. I have live market access and can simplify complex trading concepts. How can I assist you today?" }
+    { role: 'assistant', content: "Hello! I'm your FinFleet Academy AI assistant. I have live market access and can simplify complex trading concepts. How can I assist you today?" }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -224,7 +224,7 @@ const AIChat = ({ user, plan, chatCount, setChatCount }) => {
         <div className="px-8 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
            <div className="flex items-center space-x-3">
               <Sparkles className="w-5 h-5 text-brand-600 animate-pulse" />
-              <h2 className="text-xs font-black uppercase tracking-widest dark:text-white">FinFleet Assistant</h2>
+              <h2 className="text-xs font-black uppercase tracking-widest dark:text-white">FinFleet Academy Assistant</h2>
            </div>
            <div className="flex items-center space-x-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
