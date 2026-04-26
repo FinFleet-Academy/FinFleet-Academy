@@ -7,7 +7,7 @@ import React from 'react';
 const BrandLogo = ({ className = "h-8", alt = "FinFleet Logo" }) => {
   return (
     <img 
-      src="/finfleet-logo.png" 
+      src="/logo.svg" 
       alt={alt}
       className={`${className} object-contain`}
     />
