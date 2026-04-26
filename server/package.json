@@ -17,6 +17,7 @@
     "@socket.io/redis-adapter": "^8.3.0",
     "axios": "^1.15.2",
     "bcryptjs": "^2.4.3",
+    "bull": "^4.16.5",
     "bullmq": "^5.76.1",
     "compression": "^1.8.1",
     "connect-redis": "^9.0.0",
