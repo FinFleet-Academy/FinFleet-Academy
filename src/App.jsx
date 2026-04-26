@@ -62,6 +62,18 @@ function App() {
     setAppReady(true);
   }, []);
 
+  // Force reload on chunk load failure (common after new deployments)
+  useEffect(() => {
+    const handleError = (e) => {
+      if (e.message?.includes('Failed to fetch dynamically imported module') || 
+          e.message?.includes('Importing a module script failed')) {
+        window.location.reload();
+      }
+    };
+    window.addEventListener('error', handleError);
+    return () => window.removeEventListener('error', handleError);
+  }, []);
+
   return (
     <ThemeProvider>
       <AuthProvider>
