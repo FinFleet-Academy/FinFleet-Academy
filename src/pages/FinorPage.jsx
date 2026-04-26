@@ -19,30 +19,79 @@ const FinorPage = () => {
   const [filter, setFilter] = useState('ALL'); // ALL, US, EU, ASIA
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    const fetchInitialIntel = async () => {
-      try {
-        const { data } = await axios.get('/api/news');
-        // Map standard news to Intel format for demo
-        const formatted = data.map(news => ({
-          ...news,
-          marketImpact: news.importance || 'MEDIUM',
-          confidenceScore: 85,
-          affectedAssets: ['EQUITIES', 'NIFTY'],
-          volatilityPrediction: 'MEDIUM',
-          sentiment: 'NEUTRAL'
-        }));
-        setIntelFeed(formatted);
-      } catch (error) {
-        console.error('Error fetching intel:', error);
-      } finally {
-        setLoading(false);
-      }
+  const generateMockNews = () => {
+    const mockTitles = [
+      "Federal Reserve hints at interest rate stabilization",
+      "Tech giants see massive surge in AI infrastructure spending",
+      "Global energy markets brace for supply chain shifts",
+      "Venture capital flow into fintech startups reaches 2-year high",
+      "Emerging markets see record capital inflows this quarter"
+    ];
+    
+    return {
+      _id: `mock-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      title: mockTitles[Math.floor(Math.random() * mockTitles.length)],
+      summary: "AI detected a significant market shift that may impact your portfolio strategy.",
+      content: "Detailed analysis suggests that market participants are recalibrating expectations following significant policy shifts. High-density liquidity zones are shifting toward defensive sectors as institutional capital rebalances.",
+      marketImpact: Math.random() > 0.5 ? 'HIGH' : 'MEDIUM',
+      confidenceScore: Math.floor(Math.random() * 20 + 80),
+      affectedAssets: ['GLOBAL', 'AI', 'TECH'],
+      volatilityPrediction: 'MEDIUM',
+      sentiment: 'BULLISH',
+      createdAt: new Date().toISOString(),
+      source: 'AI PREDICTIVE ENGINE',
+      slug: `mock-news-${Date.now()}`
     };
+  };
+
+  const fetchInitialIntel = async () => {
+    console.log("[Finor] Initiating Intelligence Fetch..."); // Debug Log
+    try {
+      const { data } = await axios.get('/api/news');
+      console.log("AI News Response:", data); // Debug Log
+      
+      // Map standard news to Intel format
+      const formatted = data.map(news => ({
+        ...news,
+        marketImpact: news.importance || (news.title.toLowerCase().includes('high') ? 'HIGH' : 'MEDIUM'),
+        confidenceScore: 85 + Math.floor(Math.random() * 10),
+        affectedAssets: news.affectedAssets || ['EQUITIES', 'NIFTY'],
+        volatilityPrediction: 'MEDIUM',
+        sentiment: 'NEUTRAL'
+      }));
+
+      if (formatted.length === 0) {
+        console.warn("[Finor] No news from API, using fallback generator");
+        const mock = generateMockNews();
+        setIntelFeed(prev => [mock, ...prev]);
+      } else {
+        // Use the requested state update pattern: setNews(prev => [...data, ...prev])
+        // We filter out duplicates to ensure a clean UI
+        setIntelFeed(prev => {
+          const newItems = formatted.filter(item => !prev.some(p => (p._id || p.id) === (item._id || item.id)));
+          console.log(`[Finor] Adding ${newItems.length} new items to feed`); // Debug Log
+          return [...newItems, ...prev];
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching intel:', error);
+      // Fallback (IMPORTANT): Generate mock news so UI still updates
+      const mock = generateMockNews();
+      setIntelFeed(prev => [mock, ...prev]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchInitialIntel();
 
-    // 📡 Real-time listener for AI updates (Simulated via polling for demo)
-    const interval = setInterval(fetchInitialIntel, 10000);
+    // 📡 Real-time listener (AUTO UPDATE: 60 seconds interval as requested)
+    const interval = setInterval(() => {
+      console.log("[Finor] Running scheduled intelligence refresh...");
+      fetchInitialIntel();
+    }, 60000);
+    
     return () => clearInterval(interval);
   }, []);
 

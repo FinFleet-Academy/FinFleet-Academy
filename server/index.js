@@ -44,6 +44,7 @@ import financialRoutes from './routes/financialRoutes.js';
 import supportSystemRoutes from './routes/supportSystemRoutes.js';
 import marketRoutes from './routes/marketRoutes.js';
 import MarketStreamer from './services/intelligence-service/marketStreamer.js';
+import { startNewsScraper } from './services/news-intelligence/orchestrator.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 import { requestTracer } from './utils/logger.js';
 import { cacheService } from './services/cacheService.js';
@@ -211,6 +212,9 @@ initSocketServer();
 // Initialize Pro Intelligence Streamer
 const intelStreamer = new MarketStreamer();
 intelStreamer.init(httpServer);
+
+// Start Global News AI Engine
+startNewsScraper();
 
 // No simulator injections needed.
 

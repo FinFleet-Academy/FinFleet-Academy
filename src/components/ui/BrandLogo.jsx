@@ -10,7 +10,6 @@ const BrandLogo = ({ className = "h-8", alt = "FinFleet Logo" }) => {
       src="/finfleet-logo.png" 
       alt={alt}
       className={`${className} object-contain`}
-      style={{ height: 'inherit' }}
     />
   );
 };
