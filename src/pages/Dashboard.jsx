@@ -85,7 +85,7 @@ const Dashboard = () => {
       {/* 2. KPIs */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: uiContent.dashboard.stats.balance, value: `₹${portfolio.balance.toLocaleString()}`, icon: DollarSign, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+          { label: uiContent.dashboard.stats.balance, value: `₹${(portfolio?.balance || 0).toLocaleString()}`, icon: DollarSign, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
           { label: uiContent.dashboard.stats.points, value: user?.points || 0, icon: Award, color: 'text-amber-500', bg: 'bg-amber-500/10' },
           { label: uiContent.dashboard.stats.courses, value: courses.length, icon: BookOpen, color: 'text-indigo-500', bg: 'bg-indigo-500/10' },
           { label: 'AI Quota', value: `${user?.chatCount || 0}/20`, icon: Zap, color: 'text-brand-600', bg: 'bg-brand-600/10' },
@@ -196,7 +196,7 @@ const Dashboard = () => {
                       <p className="text-[8px] font-bold text-slate-400 uppercase">{t.type} · {new Date(t.createdAt).toLocaleDateString()}</p>
                     </div>
                   </div>
-                  <span className="text-xs font-black">₹{t.price.toLocaleString()}</span>
+                  <span className="text-xs font-black">₹{(t?.price || 0).toLocaleString()}</span>
                 </div>
               ))}
               <Button variant="outline" size="sm" fullWidth className="mt-2" onClick={() => navigate('/pro-chart')}>
@@ -228,7 +228,7 @@ const Dashboard = () => {
             <TableRow key={i}>
               <TableCell className="font-black text-slate-900 dark:text-white uppercase">{item.symbol}</TableCell>
               <TableCell>{item.quantity}</TableCell>
-              <TableCell>₹{item.averagePrice.toLocaleString()}</TableCell>
+              <TableCell>₹{(item?.averagePrice || 0).toLocaleString()}</TableCell>
               <TableCell className="uppercase text-[9px] tracking-widest">{item.market}</TableCell>
               <TableCell><Badge variant="emerald">Active</Badge></TableCell>
             </TableRow>
