@@ -26,7 +26,7 @@ const ProTradingChart = () => {
   const [chartData, setChartData] = useState([]);
   const [intelligence, setIntelligence] = useState(null);
   const [activeLayers, setActiveLayers] = useState({ liquidity: true, predictive: true, psychology: true });
-  const [indicators, setIndicators] = useState({ ema: true, rsi: false, bollinger: false });
+
   const [showSettings, setShowSettings] = useState(false);
   const [uiMode, setUiMode] = useState('BALANCED'); // BALANCED, CRITICAL, SIMPLIFIED
   const [isLive, setIsLive] = useState(true);
