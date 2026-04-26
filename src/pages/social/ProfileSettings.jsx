@@ -10,20 +10,25 @@ import {
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import { toast } from 'react-hot-toast';
+import { Link } from 'react-router-dom';
+import { useTheme } from '../../context/ThemeContext';
 
 const ProfileSettings = () => {
   const { user, setUser } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
+  const [activeTab, setActiveTab] = useState('profile');
   const [formData, setFormData] = useState({
     name: '',
     username: '',
     bio: '',
+    skillLevel: 'Beginner',
     socialLinks: { 
       linkedin: { url: '', visibility: 'PUBLIC' }, 
       twitter: { url: '', visibility: 'PUBLIC' }, 
       instagram: { url: '', visibility: 'PUBLIC' },
       website: { url: '', visibility: 'PUBLIC' }
     },
-    privacy: { email: 'PRIVATE', mobile: 'PRIVATE', stats: 'PUBLIC', certificates: 'PUBLIC' }
+    privacy: { email: 'PRIVATE', mobile: 'PRIVATE', stats: 'PRIVATE', certificates: 'PUBLIC' }
   });
   const [loading, setLoading] = useState(false);
 
@@ -33,186 +38,262 @@ const ProfileSettings = () => {
         name: user.name || '',
         username: user.username || '',
         bio: user.bio || '',
+        skillLevel: user.skillLevel || 'Beginner',
         socialLinks: user.socialLinks || { 
           linkedin: { url: '', visibility: 'PUBLIC' }, 
           twitter: { url: '', visibility: 'PUBLIC' }, 
           instagram: { url: '', visibility: 'PUBLIC' },
           website: { url: '', visibility: 'PUBLIC' }
         },
-        privacy: user.privacy || { email: 'PRIVATE', mobile: 'PRIVATE', stats: 'PUBLIC', certificates: 'PUBLIC' }
+        privacy: user.privacy || { email: 'PRIVATE', mobile: 'PRIVATE', stats: 'PRIVATE', certificates: 'PUBLIC' }
       });
     }
   }, [user]);
 
   const handleUpdate = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setLoading(true);
     try {
-      // URL Validation
-      const validDomains = ['linkedin.com', 'x.com', 'twitter.com', 'instagram.com'];
-      for (const platform of ['linkedin', 'twitter', 'instagram']) {
-        const url = formData.socialLinks[platform].url;
-        if (url && !validDomains.some(d => url.includes(d))) {
-          throw new Error(`Invalid URL for ${platform}. Please use a valid domain.`);
-        }
-      }
-
       const res = await axios.put('/api/user/profile', formData);
       setUser(res.data);
-      toast.success("Financial Identity Synchronized");
+      toast.success("Settings synchronized successfully");
     } catch (err) {
-      toast.error(err.message || "Update failed");
+      toast.error(err.response?.data?.message || "Update failed");
     } finally {
       setLoading(false);
     }
   };
 
-  const toggleSocialPrivacy = (platform) => {
-    const levels = ['PUBLIC', 'FOLLOWERS', 'PRIVATE'];
-    const current = formData.socialLinks[platform].visibility;
-    const next = levels[(levels.indexOf(current) + 1) % levels.length];
-    setFormData({
-      ...formData,
-      socialLinks: {
-        ...formData.socialLinks,
-        [platform]: { ...formData.socialLinks[platform], visibility: next }
-      }
-    });
-  };
+  const tabs = [
+    { id: 'profile', label: 'Profile', icon: User },
+    { id: 'account', label: 'Account', icon: Key },
+    { id: 'privacy', label: 'Privacy', icon: Shield },
+    { id: 'appearance', label: 'Appearance', icon: Moon },
+  ];
+
+  const fadeInUp = { initial: { opacity: 0, y: 10 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: -10 } };
 
   return (
-    <div className="min-h-screen bg-[#020617] text-slate-300 py-20 px-4 md:px-8 font-sans selection:bg-brand-500/30">
-      <div className="max-w-4xl mx-auto space-y-12">
+    <div className="min-h-screen bg-[#F9FAFB] dark:bg-[#080C10] py-20 px-4 md:px-8 font-sans">
+      <div className="max-w-5xl mx-auto">
         
-        <div className="space-y-2">
-          <h1 className="text-4xl font-black text-white tracking-tighter uppercase">Identity Architecture</h1>
-          <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Configure your external presence & privacy firewall</p>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-12 gap-6">
+          <div>
+            <h1 className="text-4xl font-black dark:text-white tracking-tighter uppercase">Settings</h1>
+            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-2">Manage your institutional identity & preferences</p>
+          </div>
+          <Link to="/profile" className="flex items-center text-[10px] font-black uppercase tracking-widest text-brand-600 hover:underline">
+            View Public Profile <ExternalLink className="w-3 h-3 ml-2" />
+          </Link>
         </div>
 
-        <form onSubmit={handleUpdate} className="space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
           
-          {/* 1. CORE IDENTITY */}
-          <div className="bg-[#0f172a]/80 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] p-10 space-y-8 shadow-2xl">
-             <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-brand-500/10 rounded-2xl flex items-center justify-center">
-                  <User className="w-6 h-6 text-brand-500" />
-                </div>
-                <h2 className="text-xl font-black text-white uppercase tracking-tighter">Public Identity</h2>
-             </div>
-
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Professional Name</label>
-                  <input 
-                    type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full bg-[#020617] border border-white/5 rounded-2xl px-6 py-4 text-sm font-bold text-white focus:border-brand-500 transition-all outline-none"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Global Handle (@)</label>
-                  <input 
-                    type="text" value={formData.username} onChange={(e) => setFormData({...formData, username: e.target.value})}
-                    className="w-full bg-[#020617] border border-white/5 rounded-2xl px-6 py-4 text-sm font-bold text-white focus:border-brand-500 transition-all outline-none"
-                  />
-                </div>
-             </div>
+          {/* Sidebar Nav */}
+          <div className="lg:col-span-1 space-y-2">
+            {tabs.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`w-full flex items-center space-x-4 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                  activeTab === tab.id
+                    ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-xl shadow-black/10'
+                    : 'text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-900 border border-transparent'
+                }`}
+              >
+                <tab.icon className="w-4 h-4" />
+                <span>{tab.label}</span>
+              </button>
+            ))}
           </div>
 
-          {/* 2. SOCIAL MEDIA SYNDICATION (GRANULAR) */}
-          <div className="bg-[#0f172a]/80 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] p-10 space-y-8 shadow-2xl">
-             <div className="flex items-center space-x-4 mb-4">
-                <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center">
-                  <Globe className="w-6 h-6 text-emerald-500" />
-                </div>
-                <h2 className="text-xl font-black text-white uppercase tracking-tighter">Social Syndication</h2>
-             </div>
-
-             <div className="space-y-6">
-                {['linkedin', 'twitter', 'instagram'].map(platform => (
-                  <div key={platform} className="p-8 bg-[#020617] border border-white/5 rounded-[2rem] space-y-6 group hover:border-brand-500/20 transition-all">
-                     <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                           {platform === 'linkedin' && <Linkedin className="w-5 h-5 text-blue-500" />}
-                           {platform === 'twitter' && <Twitter className="w-5 h-5 text-slate-400" />}
-                           {platform === 'instagram' && <Instagram className="w-5 h-5 text-pink-500" />}
-                           <span className="text-[10px] font-black uppercase tracking-widest text-white">{platform} Integration</span>
-                        </div>
-                        <button 
-                          type="button" onClick={() => toggleSocialPrivacy(platform)}
-                          className={`px-4 py-2 rounded-xl text-[8px] font-black uppercase tracking-widest transition-all ${
-                            formData.socialLinks[platform].visibility === 'PUBLIC' ? 'bg-emerald-500/10 text-emerald-500' :
-                            formData.socialLinks[platform].visibility === 'FOLLOWERS' ? 'bg-brand-500/10 text-brand-500' :
-                            'bg-slate-800 text-slate-500'
-                          }`}
-                        >
-                          {formData.socialLinks[platform].visibility}
-                        </button>
-                     </div>
-                     <input 
-                       type="url" 
-                       placeholder={`https://${platform}.com/username`}
-                       value={formData.socialLinks[platform].url}
-                       onChange={(e) => setFormData({
-                         ...formData, 
-                         socialLinks: {
-                           ...formData.socialLinks, 
-                           [platform]: { ...formData.socialLinks[platform], url: e.target.value }
-                         }
-                       })}
-                       className="w-full bg-slate-900/50 border border-white/5 rounded-xl px-6 py-3 text-xs font-bold text-white focus:border-brand-500 outline-none transition-all"
-                     />
-                  </div>
-                ))}
-             </div>
-          </div>
-
-          {/* 3. GLOBAL PRIVACY FIREWALL */}
-          <div className="bg-[#0f172a]/80 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] p-10 space-y-8 shadow-2xl">
-             <div className="flex items-center space-x-4 mb-4">
-                <div className="w-12 h-12 bg-indigo-500/10 rounded-2xl flex items-center justify-center">
-                  <Shield className="w-6 h-6 text-indigo-500" />
-                </div>
-                <h2 className="text-xl font-black text-white uppercase tracking-tighter">Privacy Firewall</h2>
-             </div>
-
-             <div className="space-y-4">
-                {Object.keys(formData.privacy).map(field => (
-                  <div key={field} className="flex items-center justify-between p-6 bg-[#020617] border border-white/5 rounded-3xl group hover:border-brand-500/30 transition-all">
-                    <div>
-                      <h4 className="text-sm font-black text-white uppercase mb-1">{field} Visibility</h4>
-                      <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Enforce access control for this field</p>
+          {/* Main Content Area */}
+          <div className="lg:col-span-3">
+            <AnimatePresence mode="wait">
+              {activeTab === 'profile' && (
+                <motion.div key="profile" {...fadeInUp} className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 p-8 md:p-12 shadow-sm space-y-10">
+                  <div className="space-y-8">
+                    <h2 className="text-xl font-black dark:text-white uppercase tracking-tighter">Public Profile</h2>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest px-1">Display Name</label>
+                        <input 
+                          type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})}
+                          className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-6 py-4 text-sm font-bold dark:text-white focus:border-brand-500 transition-all outline-none"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest px-1">Trading Handle (@)</label>
+                        <input 
+                          type="text" value={formData.username} onChange={(e) => setFormData({...formData, username: e.target.value})}
+                          className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-6 py-4 text-sm font-bold dark:text-white focus:border-brand-500 transition-all outline-none"
+                        />
+                      </div>
                     </div>
+
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest px-1">Biography (Max 160 chars)</label>
+                      <textarea 
+                        maxLength={160}
+                        value={formData.bio} onChange={(e) => setFormData({...formData, bio: e.target.value})}
+                        className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-6 py-4 text-sm font-bold dark:text-white focus:border-brand-500 transition-all outline-none resize-none h-32"
+                        placeholder="Tell the community about your trading journey..."
+                      />
+                    </div>
+
+                    <div className="space-y-4">
+                      <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest px-1">Trading Skill Level</label>
+                      <div className="flex flex-wrap gap-3">
+                        {['Beginner', 'Intermediate', 'Pro'].map(level => (
+                          <button
+                            key={level}
+                            type="button"
+                            onClick={() => setFormData({...formData, skillLevel: level})}
+                            className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                              formData.skillLevel === level
+                                ? 'bg-brand-600 text-white shadow-lg shadow-brand-500/20'
+                                : 'bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+                            }`}
+                          >
+                            {level}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="space-y-6 pt-6 border-t border-slate-100 dark:border-slate-800">
+                      <h3 className="text-xs font-black dark:text-white uppercase tracking-widest">Social Connections</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {[
+                          { id: 'linkedin', icon: Linkedin, color: 'text-blue-600' },
+                          { id: 'twitter', icon: Twitter, color: 'text-slate-400' },
+                          { id: 'instagram', icon: Instagram, color: 'text-pink-600' },
+                          { id: 'website', icon: Globe, color: 'text-brand-600' }
+                        ].map(social => (
+                          <div key={social.id} className="relative">
+                            <social.icon className={`absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 ${social.color}`} />
+                            <input 
+                              type="text" 
+                              placeholder={`${social.id.charAt(0).toUpperCase() + social.id.slice(1)} URL`}
+                              value={formData.socialLinks[social.id].url}
+                              onChange={(e) => setFormData({
+                                ...formData, 
+                                socialLinks: {
+                                  ...formData.socialLinks, 
+                                  [social.id]: { ...formData.socialLinks[social.id], url: e.target.value }
+                                }
+                              })}
+                              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl pl-12 pr-6 py-4 text-xs font-bold dark:text-white focus:border-brand-500 outline-none transition-all"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex justify-end">
                     <button 
-                      type="button" onClick={() => {
-                        const levels = ['PUBLIC', 'FOLLOWERS', 'PRIVATE'];
-                        const current = formData.privacy[field];
-                        const next = levels[(levels.indexOf(current) + 1) % levels.length];
-                        setFormData({...formData, privacy: {...formData.privacy, [field]: next}});
-                      }}
-                      className={`px-6 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
-                        formData.privacy[field] === 'PUBLIC' ? 'bg-emerald-500/10 text-emerald-500' :
-                        formData.privacy[field] === 'FOLLOWERS' ? 'bg-brand-500/10 text-brand-500' :
-                        'bg-slate-800 text-slate-400'
-                      }`}
+                      onClick={handleUpdate} disabled={loading}
+                      className="px-10 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:scale-105 transition-all disabled:opacity-50"
                     >
-                      {formData.privacy[field]}
+                      {loading ? 'Saving...' : 'Save Profile'}
                     </button>
                   </div>
-                ))}
-             </div>
-          </div>
+                </motion.div>
+              )}
 
-          <div className="flex items-center justify-end space-x-6 pt-8">
-             <button 
-               type="submit" disabled={loading}
-               className="bg-white text-slate-950 px-12 py-5 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.2em] shadow-2xl hover:scale-105 transition-all flex items-center space-x-3 disabled:opacity-50"
-             >
-                {loading ? <div className="w-4 h-4 border-2 border-slate-900/20 border-t-slate-900 rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
-                <span>Synchronize Identity</span>
-             </button>
-          </div>
+              {activeTab === 'account' && (
+                <motion.div key="account" {...fadeInUp} className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 p-8 md:p-12 shadow-sm space-y-10">
+                  <div className="space-y-8">
+                    <h2 className="text-xl font-black dark:text-white uppercase tracking-tighter">Account Settings</h2>
+                    <div className="p-6 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800">
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Email Address</span>
+                        <span className="px-3 py-1 bg-white dark:bg-slate-900 rounded-lg text-[10px] font-black text-brand-600 border border-slate-100 dark:border-slate-800">Primary</span>
+                      </div>
+                      <p className="text-sm font-bold dark:text-white">{user?.email}</p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-xs font-black dark:text-white uppercase tracking-widest">Security</h3>
+                      <button className="flex items-center space-x-3 px-6 py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-brand-600 hover:border-brand-500 transition-all">
+                        <Lock className="w-4 h-4" />
+                        <span>Change Account Password</span>
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
 
-        </form>
+              {activeTab === 'privacy' && (
+                <motion.div key="privacy" {...fadeInUp} className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 p-8 md:p-12 shadow-sm space-y-10">
+                  <div className="space-y-8">
+                    <h2 className="text-xl font-black dark:text-white uppercase tracking-tighter">Privacy Controls</h2>
+                    <div className="space-y-4">
+                      {Object.keys(formData.privacy).map(field => (
+                        <div key={field} className="flex items-center justify-between p-6 bg-slate-50 dark:bg-slate-950 rounded-3xl border border-slate-100 dark:border-slate-800 group hover:border-brand-500/30 transition-all">
+                          <div>
+                            <h4 className="text-sm font-black dark:text-white uppercase mb-1">{field} Visibility</h4>
+                            <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Control who can view this information</p>
+                          </div>
+                          <div className="flex bg-white dark:bg-slate-900 p-1 rounded-xl border border-slate-100 dark:border-slate-800">
+                            {['PUBLIC', 'FOLLOWERS', 'PRIVATE'].map(level => (
+                              <button 
+                                key={level}
+                                type="button" 
+                                onClick={() => setFormData({...formData, privacy: {...formData.privacy, [field]: level}})}
+                                className={`px-4 py-2 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all ${
+                                  formData.privacy[field] === level 
+                                    ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-sm' 
+                                    : 'text-slate-400 hover:text-slate-600'
+                                }`}
+                              >
+                                {level}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex justify-end">
+                    <button 
+                      onClick={handleUpdate} disabled={loading}
+                      className="px-10 py-4 bg-brand-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-brand-500/20 hover:scale-105 transition-all disabled:opacity-50"
+                    >
+                      {loading ? 'Syncing...' : 'Update Privacy Settings'}
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+
+              {activeTab === 'appearance' && (
+                <motion.div key="appearance" {...fadeInUp} className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 p-8 md:p-12 shadow-sm space-y-10">
+                  <div className="space-y-8">
+                    <h2 className="text-xl font-black dark:text-white uppercase tracking-tighter">Appearance</h2>
+                    <div className="p-8 bg-slate-50 dark:bg-slate-950 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                      <div className="flex items-center space-x-6">
+                        <div className="p-4 bg-white dark:bg-slate-900 rounded-3xl shadow-xl">
+                          {isDark ? <Moon className="w-8 h-8 text-brand-600" /> : <Sun className="w-8 h-8 text-amber-500" />}
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-black dark:text-white uppercase">Theme Selection</h4>
+                          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Switch between light and dark modes</p>
+                        </div>
+                      </div>
+                      <button 
+                        onClick={toggleTheme}
+                        className="px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl hover:scale-105 transition-all"
+                      >
+                        {isDark ? 'Switch to Light' : 'Switch to Dark'}
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
       </div>
     </div>
   );

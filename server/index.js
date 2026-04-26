@@ -12,6 +12,7 @@ import cookieParser from 'cookie-parser';
 import { fileURLToPath } from 'url';
 import { createServer } from 'http';
 import { initMarketSocket } from './socket/marketSocket.js';
+import { initNotificationSocket } from './socket/notificationSocket.js';
 import { apiLimiter, authLimiter } from './middleware/rateLimiter.js';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
@@ -204,6 +205,7 @@ const initSocketServer = async () => {
   }
 
   initMarketSocket(io);
+  initNotificationSocket(io);
 };
 
 await cacheService.connect();

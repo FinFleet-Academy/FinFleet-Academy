@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
   isAdmin: { type: Boolean, default: false, index: true },
   mobile: { type: String, default: '' },
   bio: { type: String, default: '', maxlength: 500 },
+  skillLevel: { type: String, enum: ['Beginner', 'Intermediate', 'Pro'], default: 'Beginner' },
   profileImage: { type: String, default: '' },
   socialLinks: {
     instagram: { url: { type: String, default: '' }, visibility: { type: String, enum: ['PUBLIC', 'FOLLOWERS', 'PRIVATE', 'public', 'followers', 'private'], default: 'PUBLIC' } },
@@ -25,7 +26,7 @@ const userSchema = new mongoose.Schema({
   privacy: {
     email:        { type: String, enum: ['PUBLIC', 'FOLLOWERS', 'PRIVATE', 'public', 'followers', 'private'], default: 'PRIVATE' },
     mobile:       { type: String, enum: ['PUBLIC', 'FOLLOWERS', 'PRIVATE', 'public', 'followers', 'private'], default: 'PRIVATE' },
-    stats:        { type: String, enum: ['PUBLIC', 'FOLLOWERS', 'PRIVATE', 'public', 'followers', 'private'], default: 'PUBLIC' },
+    stats:        { type: String, enum: ['PUBLIC', 'FOLLOWERS', 'PRIVATE', 'public', 'followers', 'private'], default: 'PRIVATE' },
     certificates: { type: String, enum: ['PUBLIC', 'FOLLOWERS', 'PRIVATE', 'public', 'followers', 'private'], default: 'PUBLIC' },
   },
   themePreference: { type: String, enum: ['light', 'dark'], default: 'dark' },

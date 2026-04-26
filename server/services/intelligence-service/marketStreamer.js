@@ -1,6 +1,8 @@
 import { WebSocketServer } from 'ws';
 import msgpack from 'msgpack-lite';
 import aiLogic from './aiLogic.js';
+import alertService from '../alertService.js';
+import aiSignalService from '../aiSignalService.js';
 
 /**
  * ⚡ FinFleet Pro: Binary Intelligence Streamer
@@ -88,7 +90,18 @@ class MarketStreamer {
         ts: Date.now()
       };
 
-      // 3. Binary Encoding & Broadcast
+      // 3. Check Trading Alerts
+      alertService.checkAlerts(symbol, lastTick.price);
+
+      // 4. Push AI Signals if significant
+      if (whaleActivity) {
+        aiSignalService.pushSignal(symbol, whaleActivity, 0.85);
+      }
+      if (psychology && psychology !== 'CALM_EQUILIBRIUM') {
+        aiSignalService.pushSignal(symbol, psychology, 0.75);
+      }
+
+      // 5. Binary Encoding & Broadcast
       const binaryData = msgpack.encode(payload);
       
       this.clients.forEach(client => {

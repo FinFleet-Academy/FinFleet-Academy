@@ -29,11 +29,14 @@ const AdminLayout = ({ children, activeTab, setActiveTab }) => {
 
   const menuItems = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
-    { id: 'live_classes', label: 'Live Classes', icon: Video },
-    { id: 'users', label: 'User Management', icon: Users },
+    { id: 'classes', label: 'Live Classes', icon: Video },
+    { id: 'users', label: 'Users', icon: Users },
     { id: 'payments', label: 'Payments', icon: CreditCard },
     { id: 'analytics', label: 'Analytics', icon: BarChart3 },
-    { id: 'audit_logs', label: 'Audit Logs', icon: History },
+    { id: 'notifications', label: 'Notifications', icon: Bell },
+    { id: 'support', label: 'Support', icon: Globe },
+    { id: 'health', label: 'Health', icon: Activity },
+    { id: 'audit', label: 'Audit Logs', icon: History },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 

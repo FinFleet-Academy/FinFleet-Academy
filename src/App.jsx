@@ -36,6 +36,7 @@ import ProTradingChart from './pages/ProTradingChart';
 const LiveClasses = lazy(() => import('./pages/LiveClasses'));
 const QuizPage = lazy(() => import('./pages/QuizPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+const ProfileSettings = lazy(() => import('./pages/social/ProfileSettings'));
 
 // Premium Loading Fallback
 const PageLoader = () => (
@@ -111,6 +112,7 @@ function App() {
                       <Route path="/login" element={<LoginPage />} />
                       <Route path="/signup" element={<SignupPage />} />
                       <Route path="/profile" element={<ProfilePage />} />
+                      <Route path="/settings" element={<ProfileSettings />} />
                       <Route path="/feedback" element={<FeedbackPage />} />
                       <Route path="/help" element={<HelpPage />} />
                       <Route path="/tools/*" element={<ToolsRouter />} />

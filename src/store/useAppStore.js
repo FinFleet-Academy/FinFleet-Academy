@@ -12,7 +12,7 @@ export const useAppStore = create(
       logout: () => set({ user: null, token: null }),
 
       // UI State
-      isSidebarOpen: true,
+      isSidebarOpen: false,
       toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
       setSidebarOpen: (isOpen) => set({ isSidebarOpen: isOpen }),
 

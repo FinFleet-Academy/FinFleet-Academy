@@ -17,15 +17,47 @@ export const getAdminStats = async (req, res) => {
   }
 };
 
+import { sendRealTimeNotification } from '../socket/notificationSocket.js';
+
 export const broadcastNotification = async (req, res) => {
-  const { userEmail, title, message } = req.body;
+  const { target, userIds, title, message, type, link, metadata } = req.body;
   try {
-    const notification = await Notification.create({ 
-      userEmail, 
-      title: title || 'Platform Notification', 
-      message 
-    });
-    res.status(201).json(notification);
+    if (target === 'all') {
+      const users = await User.find({}, '_id');
+      const notifications = users.map(user => ({
+        userId: user._id,
+        title,
+        message,
+        type: type || 'announcement',
+        link,
+        metadata
+      }));
+      await Notification.insertMany(notifications);
+      
+      // Push real-time to all
+      sendRealTimeNotification('ALL', { title, message, type, link, metadata });
+      
+      return res.status(201).json({ message: `Notification broadcasted to ${users.length} users` });
+    } else if (target === 'selected' && Array.isArray(userIds)) {
+      const notifications = userIds.map(userId => ({
+        userId,
+        title,
+        message,
+        type: type || 'announcement',
+        link,
+        metadata
+      }));
+      await Notification.insertMany(notifications);
+
+      // Push real-time to each selected user
+      userIds.forEach(userId => {
+        sendRealTimeNotification(userId, { title, message, type, link, metadata });
+      });
+
+      return res.status(201).json({ message: `Notification sent to ${userIds.length} users` });
+    }
+
+    res.status(400).json({ message: 'Invalid target or missing userIds' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

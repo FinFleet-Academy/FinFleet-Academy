@@ -21,6 +21,7 @@ import { StatCardSkeleton, ChartSkeleton, TableSkeleton } from '../components/ad
 import { Routes, Route, useLocation } from 'react-router-dom';
 import AdminAnalytics from './admin/Analytics';
 import SupportManager from './admin/SupportManager';
+import AdminNotifications from './admin/Notifications';
 
 const AdminDashboard = () => {
   const { isAdmin, fetchUsers, upgradePlan } = useAuth();
@@ -78,8 +79,19 @@ const AdminDashboard = () => {
     );
   }
 
+  const getActiveTab = () => {
+    const segments = pathname.split('/');
+    const last = segments[segments.length - 1];
+    return last === 'admin' ? 'overview' : last;
+  };
+
+  const handleTabChange = (tabId) => {
+    const path = tabId === 'overview' ? '/admin' : `/admin/${tabId}`;
+    navigate(path);
+  };
+
   return (
-    <div className="admin-container">
+    <AdminLayout activeTab={getActiveTab()} setActiveTab={handleTabChange}>
       <Routes>
         <Route index element={<AdminOverview stats={analyticsData} />} />
         <Route path="classes" element={<AdminLiveClasses classes={liveClassesList} loadData={loadData} />} />
@@ -89,9 +101,10 @@ const AdminDashboard = () => {
         <Route path="audit" element={<AdminAuditLogs />} />
         <Route path="health" element={<SystemHealth />} />
         <Route path="support" element={<SupportManager />} />
+        <Route path="notifications" element={<AdminNotifications />} />
         <Route path="settings" element={<AdminSettings />} />
       </Routes>
-    </div>
+    </AdminLayout>
   );
 };
 

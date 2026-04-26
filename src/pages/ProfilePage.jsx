@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, Mail, Phone, FileText, Camera, Save, CheckCircle, 
   Shield, Star, Crown, Zap, Lock, Eye, EyeOff, Award, 
-  ExternalLink, Users, ChevronRight, UserPlus, UserMinus
+  ExternalLink, Users, ChevronRight, UserPlus, UserMinus,
+  Linkedin, Twitter, Instagram
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
@@ -44,18 +45,12 @@ const PrivacyRow = ({ label, field, value, onChange, options = ['public', 'follo
 
 const ProfilePage = () => {
   const { user, plan, setUser } = useAuth();
-  const [activeTab, setActiveTab] = useState('edit');
-  const [form, setForm]         = useState({ name: '', mobile: '', bio: '', profileImage: '' });
-  const [privacy, setPrivacy]   = useState({ email: 'private', mobile: 'private', bio: 'public', followersList: 'public', followingList: 'public', certificates: 'public' });
   const [certs, setCerts]       = useState([]);
   const [social, setSocial]     = useState({ followers: [], following: [] });
-  const [saving, setSaving]     = useState(false);
   const [loadingSocial, setLoadingSocial] = useState(false);
 
   useEffect(() => {
     if (user) {
-      setForm({ name: user.name || '', mobile: user.mobile || '', bio: user.bio || '', profileImage: user.profileImage || '' });
-      if (user.privacy) setPrivacy({ ...privacy, ...user.privacy });
       setCerts(user.certificates || []);
       fetchSocialData();
     }
@@ -70,242 +65,171 @@ const ProfilePage = () => {
     finally { setLoadingSocial(false); }
   };
 
-  const handleUnfollow = async (targetId) => {
-    try {
-      await axios.delete(`/api/follow/${targetId}`);
-      toast.success('Unfollowed successfully');
-      fetchSocialData();
-    } catch {
-      toast.error('Failed to unfollow');
-    }
-  };
-
-  const handlePrivacyChange = (field, val) => setPrivacy(prev => ({ ...prev, [field]: val }));
-
-  const handleSavePrivacy = async () => {
-    setSaving(true);
-    try {
-      await axios.put('/api/user/privacy', { privacy });
-      toast.success('Privacy settings synced!');
-    } catch { toast.error('Sync failed'); }
-    finally { setSaving(false); }
-  };
-
-  const tabs = [
-    { id: 'edit', label: 'Settings', icon: User },
-    { id: 'social', label: 'Social', icon: Users },
-    { id: 'privacy', label: 'Privacy', icon: Lock },
-    { id: 'certificates', label: 'Achievements', icon: Award },
-  ];
-
   const fadeInUp = { initial: { opacity: 0, y: 10 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: -10 } };
 
   return (
     <div className="py-12 md:py-24 bg-[#F9FAFB] dark:bg-[#080C10] min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* Profile Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-          <div className="flex items-center space-x-6">
-            <div className="relative group">
-               <div className="w-24 h-24 md:w-32 md:h-32 rounded-[2.5rem] bg-gradient-to-br from-brand-600 to-indigo-600 p-1 shadow-2xl shadow-brand-500/20">
-                  {form.profileImage ? (
-                    <img src={form.profileImage} alt="Profile" className="w-full h-full rounded-[2.25rem] object-cover bg-white" />
+        {/* Profile Header (Premium Card) */}
+        <div className="relative mb-12">
+          <div className="bg-white dark:bg-slate-900 rounded-[3rem] p-10 md:p-16 border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-brand-500/10 rounded-full blur-[100px] -mr-32 -mt-32" />
+            
+            <div className="relative flex flex-col md:flex-row items-center md:items-start space-y-8 md:space-y-0 md:space-x-12">
+              <div className="relative">
+                <div className="w-40 h-40 rounded-[3rem] bg-gradient-to-br from-brand-600 to-indigo-600 p-1.5 shadow-2xl shadow-brand-500/20">
+                  {user?.profileImage ? (
+                    <img src={user.profileImage} alt="Profile" className="w-full h-full rounded-[2.75rem] object-cover bg-white" />
                   ) : (
-                    <div className="w-full h-full rounded-[2.25rem] bg-slate-900 flex items-center justify-center text-white text-3xl font-black">
+                    <div className="w-full h-full rounded-[2.75rem] bg-slate-900 flex items-center justify-center text-white text-4xl font-black">
                       {user?.name?.[0]}
                     </div>
                   )}
-               </div>
-               <button className="absolute -bottom-2 -right-2 p-3 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 hover:scale-110 transition-transform">
-                  <Camera className="w-4 h-4 text-brand-600" />
-               </button>
-            </div>
-            <div>
-              <div className="flex items-center space-x-3 mb-2">
-                <h1 className="text-3xl font-black dark:text-white tracking-tight">{user?.name}</h1>
-                <span className="px-3 py-1 bg-brand-50 dark:bg-brand-900/30 text-brand-600 text-[10px] font-black rounded-full uppercase tracking-widest border border-brand-100 dark:border-brand-800">
-                  Verified
-                </span>
+                </div>
+                <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-emerald-500 border-4 border-white dark:border-slate-900 rounded-2xl flex items-center justify-center shadow-lg">
+                  <CheckCircle className="w-5 h-5 text-white" />
+                </div>
               </div>
-              <div className="flex items-center space-x-4 text-slate-400 text-sm font-bold">
-                 <span className="flex items-center"><Users className="w-4 h-4 mr-1.5" /> {social.followers?.length || 0} Followers</span>
-                 <span className="flex items-center"><UserPlus className="w-4 h-4 mr-1.5" /> {social.following?.length || 0} Following</span>
+
+              <div className="flex-1 text-center md:text-left">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4">
+                  <div>
+                    <h1 className="text-4xl font-black dark:text-white tracking-tighter mb-2">{user?.name}</h1>
+                    <p className="text-slate-500 font-bold text-sm tracking-tight">@{user?.username || 'finfleeter'}</p>
+                  </div>
+                  <div className="flex items-center justify-center md:justify-end space-x-3">
+                    <Link to="/settings" className="px-6 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl">
+                      Edit Profile
+                    </Link>
+                    <Link to={`/user/${user?._id}`} className="p-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-2xl hover:bg-brand-50 transition-all">
+                      <ExternalLink className="w-5 h-5" />
+                    </Link>
+                  </div>
+                </div>
+
+                <p className="text-lg font-bold text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed mb-8 italic">
+                  {user?.bio || "No biography provided yet. Master the markets with FinFleet Academy."}
+                </p>
+
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
+                  {user?.socialLinks?.linkedin?.url && (
+                    <a href={user.socialLinks.linkedin.url} target="_blank" className="p-3 bg-slate-50 dark:bg-slate-800 rounded-2xl hover:text-brand-600 transition-colors">
+                      <Linkedin className="w-5 h-5" />
+                    </a>
+                  )}
+                  {user?.socialLinks?.twitter?.url && (
+                    <a href={user.socialLinks.twitter.url} target="_blank" className="p-3 bg-slate-50 dark:bg-slate-800 rounded-2xl hover:text-brand-600 transition-colors">
+                      <Twitter className="w-5 h-5" />
+                    </a>
+                  )}
+                  {user?.socialLinks?.instagram?.url && (
+                    <a href={user.socialLinks.instagram.url} target="_blank" className="p-3 bg-slate-50 dark:bg-slate-800 rounded-2xl hover:text-brand-600 transition-colors">
+                      <Instagram className="w-5 h-5" />
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-          <Link to={`/user/${user?._id}`} className="px-6 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs font-black uppercase tracking-widest dark:text-white shadow-sm flex items-center hover:shadow-md transition-all active:scale-95">
-             Preview Public <ExternalLink className="w-4 h-4 ml-2" />
-          </Link>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        {/* Stats & Info Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
           
-          {/* Sidebar Nav */}
-          <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm p-2">
-               {tabs.map(t => (
-                 <button
-                   key={t.id}
-                   onClick={() => setActiveTab(t.id)}
-                   className={`w-full flex items-center space-x-3 px-6 py-4 rounded-2xl text-sm font-black transition-all ${
-                     activeTab === t.id
-                       ? 'bg-brand-600 text-white shadow-xl shadow-brand-500/20'
-                       : 'text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800'
-                   }`}
-                 >
-                   <t.icon className={`w-4 h-4 ${activeTab === t.id ? 'text-white' : 'text-slate-400'}`} />
-                   <span className="uppercase tracking-widest text-[10px]">{t.label}</span>
-                 </button>
-               ))}
+          {/* Identity & Stats */}
+          <div className="space-y-8">
+            {/* Stats Card */}
+            <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
+              <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-8">Ecosystem Stats</h3>
+              <div className="grid grid-cols-2 gap-8">
+                <div>
+                  <p className="text-3xl font-black dark:text-white mb-1">{social.followers?.length || 0}</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Followers</p>
+                </div>
+                <div>
+                  <p className="text-3xl font-black dark:text-white mb-1">{social.following?.length || 0}</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Following</p>
+                </div>
+                <div>
+                  <p className="text-3xl font-black dark:text-white mb-1">{certs.length || 0}</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Certificates</p>
+                </div>
+                <div>
+                  <p className="text-3xl font-black dark:text-white mb-1">0</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Trades</p>
+                </div>
+              </div>
             </div>
 
-            <div className="bg-slate-900 rounded-[2rem] p-6 text-white relative overflow-hidden group shadow-xl">
-               <div className="absolute top-0 right-0 w-24 h-24 bg-brand-500 rounded-full blur-3xl opacity-20 -mr-8 -mt-8" />
-               <h3 className="text-[10px] font-black uppercase tracking-widest text-brand-400 mb-4 flex items-center">
-                  <Crown className="w-3 h-3 mr-2" />
-                  Subscription
-               </h3>
-               <div className="text-xl font-black mb-1">{plan}</div>
-               <p className="text-slate-400 text-[10px] font-bold mb-6">Access to all premium modules</p>
-               <Link to="/pricing" className="text-[10px] font-black uppercase tracking-widest text-brand-400 hover:text-brand-300 transition-colors">Upgrade Plan →</Link>
+            {/* Trading Identity Card */}
+            <div className="bg-slate-950 rounded-[2.5rem] p-8 text-white relative overflow-hidden group shadow-2xl">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/20 rounded-full blur-[50px] -mr-16 -mt-16" />
+              <h3 className="text-[10px] font-black uppercase tracking-widest text-brand-400 mb-6 flex items-center">
+                <Crown className="w-3 h-3 mr-2" />
+                Trading Identity
+              </h3>
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Skill Level</span>
+                  <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-[10px] font-black uppercase tracking-widest text-brand-400">
+                    {user?.skillLevel || 'Beginner'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Verification</span>
+                  <span className="flex items-center text-[10px] font-black uppercase tracking-widest text-emerald-400">
+                    <CheckCircle className="w-3 h-3 mr-1.5" /> Verified
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Member Since</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-white">
+                    {new Date(user?.createdAt).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Content Area */}
-          <div className="lg:col-span-3 min-h-[500px]">
-            <AnimatePresence mode="wait">
-              {activeTab === 'edit' && (
-                <motion.div key="edit" {...fadeInUp} className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 p-8 md:p-12 shadow-sm h-full">
-                  <h2 className="text-xl font-black dark:text-white mb-8 uppercase tracking-widest">Account Details</h2>
-                  <form onSubmit={(e) => { e.preventDefault(); toast.success("Saved"); }} className="space-y-8">
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div className="space-y-2">
-                           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Full Name</label>
-                           <input value={form.name} onChange={e => setForm({...form, name: e.target.value})} className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm font-bold dark:text-white focus:border-brand-500 focus:outline-none transition-all" />
-                        </div>
-                        <div className="space-y-2">
-                           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Contact Email</label>
-                           <input value={user?.email} readOnly className="w-full px-6 py-4 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm font-bold text-slate-400 cursor-not-allowed" />
-                        </div>
-                     </div>
-                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Biography</label>
-                        <textarea value={form.bio} onChange={e => setForm({...form, bio: e.target.value})} rows={4} className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm font-bold dark:text-white focus:border-brand-500 focus:outline-none transition-all resize-none" placeholder="Share your investing journey..." />
-                     </div>
-                     <button type="submit" className="px-10 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl text-xs font-black uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all">
-                        Sync Changes
-                     </button>
-                  </form>
-                </motion.div>
-              )}
+          {/* Social Network & Activity */}
+          <div className="lg:col-span-2 space-y-8">
+            <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] p-10 border border-slate-200 dark:border-slate-800 shadow-sm min-h-[400px]">
+              <div className="flex items-center justify-between mb-10">
+                <h2 className="text-xl font-black dark:text-white uppercase tracking-widest">Network Highlights</h2>
+                <div className="flex space-x-2">
+                  <button className="px-4 py-2 bg-slate-50 dark:bg-slate-800 rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500">Following</button>
+                  <button className="px-4 py-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-400">Activity</button>
+                </div>
+              </div>
 
-              {activeTab === 'privacy' && (
-                <motion.div key="privacy" {...fadeInUp} className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 p-8 md:p-12 shadow-sm h-full">
-                  <div className="flex justify-between items-center mb-10">
-                    <h2 className="text-xl font-black dark:text-white uppercase tracking-widest">Privacy & Trust</h2>
-                    <Shield className="w-6 h-6 text-emerald-500" />
-                  </div>
-                  <div className="space-y-2">
-                     <PrivacyRow label="Email Visibility" field="email" value={privacy.email} onChange={handlePrivacyChange} />
-                     <PrivacyRow label="Mobile Presence" field="mobile" value={privacy.mobile} onChange={handlePrivacyChange} />
-                     <PrivacyRow label="Bio & Profile" field="bio" value={privacy.bio} onChange={handlePrivacyChange} />
-                     <PrivacyRow label="Followers List" field="followersList" value={privacy.followersList} onChange={handlePrivacyChange} options={['public', 'private']} />
-                     <PrivacyRow label="Following List" field="followingList" value={privacy.followingList} onChange={handlePrivacyChange} options={['public', 'private']} />
-                     <PrivacyRow label="Achievement Badges" field="certificates" value={privacy.certificates} onChange={handlePrivacyChange} />
-                  </div>
-                  <div className="mt-12 p-6 bg-slate-50 dark:bg-slate-950 rounded-[1.5rem] border border-slate-100 dark:border-slate-800">
-                     <p className="text-[10px] font-bold text-slate-500 leading-relaxed">
-                        <Lock className="w-3 h-3 inline mr-2" />
-                        All data is encrypted. Selecting "Private" ensures your data is only visible to you. "Followers" allows verified connections to see your shared insights.
-                     </p>
-                  </div>
-                  <button onClick={handleSavePrivacy} className="mt-8 px-10 py-4 bg-brand-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-brand-700 shadow-xl shadow-brand-500/20 transition-all">
-                     Update Privacy
-                  </button>
-                </motion.div>
-              )}
-
-              {activeTab === 'social' && (
-                 <motion.div key="social" {...fadeInUp} className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 p-8 md:p-12 shadow-sm h-full">
-                    <h2 className="text-xl font-black dark:text-white mb-10 uppercase tracking-widest">My Network</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                       <div className="space-y-6">
-                          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Followers ({social.followers?.length || 0})</h3>
-                          <div className="space-y-4">
-                             {social.followers?.map(f => (
-                                <div key={f._id} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl">
-                                   <div className="flex items-center space-x-3">
-                                      <div className="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-800" />
-                                      <span className="text-xs font-black dark:text-white uppercase tracking-tight">{f.name}</span>
-                                   </div>
-                                   <Link to={`/user/${f._id}`} className="p-2 rounded-lg hover:bg-white dark:hover:bg-slate-800 transition-colors">
-                                      <ChevronRight className="w-4 h-4 text-slate-400" />
-                                   </Link>
-                                </div>
-                             ))}
-                             {social.followers?.length === 0 && <p className="text-xs font-bold text-slate-400 italic">No followers yet.</p>}
-                          </div>
-                       </div>
-                       <div className="space-y-6">
-                          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Following ({social.following?.length || 0})</h3>
-                          <div className="space-y-4">
-                             {social.following?.map(f => (
-                                <div key={f._id} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl">
-                                   <div className="flex items-center space-x-3">
-                                      <div className="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-800" />
-                                      <span className="text-xs font-black dark:text-white uppercase tracking-tight">{f.name}</span>
-                                   </div>
-                                   <button onClick={() => handleUnfollow(f._id)} className="text-[10px] font-black uppercase text-red-500 hover:underline">Unfollow</button>
-                                </div>
-                             ))}
-                             {social.following?.length === 0 && <p className="text-xs font-bold text-slate-400 italic">Following no one.</p>}
-                          </div>
-                       </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {social.following?.slice(0, 4).map(f => (
+                  <div key={f._id} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl group border border-transparent hover:border-brand-500/20 transition-all">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center font-black text-xs">
+                        {f.name?.[0]}
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-[11px] font-black dark:text-white uppercase tracking-tight leading-none mb-1">{f.name}</span>
+                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Community Member</span>
+                      </div>
                     </div>
-                 </motion.div>
-              )}
-
-              {activeTab === 'certificates' && (
-                <motion.div key="certs" {...fadeInUp} className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 p-8 md:p-12 shadow-sm h-full">
-                  <h2 className="text-xl font-black dark:text-white mb-10 uppercase tracking-widest">Achievements</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                     {!certs || certs.length === 0 ? (
-                        <div className="col-span-full py-20 text-center opacity-40">
-                           <Award className="w-16 h-16 mx-auto mb-4" />
-                           <p className="text-sm font-black uppercase tracking-widest">No certifications earned</p>
-                        </div>
-                     ) : (
-                        certs.map(c => (
-                           <div key={c._id} className="p-6 bg-slate-50 dark:bg-slate-950 rounded-3xl border border-slate-100 dark:border-slate-800 flex flex-col items-center text-center group hover:border-brand-500/50 transition-all relative">
-                              {!c.isVisible && <div className="absolute top-4 right-4"><EyeOff className="w-4 h-4 text-slate-400" /></div>}
-                              <div className="w-16 h-16 rounded-2xl bg-white dark:bg-slate-900 shadow-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                                 <Award className="w-8 h-8 text-brand-600" />
-                              </div>
-                              <h4 className="text-sm font-black dark:text-white mb-1 uppercase tracking-tight">{c.courseName}</h4>
-                              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{new Date(c.completedAt).toLocaleDateString()}</p>
-                              <div className="mt-6 w-full pt-4 border-t border-slate-200 dark:border-slate-800">
-                                 <button 
-                                   onClick={async () => {
-                                     try {
-                                       const { data } = await axios.put('/api/user/certificate-visibility', { certId: c._id, isVisible: !c.isVisible });
-                                       setCerts(data.certificates);
-                                       toast.success(c.isVisible ? 'Hidden from public' : 'Visible to public');
-                                     } catch { toast.error('Failed to update visibility'); }
-                                   }}
-                                   className="text-[10px] font-black uppercase text-brand-600 hover:underline"
-                                 >
-                                   {c.isVisible ? 'Hide Certificate' : 'Show Certificate'}
-                                 </button>
-                              </div>
-                           </div>
-                        ))
-                     )}
+                    <Link to={`/user/${f._id}`} className="w-8 h-8 rounded-lg bg-white dark:bg-slate-900 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <ChevronRight className="w-4 h-4 text-slate-400" />
+                    </Link>
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                ))}
+                {(!social.following || social.following.length === 0) && (
+                  <div className="col-span-full py-20 flex flex-col items-center justify-center text-slate-300 dark:text-slate-700">
+                    <Users className="w-12 h-12 mb-4" />
+                    <p className="text-[10px] font-black uppercase tracking-widest">Your network is empty</p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
+
         </div>
       </div>
     </div>

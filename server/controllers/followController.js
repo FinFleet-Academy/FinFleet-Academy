@@ -2,6 +2,9 @@ import Follow from '../models/Follow.js';
 import User from '../models/User.js';
 
 // Follow a user
+import Notification from '../models/Notification.js';
+import { sendRealTimeNotification } from '../socket/notificationSocket.js';
+
 export const followUser = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -11,6 +14,21 @@ export const followUser = async (req, res) => {
     if (existing) return res.status(400).json({ message: "Already following" });
 
     await Follow.create({ follower: req.user.id, following: userId });
+
+    // Create Notification
+    const followerUser = await User.findById(req.user.id).select('name');
+    const notification = await Notification.create({
+      userId,
+      senderId: req.user.id,
+      title: 'New Follower',
+      message: `${followerUser.name} started following you`,
+      type: 'social',
+      link: `/user/${req.user.id}`
+    });
+
+    // Real-time push
+    sendRealTimeNotification(userId, notification);
+
     res.status(201).json({ message: "Followed successfully" });
   } catch (error) {
     res.status(500).json({ message: "Server error" });

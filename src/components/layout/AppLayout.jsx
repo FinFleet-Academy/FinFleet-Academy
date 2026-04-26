@@ -17,7 +17,6 @@ const AppLayout = ({ children }) => {
       const mobile = window.innerWidth < 1024;
       setIsMobile(mobile);
       if (mobile) setSidebarOpen(false);
-      else setSidebarOpen(true);
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -36,11 +35,7 @@ const AppLayout = ({ children }) => {
       {/* 1. Sidebar (Persistent or Drawer) */}
       <AnimatePresence mode="wait">
         {(isSidebarOpen || !isMobile) && (
-          <Sidebar 
-            isOpen={isSidebarOpen} 
-            setIsOpen={setSidebarOpen} 
-            isMobile={isMobile}
-          />
+          <Sidebar isMobile={isMobile} />
         )}
       </AnimatePresence>
 

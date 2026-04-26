@@ -146,6 +146,9 @@ const PublicProfilePage = () => {
                  <span className="text-[10px] font-black px-3 py-1 bg-brand-50 dark:bg-brand-900/30 text-brand-600 rounded-full uppercase tracking-widest border border-brand-100 dark:border-brand-800">
                     {profile.plan || 'MEMBER'}
                  </span>
+                 <span className="text-[10px] font-black px-3 py-1 bg-slate-50 dark:bg-slate-800 text-brand-600 dark:text-brand-400 rounded-full uppercase tracking-widest border border-slate-200 dark:border-slate-800">
+                    {profile.skillLevel || 'Beginner'}
+                 </span>
                  <span className="text-[10px] font-black px-3 py-1 bg-slate-50 dark:bg-slate-800 text-slate-500 rounded-full uppercase tracking-widest">
                     Joined {new Date(profile.createdAt).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
                  </span>
