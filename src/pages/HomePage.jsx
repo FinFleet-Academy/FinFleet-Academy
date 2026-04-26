@@ -1,7 +1,8 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  ArrowRight, BookOpen, Newspaper, Users, Star, Sparkles, Zap, Globe, PlayCircle, Activity
+  ArrowRight, BookOpen, Newspaper, Users, Star, Sparkles, Zap, Globe, PlayCircle, Activity,
+  ShieldCheck, BarChart4, LineChart, Cpu, PieChart
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -37,6 +38,91 @@ const HomePage = () => {
       <Suspense fallback={<div className="h-[700px] bg-slate-950 animate-pulse" />}>
         <PremiumLiveChart />
       </Suspense>
+
+      {/* 1.5. Quant Platform (Coming Soon) */}
+      <section className="relative py-32 bg-slate-950 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950 to-brand-950/30 opacity-60" />
+        <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_70%_50%,rgba(99,102,241,0.1),transparent_50%)]" />
+        
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+            {/* Left: Content */}
+            <motion.div 
+              initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} 
+              viewport={{ once: true }} transition={{ duration: 0.8 }}
+              className="space-y-10"
+            >
+              <div className="inline-flex items-center space-x-3 bg-brand-500/10 border border-brand-500/20 px-4 py-2 rounded-full">
+                <div className="w-2 h-2 rounded-full bg-brand-500 animate-pulse" />
+                <span className="text-[10px] font-black text-brand-400 uppercase tracking-[0.3em]">Institutional Grade System</span>
+              </div>
+
+              <h2 className="text-5xl lg:text-7xl font-black text-white uppercase tracking-tighter leading-none">
+                FinFleet <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-indigo-400">Quant Platform.</span>
+              </h2>
+
+              <p className="text-lg font-bold text-slate-400 leading-relaxed italic max-w-xl">
+                FinFleet Quant Platform is our upcoming advanced financial system designed to deliver institutional-grade intelligence to traders and investors.
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {[
+                  { icon: Globe, text: 'Real-time market data' },
+                  { icon: Sparkles, text: 'AI-powered insights' },
+                  { icon: LineChart, text: 'Quantitative analysis' },
+                  { icon: ShieldCheck, text: 'Risk management tools' },
+                  { icon: PieChart, text: 'Portfolio intelligence' }
+                ].map((feature, i) => (
+                  <div key={i} className="flex items-center space-x-4">
+                    <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-brand-400 border border-white/5">
+                      <feature.icon className="w-5 h-5" />
+                    </div>
+                    <span className="text-[11px] font-black text-slate-300 uppercase tracking-widest">{feature.text}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="pt-10">
+                <motion.div 
+                  initial={{ scale: 0.95 }} animate={{ scale: 1 }} transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                  className="inline-block"
+                >
+                  <div className="text-4xl lg:text-6xl font-black uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-brand-500 via-indigo-500 to-emerald-500 drop-shadow-[0_0_15px_rgba(99,102,241,0.3)]">
+                    COMING SOON
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+
+            {/* Right: Visual */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} 
+              viewport={{ once: true }} transition={{ duration: 1 }}
+              className="relative aspect-square lg:aspect-video rounded-[3rem] bg-slate-900/50 border border-white/5 overflow-hidden flex items-center justify-center shadow-3xl group"
+            >
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(139,92,246,0.1),transparent_70%)]" />
+              
+              {/* Abstract Visual Elements */}
+              <div className="relative flex flex-col items-center space-y-6">
+                <Cpu className="w-24 h-24 text-brand-500/30 animate-pulse" />
+                <div className="flex space-x-4">
+                  {[1,2,3].map(i => (
+                    <motion.div 
+                      key={i} animate={{ height: [20, 60, 20] }} 
+                      transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
+                      className="w-2 bg-brand-500/20 rounded-full" 
+                    />
+                  ))}
+                </div>
+                <div className="text-[10px] font-black text-slate-600 uppercase tracking-[0.5em]">Neural Engine v4.0 Active</div>
+              </div>
+
+              {/* Glowing Corner */}
+              <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-brand-500 rounded-full blur-[100px] opacity-20 group-hover:opacity-40 transition-opacity" />
+            </motion.div>
+          </div>
+        </div>
+      </section>
 
       {/* 2. Trust Metrics */}
       <section className="py-20 border-y border-slate-100 dark:border-slate-800/50 bg-slate-50/50 dark:bg-slate-900/10">
@@ -135,9 +221,63 @@ const HomePage = () => {
         </div>
       </section>
 
+      {/* 5. About & Ecosystem */}
+      <section className="py-32 border-t border-slate-100 dark:border-slate-800/50 bg-slate-50/30 dark:bg-slate-900/5">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
+            {/* About Academy */}
+            <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+              <h2 className="text-4xl font-black dark:text-white uppercase tracking-tighter mb-8">About <span className="text-brand-600">FinFleet Academy</span></h2>
+              <p className="text-lg font-bold text-slate-500 dark:text-slate-400 leading-relaxed italic">
+                FinFleet Academy is a next-generation financial education platform designed to help individuals learn, practice, and master the stock market. We combine structured learning, real-time tools, and AI-powered insights to create a complete trading ecosystem.
+              </p>
+            </motion.div>
+
+            {/* About Finor */}
+            <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+              <h2 className="text-4xl font-black dark:text-white uppercase tracking-tighter mb-8">About <span className="text-indigo-500">Finor AI</span></h2>
+              <p className="text-lg font-bold text-slate-500 dark:text-slate-400 leading-relaxed italic">
+                Finor is our AI-powered financial intelligence engine that analyzes market trends, generates real-time insights, and delivers smart financial news to help users make data-driven decisions.
+              </p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. Connect With Us */}
+      <section className="py-32 bg-slate-950 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-brand-900/20 opacity-30" />
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <div className="text-center mb-20">
+            <h2 className="text-5xl lg:text-7xl font-black uppercase tracking-tighter mb-6">Connect <span className="text-brand-500">With Us</span></h2>
+            <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Join our global network of elite traders</p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+            {[
+              { name: 'WhatsApp', icon: <Zap className="w-5 h-5" />, link: 'https://wa.me/918986165504', color: 'bg-[#25D366]' },
+              { name: 'Instagram', icon: <Globe className="w-5 h-5" />, link: 'https://www.instagram.com/finfleetacademy/', color: 'bg-[#E4405F]' },
+              { name: 'LinkedIn', icon: <Users className="w-5 h-5" />, link: 'https://www.linkedin.com/company/finfleet-academy/', color: 'bg-[#0A66C2]' },
+              { name: 'YouTube', icon: <PlayCircle className="w-5 h-5" />, link: 'https://youtube.com/@finfleetacademy', color: 'bg-[#FF0000]' },
+              { name: 'Finor', icon: <Activity className="w-5 h-5" />, link: 'https://www.instagram.com/finor.in/', color: 'bg-indigo-600' },
+              { name: 'Email', icon: <Newspaper className="w-5 h-5" />, link: 'mailto:info@finfleetacademy.com', color: 'bg-slate-700' }
+            ].map((social, i) => (
+              <motion.a
+                key={i} href={social.link} target="_blank" rel="noopener noreferrer"
+                whileHover={{ scale: 1.05, y: -5 }} whileTap={{ scale: 0.95 }}
+                className={`flex flex-col items-center justify-center p-8 rounded-[2rem] ${social.color} shadow-lg shadow-black/20 group transition-all`}
+              >
+                <div className="mb-4 text-white">{social.icon}</div>
+                <span className="text-[10px] font-black uppercase tracking-widest">{social.name}</span>
+              </motion.a>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Huge Background Branding */}
       <div className="pb-20 text-center select-none pointer-events-none opacity-[0.02]">
-        <h2 className="text-[25vw] font-black leading-none tracking-tighter dark:text-white">FLEET</h2>
+        <h2 className="text-[25vw] font-black leading-none tracking-tighter dark:text-white uppercase">FLEET</h2>
       </div>
     </div>
   );

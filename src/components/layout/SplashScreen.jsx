@@ -191,10 +191,10 @@ const SplashScreen = ({ onComplete }) => {
                 transition={{ duration: 1.2, delay: 0.8, ease: 'easeInOut' }}
               />
               <h1
-                className="text-6xl sm:text-7xl font-extrabold tracking-tight text-white"
+                className="text-6xl sm:text-7xl font-extrabold tracking-tight text-white text-center"
                 style={{ fontFamily: "'Inter', system-ui, sans-serif", letterSpacing: '-0.03em' }}
               >
-                Fin<span style={{ color: '#8b5cf6' }}>Fleet</span>
+                Fin<span style={{ color: '#8b5cf6' }}>Fleet</span> Academy
               </h1>
             </motion.div>
 
