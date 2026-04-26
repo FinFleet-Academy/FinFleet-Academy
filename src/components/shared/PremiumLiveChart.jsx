@@ -256,7 +256,6 @@ const PremiumLiveChart = ({ symbol = 'AAPL' }) => {
                {/* Top Info Bar */}
                <div className="p-6 flex items-center justify-between border-b border-[#1f2937]">
                   <div className="flex items-center space-x-4">
-                     <BrandLogo className="h-7 w-auto" />
                      <div>
                         <h3 className="text-sm font-black text-white uppercase tracking-widest">{symbol}</h3>
                         <p className="text-[9px] font-bold text-gray-500 uppercase tracking-[0.2em]">Market Data</p>

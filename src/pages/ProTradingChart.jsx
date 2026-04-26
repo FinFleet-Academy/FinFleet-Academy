@@ -261,7 +261,6 @@ const ProTradingChart = () => {
           </Link>
           
           <div className="flex items-center space-x-3">
-            <BrandLogo className="h-7 w-auto" />
             <div>
               <div className="flex items-center space-x-2">
                 <span className="text-sm font-black text-white uppercase">{activeStock.symbol}</span>

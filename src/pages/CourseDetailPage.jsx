@@ -245,7 +245,6 @@ const CourseDetailPage = () => {
                    <h3 className="text-[10px] font-black uppercase tracking-widest text-brand-400 mb-6">Instructor's Note</h3>
                    <p className="text-slate-400 text-xs font-bold leading-relaxed">"Mastering this lesson is key to understanding how markets really work."</p>
                    <div className="mt-8 flex items-center space-x-3">
-                      <BrandLogo className="h-7 w-auto" />
                       <div className="text-[9px] font-black uppercase tracking-widest text-slate-500">FinFleet Academy Team</div>
                    </div>
                 </div>

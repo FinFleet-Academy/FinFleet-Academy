@@ -251,7 +251,6 @@ const FinancialTracker = () => {
         
         <div className="flex items-center justify-between mb-10 relative z-10">
            <div className="flex items-center space-x-4">
-              <BrandLogo className="h-8 w-auto" />
               <div>
                  <h3 className="text-sm font-black text-white uppercase tracking-[0.2em]">Neural Intelligence Analysis</h3>
                  <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">v4.2.0-Alpha Stream Active</p>
