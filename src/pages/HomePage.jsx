@@ -2,7 +2,8 @@ import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowRight, BookOpen, Newspaper, Users, Star, Sparkles, Zap, Globe, PlayCircle, Activity,
-  ShieldCheck, BarChart4, LineChart, Cpu, PieChart
+  ShieldCheck, BarChart4, LineChart, Cpu, PieChart, Brain, TrendingUp, Target, Award,
+  Bot, Rss, BarChart2, Layers
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -221,26 +222,245 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* 5. About & Ecosystem */}
-      <section className="py-32 border-t border-slate-100 dark:border-slate-800/50 bg-slate-50/30 dark:bg-slate-900/5">
+      {/* 5. About FinFleet Academy — Premium Section */}
+      <section id="about" className="py-32 border-t border-slate-100 dark:border-slate-800/50 overflow-hidden bg-white dark:bg-[#080C10]">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
-            {/* About Academy */}
-            <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
-              <h2 className="text-4xl font-black dark:text-white uppercase tracking-tighter mb-8">About <span className="text-brand-600">FinFleet Academy</span></h2>
-              <p className="text-lg font-bold text-slate-500 dark:text-slate-400 leading-relaxed italic">
-                FinFleet Academy is a next-generation financial education platform designed to help individuals learn, practice, and master the stock market. We combine structured learning, real-time tools, and AI-powered insights to create a complete trading ecosystem.
+
+          {/* Section Label */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            className="flex items-center space-x-3 mb-6"
+          >
+            <div className="w-8 h-8 rounded-xl bg-brand-50 dark:bg-brand-500/10 flex items-center justify-center">
+              <BookOpen className="w-4 h-4 text-brand-600" />
+            </div>
+            <span className="text-[10px] font-black text-brand-600 uppercase tracking-[0.4em]">About the Platform</span>
+          </motion.div>
+
+          {/* Split Layout — Academy */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center mb-32">
+            {/* Left: Text */}
+            <motion.div
+              initial={{ opacity: 0, x: -24 }} whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }} transition={{ duration: 0.7 }}
+              className="space-y-8"
+            >
+              <h2 className="text-5xl lg:text-6xl font-black dark:text-white tracking-tighter leading-none">
+                About{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-indigo-500">
+                  FinFleet Academy
+                </span>
+              </h2>
+              <p className="text-base font-bold text-slate-500 dark:text-slate-400 leading-relaxed">
+                FinFleet Academy is a next-generation financial learning platform designed to help individuals master
+                real-world money skills. We combine structured courses, live market tools, and AI-powered insights
+                to create a complete trading and financial education ecosystem.
               </p>
+              <p className="text-base font-bold text-slate-500 dark:text-slate-400 leading-relaxed">
+                Our mission is to bridge the gap between theory and real market execution — giving learners access
+                to tools, simulations, and intelligence used by professionals.
+              </p>
+
+              {/* Bullet Points */}
+              <div className="space-y-4 pt-2">
+                {[
+                  { icon: TrendingUp, text: 'Stock market education & trading psychology' },
+                  { icon: Target, text: 'Real-world simulations & paper trading' },
+                  { icon: Brain, text: 'AI-driven insights & pattern recognition' },
+                  { icon: ShieldCheck, text: 'Practical financial knowledge — credit, loans, wealth' },
+                ].map((item, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -12 }} whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }} transition={{ delay: i * 0.08 }}
+                    className="flex items-center space-x-4"
+                  >
+                    <div className="w-9 h-9 rounded-xl bg-brand-50 dark:bg-brand-500/10 flex items-center justify-center text-brand-600 flex-shrink-0">
+                      <item.icon className="w-4 h-4" />
+                    </div>
+                    <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{item.text}</span>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Stats Row */}
+              <div className="flex flex-wrap gap-6 pt-4">
+                {[
+                  { value: '12K+', label: 'Learners' },
+                  { value: 'AI-Powered', label: 'Insights' },
+                  { value: 'Real-time', label: 'Market Tools' },
+                ].map((s, i) => (
+                  <div key={i} className="text-center">
+                    <div className="text-2xl font-black text-brand-600 tracking-tighter">{s.value}</div>
+                    <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5">{s.label}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* CTA */}
+              <div className="flex items-center gap-4 pt-2">
+                <Link to="/signup">
+                  <Button variant="brand" size="lg" className="rounded-2xl px-8 py-4 text-[11px] font-black uppercase tracking-wider shadow-xl shadow-brand-500/20">
+                    Start Learning <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </Link>
+                <Link to="/courses">
+                  <Button variant="ghost" size="lg" className="rounded-2xl px-8 py-4 text-[11px] font-black text-brand-600 uppercase tracking-wider">
+                    View Courses
+                  </Button>
+                </Link>
+              </div>
             </motion.div>
 
-            {/* About Finor */}
-            <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
-              <h2 className="text-4xl font-black dark:text-white uppercase tracking-tighter mb-8">About <span className="text-indigo-500">Finor AI</span></h2>
-              <p className="text-lg font-bold text-slate-500 dark:text-slate-400 leading-relaxed italic">
-                Finor is our AI-powered financial intelligence engine that analyzes market trends, generates real-time insights, and delivers smart financial news to help users make data-driven decisions.
-              </p>
+            {/* Right: Visual */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }} transition={{ duration: 0.8 }}
+              className="relative"
+            >
+              <div className="relative bg-slate-900/60 dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[3rem] p-10 shadow-2xl overflow-hidden">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(99,102,241,0.08),transparent_60%)]" />
+                {/* Decorative grid of feature cards */}
+                <div className="grid grid-cols-2 gap-4 relative z-10">
+                  {[
+                    { icon: BookOpen, label: 'Structured Courses', color: 'brand' },
+                    { icon: Activity, label: 'Live Market Tools', color: 'emerald' },
+                    { icon: Brain, label: 'AI Insights', color: 'indigo' },
+                    { icon: Award, label: 'Certifications', color: 'amber' },
+                    { icon: Users, label: 'Community', color: 'brand' },
+                    { icon: ShieldCheck, label: 'Secure Platform', color: 'emerald' },
+                  ].map((item, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }} transition={{ delay: i * 0.07 }}
+                      className="flex items-center space-x-3 bg-white/5 dark:bg-white/[0.04] border border-white/10 rounded-2xl p-4"
+                    >
+                      <div className={`w-8 h-8 rounded-xl bg-${item.color}-500/10 flex items-center justify-center text-${item.color}-500 flex-shrink-0`}>
+                        <item.icon className="w-4 h-4" />
+                      </div>
+                      <span className="text-[10px] font-black text-slate-300 uppercase tracking-wider leading-tight">{item.label}</span>
+                    </motion.div>
+                  ))}
+                </div>
+                <div className="absolute -bottom-16 -right-16 w-48 h-48 bg-brand-500 rounded-full blur-[80px] opacity-10" />
+              </div>
             </motion.div>
           </div>
+
+          {/* Divider */}
+          <div className="border-t border-slate-100 dark:border-slate-800/50 mb-32" />
+
+          {/* Split Layout — Finor */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+            {/* Left: Finor Visual */}
+            <motion.div
+              initial={{ opacity: 0, x: -24 }} whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }} transition={{ duration: 0.7 }}
+              className="relative order-2 lg:order-1"
+            >
+              <div className="relative bg-[#06090f] border border-white/5 rounded-[3rem] p-10 shadow-2xl overflow-hidden">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_60%,rgba(139,92,246,0.08),transparent_60%)]" />
+                {/* Signal feed mockup */}
+                <div className="space-y-3 relative z-10">
+                  {[
+                    { type: 'BUY', asset: 'RELIANCE', conf: '92%', color: 'emerald' },
+                    { type: 'SELL', asset: 'INFY', conf: '87%', color: 'red' },
+                    { type: 'HOLD', asset: 'TCS', conf: '78%', color: 'amber' },
+                    { type: 'BUY', asset: 'HDFC', conf: '91%', color: 'emerald' },
+                  ].map((sig, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }} transition={{ delay: i * 0.1 }}
+                      className="flex items-center justify-between bg-white/[0.04] border border-white/[0.07] rounded-2xl px-5 py-4"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-2 h-2 rounded-full bg-${sig.color}-500 animate-pulse`} />
+                        <span className="text-[10px] font-black text-white uppercase tracking-widest">{sig.asset}</span>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <span className={`text-[9px] font-black uppercase px-2 py-1 rounded-lg bg-${sig.color}-500/10 text-${sig.color}-400`}>{sig.type}</span>
+                        <span className="text-[9px] font-black text-slate-500">{sig.conf}</span>
+                      </div>
+                    </motion.div>
+                  ))}
+                  <div className="pt-2 flex items-center space-x-2">
+                    <div className="w-2 h-2 rounded-full bg-indigo-500 animate-ping" />
+                    <span className="text-[9px] font-black text-indigo-400 uppercase tracking-widest">Finor Live Intelligence Feed</span>
+                  </div>
+                </div>
+                <div className="absolute -top-10 -left-10 w-40 h-40 bg-indigo-500 rounded-full blur-[80px] opacity-10" />
+              </div>
+            </motion.div>
+
+            {/* Right: Finor Text */}
+            <motion.div
+              initial={{ opacity: 0, x: 24 }} whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }} transition={{ duration: 0.7 }}
+              className="space-y-8 order-1 lg:order-2"
+            >
+              <div className="inline-flex items-center space-x-3 bg-indigo-500/10 border border-indigo-500/20 px-4 py-2 rounded-full">
+                <Bot className="w-4 h-4 text-indigo-400" />
+                <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em]">AI Financial Engine</span>
+              </div>
+
+              <h2 className="text-5xl lg:text-6xl font-black dark:text-white tracking-tighter leading-none">
+                About{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">
+                  Finor
+                </span>
+              </h2>
+
+              <p className="text-base font-bold text-slate-500 dark:text-slate-400 leading-relaxed">
+                Finor is our proprietary AI-powered financial intelligence engine designed to analyze markets,
+                generate insights, and deliver real-time financial news.
+              </p>
+              <p className="text-base font-bold text-slate-500 dark:text-slate-400 leading-relaxed">
+                Unlike traditional news platforms, Finor does not just report events —{' '}
+                <span className="text-white font-black">it interprets them.</span>{' '}
+                It acts as a decision-support system for traders and learners, helping them understand not just
+                what is happening, but why it matters.
+              </p>
+
+              {/* Bullet Points */}
+              <div className="space-y-4 pt-2">
+                {[
+                  { icon: Rss, text: 'AI-generated financial news & analysis' },
+                  { icon: BarChart2, text: 'Real-time market sentiment scoring' },
+                  { icon: Layers, text: 'Smart trading signals with confidence ratings' },
+                  { icon: Zap, text: 'Live intelligence feed for active traders' },
+                ].map((item, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: 12 }} whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }} transition={{ delay: i * 0.08 }}
+                    className="flex items-center space-x-4"
+                  >
+                    <div className="w-9 h-9 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-500 flex-shrink-0">
+                      <item.icon className="w-4 h-4" />
+                    </div>
+                    <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{item.text}</span>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* CTA */}
+              <div className="flex items-center gap-4 pt-2">
+                <Link to="/finor">
+                  <Button variant="brand" size="lg" className="rounded-2xl px-8 py-4 text-[11px] font-black uppercase tracking-wider shadow-xl shadow-indigo-500/20 bg-indigo-600 hover:bg-indigo-700">
+                    Explore Finor <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </Link>
+                <Link to="/trading">
+                  <Button variant="ghost" size="lg" className="rounded-2xl px-8 py-4 text-[11px] font-black text-indigo-500 uppercase tracking-wider">
+                    Live Signals
+                  </Button>
+                </Link>
+              </div>
+            </motion.div>
+          </div>
+
         </div>
       </section>
 
