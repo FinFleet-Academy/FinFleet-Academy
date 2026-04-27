@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: finfleet-config
+  namespace: finfleet-prod
+data:
+  client-url: "https://finfleetacademy.com"
+  node-env: "production"
+  port: "5000"
+
+---
+
+# NOTE: Do NOT store real secrets here.
+# Use `kubectl create secret generic finfleet-secrets \
+#   --from-literal=mongo-uri='<your-mongo-uri>' \
+#   --from-literal=jwt-secret='<your-jwt-secret>' \
+#   --from-literal=razorpay-key-id='<your-key>' \
+#   --from-literal=razorpay-key-secret='<your-secret>'`
+# Or use a secrets manager like AWS Secrets Manager / Vault.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: finfleet-secrets
+  namespace: finfleet-prod
+type: Opaque
+stringData:
+  mongo-uri: "REPLACE_WITH_REAL_MONGO_URI"
+  jwt-secret: "REPLACE_WITH_REAL_JWT_SECRET"
+  razorpay-key-id: "REPLACE_WITH_REAL_RAZORPAY_KEY"
+  razorpay-key-secret: "REPLACE_WITH_REAL_RAZORPAY_SECRET"
