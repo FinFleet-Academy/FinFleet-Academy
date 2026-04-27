@@ -107,7 +107,18 @@ const ProfilePage = () => {
               <div className="space-y-2 mb-8">
                 <div className="flex items-center space-x-2">
                   <h1 className="text-2xl font-black text-white tracking-tighter uppercase">{data.name}</h1>
-                  {data.plan === 'PRO' && <Shield className="w-4 h-4 text-brand-500" />}
+                  <div className="flex items-center space-x-1.5">
+                    {data.plan === 'PRO' && (
+                      <div className="group/badge relative">
+                        <Shield className="w-4 h-4 text-brand-500" />
+                        <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-1 bg-brand-600 text-white text-[8px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover/badge:opacity-100 transition-opacity whitespace-nowrap z-50">Pro Elite</div>
+                      </div>
+                    )}
+                    <div className="group/badge relative">
+                      <CheckCircle className="w-4 h-4 text-blue-500 fill-blue-500/20" />
+                      <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-1 bg-blue-600 text-white text-[8px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover/badge:opacity-100 transition-opacity whitespace-nowrap z-50">Verified Trader</div>
+                    </div>
+                  </div>
                 </div>
                 <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest">@{data.username || 'finfleet_user'}</p>
                 <p className="text-xs text-slate-400 font-medium leading-relaxed pt-2 italic line-clamp-3">
@@ -153,13 +164,21 @@ const ProfilePage = () => {
 
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-2 gap-4">
-               <div className="bg-[#0f172a]/80 backdrop-blur-3xl border border-white/5 rounded-3xl p-6 text-center">
-                  <p className="text-2xl font-black text-white">{data.stats?.followers || 0}</p>
+               <div className="bg-[#0f172a]/80 backdrop-blur-3xl border border-white/5 rounded-3xl p-6 text-center group hover:border-brand-500/30 transition-all">
+                  <p className="text-2xl font-black text-white group-hover:text-brand-500 transition-colors">{data.stats?.followers || 0}</p>
                   <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Followers</p>
                </div>
-               <div className="bg-[#0f172a]/80 backdrop-blur-3xl border border-white/5 rounded-3xl p-6 text-center">
-                  <p className="text-2xl font-black text-white">{data.stats?.certificates || 0}</p>
-                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Credentials</p>
+               <div className="bg-[#0f172a]/80 backdrop-blur-3xl border border-white/5 rounded-3xl p-6 text-center group hover:border-indigo-500/30 transition-all">
+                  <p className="text-2xl font-black text-white group-hover:text-indigo-500 transition-colors">{data.stats?.following || 0}</p>
+                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Following</p>
+               </div>
+               <div className="bg-[#0f172a]/80 backdrop-blur-3xl border border-white/5 rounded-3xl p-6 text-center group hover:border-emerald-500/30 transition-all">
+                  <p className="text-2xl font-black text-white group-hover:text-emerald-500 transition-colors">{data.stats?.coursesCompleted || 0}</p>
+                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Courses</p>
+               </div>
+               <div className="bg-[#0f172a]/80 backdrop-blur-3xl border border-white/5 rounded-3xl p-6 text-center group hover:border-amber-500/30 transition-all">
+                  <p className="text-2xl font-black text-white group-hover:text-amber-500 transition-colors">Elite</p>
+                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Activity</p>
                </div>
             </div>
           </div>

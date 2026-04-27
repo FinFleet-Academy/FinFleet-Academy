@@ -11,9 +11,6 @@ import {
   createNews,
   deleteNews,
   updateNews,
-  createCourse,
-  deleteCourse,
-  updateCourse,
   getAllContacts,
   deleteContact
 } from '../controllers/adminController.js';
@@ -53,9 +50,17 @@ router.post('/news', protect, admin, createNews);
 router.put('/news/:id', protect, admin, updateNews);
 router.delete('/news/:id', protect, admin, deleteNews);
 
+import { 
+  createCourse, 
+  deleteCourse, 
+  updateLesson,
+  addLesson
+} from '../controllers/courseController.js';
+
 // Course Management
 router.post('/courses', protect, admin, createCourse);
-router.put('/courses/:id', protect, admin, updateCourse);
+router.post('/courses/:courseId/lessons', protect, admin, addLesson);
+router.put('/courses/lessons/:id', protect, admin, updateLesson);
 router.delete('/courses/:id', protect, admin, deleteCourse);
 
 // Contact Messages

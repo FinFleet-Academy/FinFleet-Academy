@@ -9,40 +9,33 @@ const courseSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  content: {
+  thumbnail: {
     type: String,
     required: true
-  },
-  videoUrl: {
-    type: String,
-    required: true
-  },
-  icon: { 
-    type: String, 
-    default: 'BookOpen' 
-  },
-  color: { 
-    type: String, 
-    default: 'text-brand-600' 
-  },
-  bg: { 
-    type: String, 
-    default: 'bg-brand-100' 
   },
   category: {
     type: String,
     default: 'Trading',
     index: true
   },
-  difficulty: {
+  level: {
     type: String,
-    enum: ['Beginner', 'Intermediate', 'Advanced'],
+    enum: ['Beginner', 'Intermediate', 'Pro'],
     default: 'Beginner'
   },
-  isPremium: {
-    type: Boolean,
-    default: false
-  }
+  accessPlan: {
+    type: String,
+    enum: ['free', 'prime', 'elite'],
+    default: 'free'
+  },
+  instructor: {
+    type: String,
+    default: 'FinFleet Academy'
+  },
+  lessons: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Lesson'
+  }]
 }, { timestamps: true });
 
 export default mongoose.model('Course', courseSchema);

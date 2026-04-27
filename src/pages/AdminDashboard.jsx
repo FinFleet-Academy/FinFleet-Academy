@@ -11,6 +11,8 @@ import AdminLayout from '../components/admin/AdminLayout';
 import AdminOverview from './admin/Overview';
 import AdminLiveClasses from './admin/LiveClasses';
 import AdminUsers from './admin/Users';
+import AdminCourseList from './admin/CourseList';
+import AdminCourseCreator from './admin/CourseCreator';
 import AdminPayments from './admin/Payments';
 import AdminSettings from './admin/Settings';
 import AdminAuditLogs from './admin/AuditLogs';
@@ -95,6 +97,8 @@ const AdminDashboard = () => {
       <Routes>
         <Route index element={<AdminOverview stats={analyticsData} />} />
         <Route path="classes" element={<AdminLiveClasses classes={liveClassesList} loadData={loadData} />} />
+        <Route path="courses" element={<AdminCourseList />} />
+        <Route path="courses/new" element={<AdminCourseCreator />} />
         <Route path="users" element={<AdminUsers users={usersList} upgradePlan={upgradePlan} />} />
         <Route path="payments" element={<AdminPayments />} />
         <Route path="analytics" element={<AdminAnalytics />} />

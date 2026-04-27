@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -35,21 +35,19 @@ const getYouTubeEmbedUrl = (url) => {
 
 const CourseDetailPage = () => {
   const { courseId } = useParams();
+  const navigate = useNavigate();
   const { user, plan, isAuthenticated } = useAuth();
   const [course, setCourse] = useState(null);
   const [progress, setProgress] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [enrolling, setEnrolling] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [courseRes, progressRes] = await Promise.all([
-          axios.get(`/api/courses/${courseId}`),
-          isAuthenticated ? axios.get('/api/courses/progress').catch(() => ({ data: [] })) : { data: [] },
-        ]);
-        setCourse(courseRes.data);
-        const prog = progressRes.data.find(p => p.courseId?._id === courseId || p.courseId === courseId);
-        setProgress(prog || null);
+        const { data } = await axios.get(`/api/courses/${courseId}`);
+        setCourse(data);
+        setProgress(data.enrollment || null);
       } catch {
         toast.error('Failed to load course');
       } finally {
@@ -58,6 +56,22 @@ const CourseDetailPage = () => {
     };
     fetchData();
   }, [courseId, isAuthenticated]);
+
+  const handleEnroll = async () => {
+    if (!isAuthenticated) return navigate('/login');
+    setEnrolling(true);
+    try {
+      await axios.post(`/api/courses/${courseId}/enroll`);
+      toast.success('Successfully enrolled!');
+      // Re-fetch to update state
+      const { data } = await axios.get(`/api/courses/${courseId}`);
+      setCourse(data);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Enrollment failed');
+    } finally {
+      setEnrolling(false);
+    }
+  };
 
   const handleToggleComplete = async () => {
     if (!isAuthenticated) return toast.error("Please login to track progress");
@@ -150,11 +164,23 @@ const CourseDetailPage = () => {
                             {isCompleted ? <Trophy className="w-8 h-8 text-amber-500" /> : <PlayCircle className="w-8 h-8 text-brand-600" />}
                          </div>
                       </div>
-                      <button 
-                        onClick={handleToggleComplete}
-                        className={`w-full py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${isCompleted ? 'bg-emerald-50 text-emerald-600' : 'bg-brand-600 text-white shadow-lg shadow-brand-500/20'}`}>
-                        {isCompleted ? 'Completed' : 'Mark as Complete'}
-                      </button>
+                      {course.enrollment ? (
+                        <button 
+                          onClick={() => navigate(`/courses/learn/${course._id}`)}
+                          className="w-full py-4 bg-brand-600 text-white shadow-lg shadow-brand-500/20 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all flex items-center justify-center space-x-2"
+                        >
+                          <PlayCircle className="w-4 h-4" />
+                          <span>Start Learning</span>
+                        </button>
+                      ) : (
+                        <button 
+                          onClick={handleEnroll}
+                          disabled={enrolling}
+                          className="w-full py-4 bg-brand-600 text-white shadow-lg shadow-brand-500/20 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all disabled:opacity-50"
+                        >
+                          {enrolling ? 'Enrolling...' : 'Enroll Now'}
+                        </button>
+                      )}
                    </div>
                 </div>
              </div>

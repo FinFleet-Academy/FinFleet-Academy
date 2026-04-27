@@ -186,37 +186,55 @@ const CoursesPage = () => {
                     </Link>
                     
                     {/* Course Info */}
-                    <div className="p-8 flex-grow flex flex-col">
-                      <div className="flex items-center space-x-2 mb-6">
-                         <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                         <span className="text-xs font-bold text-slate-400">4.9 (100+ learners)</span>
-                      </div>
-                      
-                      <Link to={`/courses/${course._id}`}>
-                        <h3 className="text-2xl font-black dark:text-white mb-3 group-hover:text-brand-600 transition-colors leading-tight">
-                          {course.title}
-                        </h3>
-                      </Link>
-                      
-                      <p className="text-sm text-slate-500 dark:text-slate-400 mb-8 flex-grow leading-relaxed font-medium">
-                        {course.description || "Master the core principles and advanced strategies in this comprehensive module."}
-                      </p>
-                      
-                      <div className="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-slate-800/50">
-                        <div className="flex items-center space-x-3">
-                          <LikeButton targetId={course._id} targetType="course" size="sm" />
-                          <div className="flex items-center space-x-1 text-slate-400">
-                             <MessageSquare className="w-4 h-4" />
-                             <span className="text-xs font-bold">8</span>
-                          </div>
+                      <div className="p-8 flex-grow flex flex-col">
+                        <div className="flex items-center justify-between mb-6">
+                           <div className="flex items-center space-x-2">
+                              <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                              <span className="text-xs font-bold text-slate-400">4.9 (100+)</span>
+                           </div>
+                           {course.enrollment && (
+                             <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest bg-emerald-500/10 px-2 py-1 rounded-md border border-emerald-500/20">Enrolled</span>
+                           )}
                         </div>
                         
-                        <Link to={`/courses/${course._id}`} className="flex items-center space-x-1 text-sm font-black text-brand-600 group-hover:translate-x-1 transition-transform">
-                          <span>Explore</span>
-                          <ArrowRight className="w-4 h-4" />
+                        <Link to={`/courses/${course._id}`}>
+                          <h3 className="text-2xl font-black dark:text-white mb-3 group-hover:text-brand-600 transition-colors leading-tight">
+                            {course.title}
+                          </h3>
                         </Link>
+                        
+                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 flex-grow leading-relaxed font-medium line-clamp-2">
+                          {course.description}
+                        </p>
+
+                        {course.enrollment && (
+                          <div className="mb-6">
+                             <div className="w-full h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                                <div 
+                                  className="h-full bg-brand-600" 
+                                  style={{ width: `${(course.enrollment.completedLessons?.length / (course.lessons?.length || 1)) * 100}%` }} 
+                                />
+                             </div>
+                             <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-2">
+                                {course.enrollment.completedLessons?.length || 0} / {course.lessons?.length || 0} Lessons
+                             </p>
+                          </div>
+                        )}
+                        
+                        <div className="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-slate-800/50">
+                          <div className="flex items-center space-x-3">
+                            <LikeButton targetId={course._id} targetType="course" size="sm" />
+                          </div>
+                          
+                          <Link 
+                            to={course.enrollment ? `/courses/learn/${course._id}` : `/courses/${course._id}`} 
+                            className="flex items-center space-x-1 text-sm font-black text-brand-600 group-hover:translate-x-1 transition-transform"
+                          >
+                            <span>{course.enrollment ? 'Resume' : 'Explore'}</span>
+                            <ArrowRight className="w-4 h-4" />
+                          </Link>
+                        </div>
                       </div>
-                    </div>
                   </motion.div>
                 ))
               )}

@@ -3,12 +3,14 @@ import { Link, useLocation } from 'react-router-dom';
 import { Rocket, Sun, Moon, Menu, X, ChevronDown, User, LifeBuoy, MessageCircle, LogOut, Sparkles, ShieldCheck, Bell, Trash2, CheckCircle2 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
+import useNotifications from '../../hooks/useNotifications';
 import { motion, AnimatePresence } from 'framer-motion';
 import BrandLogo from '../ui/BrandLogo';
 
 const Navbar = () => {
   const { isDark, toggleTheme } = useTheme();
-  const { user, logout, isAuthenticated, isAdmin, notifications, markNotificationRead, markAllNotificationsAsRead } = useAuth();
+  const { user, logout, isAuthenticated, isAdmin } = useAuth();
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
@@ -107,7 +109,7 @@ const Navbar = () => {
                          <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                             <span className="text-[10px] font-black uppercase tracking-widest dark:text-white">Notifications</span>
                             {unreadCount > 0 && (
-                              <button onClick={markAllNotificationsAsRead} className="text-[9px] font-black uppercase tracking-widest text-brand-600 hover:underline">Mark all as read</button>
+                              <button onClick={markAllAsRead} className="text-[9px] font-black uppercase tracking-widest text-brand-600 hover:underline">Mark all as read</button>
                             )}
                          </div>
                          <div className="max-h-[350px] overflow-y-auto">
@@ -118,17 +120,17 @@ const Navbar = () => {
                               </div>
                             ) : (
                               notifications.map((n) => (
-                                <div key={n._id} className={`p-4 border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group relative ${!n.read ? 'bg-brand-50/30 dark:bg-brand-900/5' : ''}`}>
+                                <div key={n._id} className={`p-4 border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group relative ${!n.isRead ? 'bg-brand-50/30 dark:bg-brand-900/5' : ''}`}>
                                    <div className="flex items-start space-x-3">
-                                      <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${!n.read ? 'bg-brand-600' : 'bg-transparent'}`} />
+                                      <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${!n.isRead ? 'bg-brand-600' : 'bg-transparent'}`} />
                                       <div className="flex-1">
                                          <p className="text-[11px] font-black dark:text-white uppercase tracking-tight leading-tight mb-1">{n.title || 'Notification'}</p>
                                          <p className="text-[10px] font-medium text-slate-500 dark:text-slate-400 leading-normal">{n.message}</p>
                                          <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-2">{new Date(n.createdAt).toLocaleDateString()}</p>
                                       </div>
                                    </div>
-                                   {!n.read && (
-                                     <button onClick={() => markNotificationRead(n._id)} className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity text-brand-600">
+                                   {!n.isRead && (
+                                     <button onClick={() => markAsRead(n._id)} className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity text-brand-600">
                                         <CheckCircle2 className="w-3.5 h-3.5" />
                                      </button>
                                    )}

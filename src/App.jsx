@@ -1,4 +1,4 @@
-import React, { useState, useCallback, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
@@ -31,6 +31,7 @@ const FinancialRouter = lazy(() => import('./pages/financial/FinancialRouter'));
 const CommunityPage = lazy(() => import('./pages/CommunityPage'));
 const PublicProfilePage = lazy(() => import('./pages/PublicProfilePage'));
 const CourseDetailPage = lazy(() => import('./pages/CourseDetailPage'));
+const CoursePlayer = lazy(() => import('./pages/courses/CoursePlayer'));
 const TradingDashboard = lazy(() => import('./pages/TradingDashboard'));
 import ProTradingChart from './pages/ProTradingChart';
 const LiveClasses = lazy(() => import('./pages/LiveClasses'));
@@ -100,6 +101,7 @@ function App() {
                       <Route path="/" element={<HomePage />} />
                       <Route path="/courses" element={<CoursesPage />} />
                       <Route path="/courses/:courseId" element={<CourseDetailPage />} />
+                      <Route path="/courses/learn/:courseId" element={<CoursePlayer />} />
                       <Route path="/pricing" element={<PricingPage />} />
                       <Route path="/finor/about" element={<AboutFinorPage />} />
                       <Route path="/finor" element={<FinorPage />} />

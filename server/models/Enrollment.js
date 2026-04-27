@@ -1,35 +1,43 @@
 import mongoose from 'mongoose';
 
-const EnrollmentSchema = new mongoose.Schema({
-  user: {
+const enrollmentSchema = new mongoose.Schema({
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: true,
+    index: true
   },
-  class: {
+  courseId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'LiveClass',
-    required: true
+    ref: 'Course',
+    required: true,
+    index: true
   },
-  paymentStatus: {
+  completedLessons: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Lesson'
+  }],
+  quizScores: {
+    type: Map,
+    of: Number, // lessonId -> score
+    default: {}
+  },
+  lastWatchedLesson: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Lesson'
+  },
+  status: {
     type: String,
-    enum: ['pending', 'completed', 'failed', 'refunded'],
-    default: 'pending'
+    enum: ['enrolled', 'completed'],
+    default: 'enrolled'
   },
-  paymentId: { type: String }, // Razorpay/Stripe Payment ID
-  orderId: { type: String },   // Razorpay/Stripe Order ID
   enrolledAt: {
     type: Date,
     default: Date.now
-  },
-  attendanceStatus: {
-    type: String,
-    enum: ['absent', 'present'],
-    default: 'absent'
   }
 }, { timestamps: true });
 
-// Ensure a user can only enroll once per class
-EnrollmentSchema.index({ user: 1, class: 1 }, { unique: true });
+// Prevent duplicate enrollments
+enrollmentSchema.index({ userId: 1, courseId: 1 }, { unique: true });
 
-export default mongoose.model('Enrollment', EnrollmentSchema);
+export default mongoose.model('Enrollment', enrollmentSchema);
