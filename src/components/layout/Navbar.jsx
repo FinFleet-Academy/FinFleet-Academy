@@ -154,7 +154,7 @@ const Navbar = () => {
                     >
                        <div className="w-8 h-8 rounded-xl bg-brand-600 flex items-center justify-center text-white font-black text-xs shadow-inner">
                           {user?.profileImage ? (
-                            <img src={user.profileImage} alt="" className="w-full h-full rounded-xl object-cover" />
+                            <img src={user.profileImage} alt="" loading="lazy" className="w-full h-full rounded-xl object-cover" />
                           ) : initials}
                        </div>
                        <span className="text-xs font-black text-white dark:text-slate-900 uppercase tracking-widest">{user?.name?.split(' ')[0]}</span>
@@ -187,10 +187,21 @@ const Navbar = () => {
                                 </Link>
                               ))}
                            </div>
-                           <button onClick={() => { logout(); setDropdownOpen(false); }} className="w-full flex items-center space-x-3 px-7 py-5 bg-red-50/50 dark:bg-red-950/10 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all">
-                              <LogOut className="w-4 h-4" />
-                              <span className="text-[10px] font-black uppercase tracking-widest">Log Out</span>
-                           </button>
+                           <div className="flex flex-col border-t border-slate-100 dark:border-slate-800">
+                             <button onClick={() => { logout(); setDropdownOpen(false); }} className="w-full flex items-center space-x-3 px-7 py-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
+                                <LogOut className="w-4 h-4" />
+                                <span className="text-[10px] font-black uppercase tracking-widest">Log Out</span>
+                             </button>
+                             <button onClick={() => { 
+                               if(window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                                 alert('Account deletion initiated.');
+                                 setDropdownOpen(false); 
+                               }
+                             }} className="w-full flex items-center space-x-3 px-7 py-4 bg-red-50/50 dark:bg-red-950/10 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all border-t border-red-100 dark:border-red-900/30">
+                                <Trash2 className="w-4 h-4" />
+                                <span className="text-[10px] font-black uppercase tracking-widest">Delete Account</span>
+                             </button>
+                           </div>
                         </motion.div>
                       )}
                     </AnimatePresence>

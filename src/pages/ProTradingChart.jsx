@@ -9,7 +9,7 @@ import {
   Waves, Target, Gauge
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import AdvancedChart from '../components/shared/AdvancedChart';
+import ChartCanvas from '../components/chart/ChartCanvas';
 import Badge from '../components/ui/Badge';
 import axios from 'axios';
 import BrandLogo from '../components/ui/BrandLogo';
@@ -32,6 +32,7 @@ const ProTradingChart = () => {
   const [isLive, setIsLive] = useState(true);
   const [fullView, setFullView] = useState(false);
   const [teachingMode, setTeachingMode] = useState(true);
+  const [leftCollapsed, setLeftCollapsed] = useState(false);
   const [chartType, setChartType] = useState('candlestick');
   const [timeframe, setTimeframe] = useState('1m');
   const [indicators, setIndicators] = useState({ ma: true, volume: true, ema: false, rsi: false, bollinger: false });
@@ -250,6 +251,9 @@ const ProTradingChart = () => {
               </div>
             </motion.div>
           </div>
+            </div>
+            )}
+          </div>
         )}
       </AnimatePresence>
 
@@ -401,7 +405,24 @@ const ProTradingChart = () => {
         
         {/* 2. INTELLIGENCE HUD */}
         {!fullView && (
-          <div className="w-80 border-r border-slate-800 bg-slate-900/30 p-6 flex flex-col space-y-8 overflow-y-auto custom-scrollbar">
+          <div className={`relative border-r border-slate-800 bg-slate-900/30 flex flex-col overflow-hidden transition-all duration-300 ${leftCollapsed ? 'w-12' : 'w-80'}`}>
+            {/* Collapse toggle */}
+            <button
+              onClick={() => setLeftCollapsed(c => !c)}
+              className="absolute -right-3 top-6 z-40 w-6 h-12 bg-slate-800 border border-slate-700 rounded-r-lg flex items-center justify-center hover:bg-slate-700 transition-colors"
+            >
+              <span className="text-slate-400 text-[10px]">{leftCollapsed ? '›' : '‹'}</span>
+            </button>
+
+            {/* Icon-only sidebar when collapsed */}
+            {leftCollapsed ? (
+              <div className="flex flex-col items-center pt-6 space-y-5">
+                <Sparkles className="w-4 h-4 text-amber-400" />
+                <Brain className="w-4 h-4 text-brand-500" />
+                <Search className="w-4 h-4 text-slate-500" />
+              </div>
+            ) : (
+            <div className="p-6 flex flex-col space-y-8 overflow-y-auto custom-scrollbar flex-grow">
            
            {/* Psychology Meter */}
            <div className="space-y-4">
@@ -480,13 +501,17 @@ const ProTradingChart = () => {
 
         {/* 3. MAIN CHART CORE */}
         <div className="flex-grow relative bg-[#020617]">
-          <AdvancedChart 
-            symbol={activeStock.symbol} 
-            data={chartData} 
-            indicators={indicators}
-            type={chartType}
-            fullView={fullView}
+          <ChartCanvas
+            data={chartData}
+            symbol={activeStock.symbol}
             timeframe={timeframe}
+            chartType={chartType}
+            showIndicators={indicators.ema}
+            aiLevels={intelligence ? {
+              support: intelligence.support,
+              resistance: intelligence.resistance,
+            } : null}
+            config={{ showGrid: true, showLabels: true }}
           />
           
           {/* Predictive Warning Overlays */}

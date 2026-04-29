@@ -6,6 +6,8 @@ import Breadcrumbs from './Breadcrumbs';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppStore } from '../../store/useAppStore';
 
+const Footer = React.lazy(() => import('./Footer'));
+
 const AppLayout = ({ children }) => {
   const { pathname } = useLocation();
   const { isSidebarOpen, setSidebarOpen, toggleSidebar } = useAppStore();
@@ -49,11 +51,14 @@ const AppLayout = ({ children }) => {
         />
 
         {/* Scrollable Content */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar relative bg-white dark:bg-[#080C10]">
-          <div className="max-w-[1600px] mx-auto p-6 sm:p-8 lg:p-10">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar relative bg-white dark:bg-[#080C10] flex flex-col">
+          <div className="max-w-[1600px] mx-auto p-6 sm:p-8 lg:p-10 w-full flex-grow">
             <Breadcrumbs />
             {children}
           </div>
+          <React.Suspense fallback={<div className="h-20 animate-pulse bg-slate-100 dark:bg-slate-900 mt-auto" />}>
+            <Footer />
+          </React.Suspense>
         </main>
       </div>
 

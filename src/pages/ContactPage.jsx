@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { 
   Mail, Instagram, Linkedin, Twitter, 
   MapPin, Phone, Send, Loader2, Star, 
-  Globe, ShieldCheck, ArrowRight
+  Globe, ShieldCheck, ArrowRight, MessageCircle
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
@@ -73,6 +73,17 @@ const ContactPage = () => {
                         <div>
                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Email Us</p>
                            <p className="text-sm font-black dark:text-white">support@finfleet.academy</p>
+                        </div>
+                     </div>
+
+                     <div className="flex items-center space-x-6 group">
+                        <div className="w-12 h-12 bg-[#25D366]/10 rounded-2xl flex items-center justify-center shadow-sm border border-[#25D366]/20 group-hover:scale-110 transition-transform">
+                           <MessageCircle className="w-5 h-5 text-[#25D366]" />
+                        </div>
+                        <div>
+                           <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">WhatsApp Support</p>
+                           <p className="text-sm font-black dark:text-white mb-1">+91 89861 65504</p>
+                           <a href="https://wa.me/918986165504" target="_blank" rel="noreferrer" className="text-[10px] text-[#25D366] font-bold hover:underline">Chat with us</a>
                         </div>
                      </div>
 

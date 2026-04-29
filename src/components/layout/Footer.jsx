@@ -55,8 +55,8 @@ const Footer = () => {
             </p>
             <div className="flex items-center space-x-4">
               {[
-                { icon: Instagram, link: "https://www.instagram.com/finfleetacademy/" },
                 { icon: Linkedin, link: "https://www.linkedin.com/company/113126241/" },
+                { icon: Instagram, link: "https://www.instagram.com/finfleetacademy/" },
                 { icon: Twitter, link: "https://x.com/finfleetacademy" }
               ].map((social, i) => (
                 <a key={i} href={social.link} target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl flex items-center justify-center text-slate-400 hover:text-brand-600 hover:border-brand-500/20 transition-all shadow-sm">
@@ -67,36 +67,40 @@ const Footer = () => {
           </div>
 
           {/* Navigation Links */}
-          <div className="lg:col-span-5 grid grid-cols-2 gap-10">
+          <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-3 gap-10">
             <div className="space-y-8">
               <h4 className="text-[11px] font-black dark:text-white uppercase tracking-[0.3em] flex items-center">
-                 <Zap className="w-4 h-4 mr-3 text-brand-600" /> Resources
+                 <Globe className="w-4 h-4 mr-3 text-brand-600" /> Company
               </h4>
               <ul className="space-y-4 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                <li><Link to="/courses" className="hover:text-brand-600 transition-colors">Courses</Link></li>
-                <li><Link to="/community" className="hover:text-brand-600 transition-colors">Community</Link></li>
-                <li><Link to="/tools" className="hover:text-brand-600 transition-colors">Trading Tools</Link></li>
+                <li><Link to="/about" className="hover:text-brand-600 transition-colors">About FinFleet Academy</Link></li>
+                <li><Link to="/finor/about" className="hover:text-brand-600 transition-colors">About Finor</Link></li>
+              </ul>
+            </div>
+            <div className="space-y-8">
+              <h4 className="text-[11px] font-black dark:text-white uppercase tracking-[0.3em] flex items-center">
+                 <Zap className="w-4 h-4 mr-3 text-brand-600" /> Product
+              </h4>
+              <ul className="space-y-4 text-[10px] font-black uppercase tracking-widest text-slate-400">
                 <li>
                   <Link to="/finor" className="hover:text-brand-600 transition-colors flex flex-col group">
                     <span>Finor</span>
-                    <span className="text-[7px] opacity-60 normal-case tracking-normal group-hover:opacity-100 transition-opacity">by FinFleet Academy</span>
+                    <span className="text-[7px] opacity-60 normal-case tracking-normal group-hover:opacity-100 transition-opacity mt-1">Finance News Platform</span>
                   </Link>
                 </li>
               </ul>
             </div>
             <div className="space-y-8">
               <h4 className="text-[11px] font-black dark:text-white uppercase tracking-[0.3em] flex items-center">
-                 <Globe className="w-4 h-4 mr-3 text-brand-600" /> Company
+                 <ShieldAlert className="w-4 h-4 mr-3 text-brand-600" /> Support
               </h4>
               <ul className="space-y-4 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                <li><Link to="/about" className="hover:text-brand-600 transition-colors">About Us</Link></li>
-                <li><Link to="/pricing" className="hover:text-brand-600 transition-colors">Pricing</Link></li>
-                <li><Link to="/contact" className="hover:text-brand-600 transition-colors">Help Center</Link></li>
-                <li><Link to="/feedback" className="hover:text-brand-600 transition-colors">Feedback</Link></li>
+                <li><Link to="/help" className="hover:text-brand-600 transition-colors">Help Center</Link></li>
+                <li><Link to="/contact" className="hover:text-brand-600 transition-colors">Contact Us</Link></li>
                 <li>
                   <button 
                     onClick={() => setShowSettings(true)}
-                    className="hover:text-brand-600 transition-colors text-[10px] font-black uppercase tracking-widest"
+                    className="hover:text-brand-600 transition-colors text-[10px] font-black uppercase tracking-widest text-left"
                   >
                     Cookies
                   </button>

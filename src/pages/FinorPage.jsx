@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   TrendingUp, Activity, BarChart2, Globe, ArrowRight, 
@@ -18,6 +18,29 @@ const FinorPage = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('ALL'); // ALL, US, EU, ASIA
   const [searchQuery, setSearchQuery] = useState('');
+  const [displayCount, setDisplayCount] = useState(5);
+  const observerTarget = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting) {
+          setDisplayCount(prev => prev + 5);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => {
+      if (observerTarget.current) {
+        observer.unobserve(observerTarget.current);
+      }
+    };
+  }, [observerTarget]);
 
   const generateMockNews = () => {
     const mockTitles = [
@@ -100,6 +123,8 @@ const FinorPage = () => {
     if (searchQuery && !item.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     return true;
   });
+
+  const displayedFeed = filteredFeed.slice(0, displayCount);
 
   return (
     <div className="bg-[#020617] min-h-screen text-slate-300 font-sans selection:bg-brand-500/30 overflow-x-hidden">
@@ -221,12 +246,12 @@ const FinorPage = () => {
                 [1,2,3,4].map(i => <div key={i} className="h-40 w-full bg-slate-900/50 rounded-3xl animate-pulse border border-slate-800" />)
               ) : (
                 <AnimatePresence>
-                  {filteredFeed.map((intel, idx) => (
+                  {displayedFeed.map((intel, idx) => (
                     <motion.div 
                       key={intel._id || idx}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: idx * 0.05 }}
+                      transition={{ delay: (idx % 5) * 0.05 }}
                       className="group bg-slate-900/40 hover:bg-slate-900 transition-all border border-slate-800 hover:border-slate-700 rounded-3xl p-8 relative overflow-hidden"
                     >
                       {/* Impact Sidebar Indicator */}
@@ -288,6 +313,11 @@ const FinorPage = () => {
                       </div>
                     </motion.div>
                   ))}
+                  {displayCount < filteredFeed.length && (
+                    <div ref={observerTarget} className="py-8 flex justify-center w-full">
+                      <div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  )}
                 </AnimatePresence>
               )}
 
