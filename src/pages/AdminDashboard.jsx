@@ -8,22 +8,22 @@ import Button from '../components/ui/Button';
 
 // SaaS Admin Components
 import AdminLayout from '../components/admin/AdminLayout';
-import AdminOverview from './admin/Overview';
-import AdminLiveClasses from './admin/LiveClasses';
-import AdminUsers from './admin/Users';
-import AdminCourseList from './admin/CourseList';
-import AdminCourseCreator from './admin/CourseCreator';
-import AdminPayments from './admin/Payments';
-import AdminSettings from './admin/Settings';
-import AdminAuditLogs from './admin/AuditLogs';
-import SystemHealth from './admin/SystemHealth';
+import AdminOverview from './admin/Overview.jsx';
+import AdminLiveClasses from './admin/LiveClasses.jsx';
+import AdminUsers from './admin/Users.jsx';
+import AdminCourseList from './admin/CourseList.jsx';
+import AdminCourseCreator from './admin/CourseCreator.jsx';
+import AdminPayments from './admin/Payments.jsx';
+import AdminSettings from './admin/Settings.jsx';
+import AdminAuditLogs from './admin/AuditLogs.jsx';
+import SystemHealth from './admin/SystemHealth.jsx';
 import { useAdminSocket } from '../hooks/useAdminSocket';
 import { StatCardSkeleton, ChartSkeleton, TableSkeleton } from '../components/admin/AdminSkeleton';
 
 import { Routes, Route, useLocation } from 'react-router-dom';
-import AdminAnalytics from './admin/Analytics';
-import SupportManager from './admin/SupportManager';
-import AdminNotifications from './admin/Notifications';
+import AdminAnalytics from './admin/Analytics.jsx';
+import SupportManager from './admin/SupportManager.jsx';
+import AdminNotifications from './admin/Notifications.jsx';
 
 const AdminDashboard = () => {
   const { isAdmin, fetchUsers, upgradePlan } = useAuth();

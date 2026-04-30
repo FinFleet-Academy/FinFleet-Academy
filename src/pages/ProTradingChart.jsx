@@ -251,9 +251,6 @@ const ProTradingChart = () => {
               </div>
             </motion.div>
           </div>
-            </div>
-            )}
-          </div>
         )}
       </AnimatePresence>
 
@@ -498,8 +495,10 @@ const ProTradingChart = () => {
            </div>
         </div>
         )}
+      </div>
+    )}
 
-        {/* 3. MAIN CHART CORE */}
+    {/* 3. MAIN CHART CORE */}
         <div className="flex-grow relative bg-[#020617]">
           <ChartCanvas
             data={chartData}
