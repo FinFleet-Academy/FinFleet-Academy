@@ -241,6 +241,8 @@ const PremiumLiveChart = ({ symbol = 'AAPL' }) => {
             <div className="inline-flex items-center space-x-3 bg-brand-500/10 border border-brand-500/20 px-4 py-2 rounded-full">
               <Zap className="w-4 h-4 text-brand-600 animate-pulse" />
               <span className="text-[10px] font-black text-brand-600 uppercase tracking-widest">Next-Gen Trading Platform</span>
+              <span className="h-4 w-px bg-brand-500/30" />
+              <span className="text-[10px] font-black text-brand-600 uppercase tracking-widest">BETA</span>
             </div>
             <h1 className="text-5xl md:text-7xl font-black text-slate-900 dark:text-white leading-[1.1] tracking-tighter">Learn. Trade. <br /><span className="text-gradient">Master the Markets.</span></h1>
             <p className="text-lg md:text-xl text-slate-500 dark:text-slate-400 font-medium max-w-xl leading-relaxed">Experience the adrenaline of real-world markets without the risk. Practice with professional-grade tools and live-simulated charts.</p>

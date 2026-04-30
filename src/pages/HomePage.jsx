@@ -130,18 +130,21 @@ const HomePage = () => {
         <div className="max-w-7xl mx-auto px-6">
            <div className="grid grid-cols-2 lg:grid-cols-4 gap-12">
               {[
-                { label: 'Active Learners', value: '12K+', icon: Users, color: 'text-brand-600' },
-                { label: 'Platform Rating', value: '4.9/5', icon: Star, color: 'text-amber-500' },
-                { label: 'Real-time Assets', value: '500+', icon: Activity, color: 'text-blue-500' },
-                { label: 'Expert Mentors', value: '100+', icon: Sparkles, color: 'text-emerald-500' }
+                { label: 'Community Members', value: '500+', sub: 'Students and early adopters building with us', icon: Users, color: 'text-brand-600' },
+                { label: 'Early Users Feedback', value: 'Rating', sub: 'Based on initial user reviews', icon: Star, color: 'text-amber-500' },
+                { label: 'Curated Learning Resources', value: 'Premium', sub: 'Carefully selected finance & tech content', icon: Activity, color: 'text-blue-500' },
+                { label: 'Growing Mentor Network', value: 'Expert', sub: 'Industry professionals joining gradually', icon: Sparkles, color: 'text-emerald-500' }
               ].map((stat, i) => (
                 <motion.div 
                   key={i} whileInView={{ opacity: 1, y: 0 }} initial={{ opacity: 0, y: 20 }} 
-                  viewport={{ once: true }} className="text-center"
+                  viewport={{ once: true }} className="text-center group"
                 >
-                   <stat.icon className={`w-8 h-8 ${stat.color} mx-auto mb-6 opacity-40`} />
+                   <div className={`w-16 h-16 ${stat.color} bg-current/10 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform`}>
+                      <stat.icon className="w-8 h-8" />
+                   </div>
                    <div className="text-4xl font-black dark:text-white tracking-tighter mb-2">{stat.value}</div>
-                   <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</div>
+                   <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">{stat.label}</div>
+                   <p className="text-[9px] font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wider leading-relaxed px-4">{stat.sub}</p>
                 </motion.div>
               ))}
            </div>
@@ -264,10 +267,10 @@ const HomePage = () => {
               {/* Bullet Points */}
               <div className="space-y-4 pt-2">
                 {[
-                  { icon: TrendingUp, text: 'Stock market education & trading psychology' },
-                  { icon: Target, text: 'Real-world simulations & paper trading' },
-                  { icon: Brain, text: 'AI-driven insights & pattern recognition' },
-                  { icon: ShieldCheck, text: 'Practical financial knowledge — credit, loans, wealth' },
+                  { icon: Users, text: 'Built by Students, for Students' },
+                  { icon: PlayCircle, text: 'Focused on Practical Learning' },
+                  { icon: Target, text: 'Real-World Finance Projects' },
+                  { icon: Globe, text: 'Community-Driven Growth' },
                 ].map((item, i) => (
                   <motion.div
                     key={i}
@@ -286,9 +289,9 @@ const HomePage = () => {
               {/* Stats Row */}
               <div className="flex flex-wrap gap-6 pt-4">
                 {[
-                  { value: '12K+', label: 'Learners' },
+                  { value: '500+', label: 'Early Adopters' },
                   { value: 'AI-Powered', label: 'Insights' },
-                  { value: 'Real-time', label: 'Market Tools' },
+                  { value: 'Curated', label: 'Resources' },
                 ].map((s, i) => (
                   <div key={i} className="text-center">
                     <div className="text-2xl font-black text-brand-600 tracking-tighter">{s.value}</div>
